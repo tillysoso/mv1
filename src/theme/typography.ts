@@ -1,0 +1,26 @@
+export const fonts = {
+  display: 'Cinzel',
+  body: 'Montserrat',
+  terminal: 'SpaceMono',
+} as const;
+
+export const fontWeights = {
+  light: '300',
+  regular: '400',
+  medium: '500',
+  semiBold: '600',
+  bold: '700',
+} as const;
+
+export const typeScale = {
+  displayXL: { fontSize: 44, fontWeight: fontWeights.bold, letterSpacing: 2 },
+  displayL:  { fontSize: 32, fontWeight: fontWeights.bold, letterSpacing: 2 },
+  displayM:  { fontSize: 26, fontWeight: fontWeights.semiBold, letterSpacing: 1.5 },
+  displayS:  { fontSize: 18, fontWeight: fontWeights.regular, letterSpacing: 2 },
+  bodyL:     { fontSize: 18, fontWeight: fontWeights.regular, lineHeight: 30 },
+  bodyM:     { fontSize: 16, fontWeight: fontWeights.regular, lineHeight: 27 },
+  bodyS:     { fontSize: 14, fontWeight: fontWeights.regular, lineHeight: 23 },
+  label:     { fontSize: 12, fontWeight: fontWeights.semiBold, letterSpacing: 1 },
+  micro:     { fontSize: 11, fontWeight: fontWeights.regular },
+  terminal:  { fontSize: 17, fontWeight: fontWeights.regular, letterSpacing: 0.5 },
+} as const;
