@@ -2,6 +2,15 @@ export const fonts = {
   display: 'Cinzel',
   body: 'Montserrat',
   terminal: 'SpaceMono',
+  // Wordmark font — Remachine Script by Luke
+  // Files: assets/fonts/RemachineScript.woff2 / .ttf / .eot
+  // Use only for the Majestic wordmark lockup — never for body or UI text
+  wordmark: 'RemachineScript',
+} as const;
+
+// ─── Font asset map (for useFonts / expo-font) ───────────────────────────────
+export const fontAssets = {
+  RemachineScript: require('../../assets/fonts/RemachineScript.ttf'),
 } as const;
 
 export const fontWeights = {
