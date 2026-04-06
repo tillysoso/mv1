@@ -2,9 +2,10 @@ export const fonts = {
   display: 'Cinzel',
   body: 'Montserrat',
   terminal: 'SpaceMono',
-  // Wordmark font — Remachine Script by Luke
+  // Wordmark font — Remachine Script (designed by Luke)
+  // Full font name: Remachine Script
   // Files: assets/fonts/RemachineScript.woff2 / .ttf / .eot
-  // Use only for the Majestic wordmark lockup — never for body or UI text
+  // Use ONLY for the Majestic wordmark lockup — never for body or UI text
   wordmark: 'RemachineScript',
 } as const;
 
