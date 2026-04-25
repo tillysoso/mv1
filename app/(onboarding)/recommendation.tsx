@@ -8,8 +8,6 @@ import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 const AVATAR_DESCRIPTIONS: Record<AvatarId, string> = {
   casper:  'Direct. Decisive. Will not let you stall.',
   eli:     'Reframes everything. Sees what others miss.',
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
@@ -158,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   caveat: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.mist,
     marginBottom: 36,
@@ -183,9 +181,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.bodyS.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     marginBottom: 4,
     letterSpacing: 0.5,

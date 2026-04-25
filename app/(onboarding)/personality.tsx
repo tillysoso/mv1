@@ -20,9 +20,7 @@ const ROMAN: Record<number, string> = {
   20: 'XX', 21: 'XXI', 22: 'XXII',
 };
 
-// TODO: fontFamily strings require expo-font preloading.
-// TODO: Replace CardPlaceholder with actual card image from assets/cards/major-arcana/
-//       once card art is delivered in a later step.
+// TODO: Replace CardPlaceholder with actual card image from assets/cards/major-arcana/ once delivered.
 
 function CardPlaceholder({ number }: { number: number }) {
   return (
@@ -101,16 +99,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   label: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.text.secondary,
     letterSpacing: 1,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
   sublabel: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -128,35 +125,34 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   cardPlaceholderText: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: 28,
     color: colors.mist,
     letterSpacing: 2,
   },
   cardNumber: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 8,
   },
   cardName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayL.fontSize,
-    fontWeight: '700',
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 20,
   },
   essence: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
     marginBottom: 16,
   },
   resonance: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -167,9 +163,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   ctaText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

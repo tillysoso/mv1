@@ -17,8 +17,6 @@ import { fonts, typeScale } from '../../src/theme/typography';
 
 const MIN_DURATION_MS = 2000;
 
-// TODO: fontFamily strings require expo-font preloading.
-
 export default function CalculatingScreen() {
   const router = useRouter();
   const { dateOfBirth, setBirthCards } = useProfileStore();
@@ -79,9 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '400',
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 16,

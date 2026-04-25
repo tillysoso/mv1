@@ -11,9 +11,6 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
-// TODO: Replace Text fontFamily strings with loaded Cinzel/Montserrat once
-// Luke's font assets are delivered. Use expo-font for preloading.
-
 export default function EntryScreen() {
   const router = useRouter();
   const opacity = useSharedValue(0);
@@ -82,16 +79,15 @@ const styles = StyleSheet.create({
     // Pulse animation handled by avatar aura system in a later step
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel) — awaiting font delivery
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 1,
     lineHeight: 36,
     marginBottom: 16,
   },
   subHeadline: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -104,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   brandLine: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 2,
@@ -122,9 +118,8 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   ctaText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

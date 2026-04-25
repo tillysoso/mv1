@@ -8,9 +8,7 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
 const PROMPT = 'What do you go by?';
-const REVEAL_DELAY_MS = 30; // per character
-
-// TODO: fontFamily strings require Cinzel/Montserrat/SpaceMono fonts via expo-font.
+const REVEAL_DELAY_MS = 30;
 
 export default function NameScreen() {
   const router = useRouter();
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   prompt: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,

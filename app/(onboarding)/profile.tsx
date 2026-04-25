@@ -5,7 +5,6 @@ import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
-// TODO: fontFamily strings require expo-font preloading.
 // TODO: Replace card placeholders with actual card art once assets are delivered.
 
 const ROMAN: Record<number, string> = {
@@ -92,16 +91,15 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   heading: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 1,
     lineHeight: 36,
     marginBottom: 16,
   },
   subheading: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -145,7 +143,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   miniCardName: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,
     letterSpacing: 0.5,
@@ -163,7 +161,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   resonanceNote: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,

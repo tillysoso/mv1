@@ -20,7 +20,6 @@ const ROMAN: Record<number, string> = {
   20: 'XX', 21: 'XXI', 22: 'XXII',
 };
 
-// TODO: fontFamily strings require expo-font preloading.
 // TODO: Replace CardPlaceholder with actual card art once assets are delivered.
 
 function CardPlaceholder({ number }: { number: number }) {
@@ -63,7 +62,6 @@ export default function SoulScreen() {
     >
       <Animated.View style={[styles.content, animatedStyle]}>
         {isSameCard ? (
-          // Same-card state — distinct callout
           <>
             <Text style={styles.label}>Both cards are the same, {name ?? 'traveller'}.</Text>
             <View style={styles.sameCardCallout}>
@@ -78,7 +76,6 @@ export default function SoulScreen() {
             </Text>
           </>
         ) : (
-          // Standard soul card layout
           <>
             <Text style={styles.label}>Your Soul Card</Text>
             <Text style={styles.sublabel}>
@@ -110,16 +107,15 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   label: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.text.secondary,
     letterSpacing: 1,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
   sublabel: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -137,25 +133,27 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   cardPlaceholderText: {
+    fontFamily: fonts.display,
     fontSize: 28,
     color: colors.mist,
     letterSpacing: 2,
   },
   cardNumber: {
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 8,
   },
   cardName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayL.fontSize,
-    fontWeight: '700',
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 20,
   },
   essence: {
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -168,14 +166,13 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   sameCardText: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '400',
     color: colors.bone,
     letterSpacing: 1,
   },
   sameCardSubtext: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -185,8 +182,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

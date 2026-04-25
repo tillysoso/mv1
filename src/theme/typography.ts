@@ -1,9 +1,18 @@
 export const fonts = {
-  display: 'Cinzel',
-  body: 'Montserrat',
-  terminal: 'SpaceMono',
+  // Cinzel — display headings, card names, Roman numerals
+  display: 'Cinzel_400Regular',
+  displayBold: 'Cinzel_700Bold',
+
+  // Montserrat — body, UI labels, avatar voice
+  body: 'Montserrat_400Regular',
+  bodyMedium: 'Montserrat_500Medium',
+  bodySemiBold: 'Montserrat_600SemiBold',
+  bodyBold: 'Montserrat_700Bold',
+
+  // Space Mono — terminal register, system lines, coords
+  terminal: 'SpaceMono_400Regular',
+
   // Wordmark font — Remachine Script (designed by Luke)
-  // Full font name: Remachine Script
   // Files: assets/fonts/RemachineScript.woff2 / .ttf / .eot
   // Use ONLY for the Majestic wordmark lockup — never for body or UI text
   wordmark: 'RemachineScript',

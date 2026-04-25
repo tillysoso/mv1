@@ -14,9 +14,6 @@ interface TerminalInputProps {
   keyboardType?: TextInput['props']['keyboardType'];
 }
 
-// TODO: Replace 'SpaceMono' string with loaded font when Luke's fonts are delivered.
-// Use expo-font to preload: { SpaceMono: require('../../../assets/fonts/SpaceMono-Regular.ttf') }
-
 export default function TerminalInput({
   value,
   onChangeText,
