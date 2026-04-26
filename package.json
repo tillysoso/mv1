@@ -9,10 +9,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/cinzel": "^0.2.3",
+    "@expo-google-fonts/montserrat": "^0.2.3",
+    "@expo-google-fonts/space-mono": "^0.2.3",
     "@shopify/react-native-skia": "2.2.12",
     "@supabase/supabase-js": "^2.101.1",
     "expo": "~54.0.33",
+    "expo-font": "~13.0.4",
     "expo-router": "~6.0.23",
+    "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~3.0.9",
     "nativewind": "^4.2.3",
     "react": "19.1.0",

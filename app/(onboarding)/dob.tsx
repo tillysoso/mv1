@@ -7,8 +7,6 @@ import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 function isValidDate(day: number, month: number, year: number): boolean {
   if (year < 1900 || year > new Date().getFullYear()) return false;
   if (month < 1 || month > 12) return false;
@@ -151,7 +149,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   prompt: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
