@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -60,8 +60,21 @@ export default function DobScreen() {
     router.push('/(onboarding)/calculating');
   }
 
+  const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
+
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        canSubmit ? (
+          <Pressable
+            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+            onPress={handleSubmit}
+          >
+            <Text style={styles.ctaText}>Continue</Text>
+          </Pressable>
+        ) : null
+      }
+    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>
           {name ? `${name}.` : ''}
@@ -186,5 +199,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     padding: 0,
     minWidth: 48,
+  },
+  cta: {
+    paddingVertical: 16,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    // TODO: fontFamily: fonts.body (Montserrat)
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
   },
 });
