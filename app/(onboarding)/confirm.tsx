@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useAuthStore } from '../../src/stores/authStore';
-import { updateAvatar } from '../../src/lib/supabase/profile';
+import { updateAvatar } from '../../src/lib/supabase/v2/profile';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
