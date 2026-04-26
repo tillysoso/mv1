@@ -36,7 +36,7 @@ export default function FirstDrawScreen() {
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
           onPress={handleDraw}
         >
-          <Text style={styles.ctaText}>Draw</Text>
+          <Text style={styles.ctaText}>Enter</Text>
         </Pressable>
       }
     >

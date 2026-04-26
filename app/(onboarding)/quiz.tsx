@@ -1,5 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -66,49 +73,78 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
-  // Tiebreaker: last answer for Q4 (index 3)
-  const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
+  const opacity = useSharedValue(1);
+  const isTransitioning = useRef(false);
+
+  function advanceTo(newQ: number) {
+    opacity.value = withSequence(
+      withTiming(0, { duration: 180 }),
+      withTiming(0, { duration: 20 }, () => {
+        runOnJS(setCurrentQ)(newQ);
+        opacity.value = withTiming(1, { duration: 280 });
+        runOnJS(() => { isTransitioning.current = false; })();
+      }),
+    );
+  }
 
   function handleSelect(avatar: AvatarId) {
+    if (isTransitioning.current) return;
+    isTransitioning.current = true;
+
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
 
     if (currentQ === QUESTIONS.length - 1) {
-      // Q4 tiebreaker
-      setLastAnswer(avatar);
-      const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
-      setQuizScores(finalScores);
-      router.push('/(onboarding)/recommendation');
+      const finalScores: Record<string, number> = {
+        ...newScores,
+        _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
+      };
+      opacity.value = withTiming(0, { duration: 200 }, () => {
+        runOnJS(setQuizScores)(finalScores);
+        runOnJS(router.push)('/(onboarding)/recommendation');
+      });
     } else {
-      setCurrentQ((q) => q + 1);
+      advanceTo(currentQ + 1);
     }
   }
 
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
   const question = QUESTIONS[currentQ];
 
   return (
     <OnboardingScreen>
       <View style={styles.content}>
-        {currentQ === 0 && (
-          <View style={styles.intro}>
-            <Text style={styles.introHeadline}>The world has patterns too.</Text>
-            <Text style={styles.introSub}>Four questions. No wrong answers. Just how you move.</Text>
-          </View>
-        )}
-
-        <Text style={styles.prompt}>{question.prompt}</Text>
-
-        <View style={styles.options}>
-          {question.options.map((opt, i) => (
-            <Pressable
+        <View style={styles.progressRow}>
+          {QUESTIONS.map((_, i) => (
+            <View
               key={i}
-              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar)}
-            >
-              <Text style={styles.optionText}>{opt.text}</Text>
-            </Pressable>
+              style={[styles.progressDot, i === currentQ && styles.progressDotActive]}
+            />
           ))}
         </View>
+
+        <Animated.View style={[styles.questionWrap, animatedStyle]}>
+          {currentQ === 0 && (
+            <View style={styles.intro}>
+              <Text style={styles.introHeadline}>The world has patterns too.</Text>
+              <Text style={styles.introSub}>Four questions. No wrong answers. Just how you move.</Text>
+            </View>
+          )}
+
+          <Text style={styles.prompt}>{question.prompt}</Text>
+
+          <View style={styles.options}>
+            {question.options.map((opt, i) => (
+              <Pressable
+                key={i}
+                style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+                onPress={() => handleSelect(opt.avatar)}
+              >
+                <Text style={styles.optionText}>{opt.text}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </Animated.View>
       </View>
     </OnboardingScreen>
   );
@@ -118,6 +154,23 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 20,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 32,
+  },
+  progressDot: {
+    width: 20,
+    height: 2,
+    backgroundColor: colors.ash,
+    borderRadius: 1,
+  },
+  progressDotActive: {
+    backgroundColor: colors.mist,
+  },
+  questionWrap: {
+    flex: 1,
   },
   intro: {
     marginBottom: 40,

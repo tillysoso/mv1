@@ -210,7 +210,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {

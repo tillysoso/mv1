@@ -181,7 +181,10 @@ const styles = StyleSheet.create({
     lineHeight: typeScale.bodyM.lineHeight,
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
