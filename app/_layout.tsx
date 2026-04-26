@@ -2,9 +2,17 @@ import '../global.css';
 
 import { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
+import { trackPageView } from '../src/lib/analytics';
+
+function usePageTracking() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
+}
 
 function useAuthRouting() {
   const router = useRouter();
@@ -45,6 +53,7 @@ export default function RootLayout() {
   }, []);
 
   useAuthRouting();
+  usePageTracking();
 
   if (!initialised) {
     return (

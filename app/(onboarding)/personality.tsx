@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
+import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -35,6 +37,7 @@ function CardPlaceholder({ number }: { number: number }) {
 export default function PersonalityScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
+  useScrollDepth('/personality');
   const translateY = useSharedValue(60);
   const opacity = useSharedValue(0);
 
@@ -55,7 +58,10 @@ export default function PersonalityScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/soul')}
+          onPress={() => {
+            trackNavigationClick('continue_cta', '/soul');
+            router.push('/(onboarding)/soul');
+          }}
         >
           <Text style={styles.ctaText}>Continue</Text>
         </Pressable>

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackFormSubmit } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
@@ -57,6 +58,7 @@ export default function DobScreen() {
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
+    trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
     router.push('/(onboarding)/calculating');
   }
 

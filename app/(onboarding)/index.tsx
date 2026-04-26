@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
@@ -34,7 +35,10 @@ export default function EntryScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
-          onPress={() => router.push('/(onboarding)/name')}
+          onPress={() => {
+            trackNavigationClick('begin_cta', '/name');
+            router.push('/(onboarding)/name');
+          }}
         >
           <Text style={styles.ctaText}>Begin</Text>
         </Pressable>

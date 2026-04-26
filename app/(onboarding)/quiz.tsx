@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackQuizAnswer } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -69,7 +70,8 @@ export default function QuizScreen() {
   // Tiebreaker: last answer for Q4 (index 3)
   const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
 
-  function handleSelect(avatar: AvatarId) {
+  function handleSelect(avatar: AvatarId, answerText: string) {
+    trackQuizAnswer(currentQ, answerText, avatar);
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
 
@@ -103,7 +105,7 @@ export default function QuizScreen() {
             <Pressable
               key={i}
               style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar)}
+              onPress={() => handleSelect(opt.avatar, opt.text)}
             >
               <Text style={styles.optionText}>{opt.text}</Text>
             </Pressable>

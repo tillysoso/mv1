@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackFormSubmit } from '../../src/lib/analytics';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -31,6 +32,7 @@ export default function NameScreen() {
     const trimmed = value.trim();
     if (!trimmed) return;
     setName(trimmed);
+    trackFormSubmit('name_entry', 'onboarding_name');
     router.push('/(onboarding)/dob');
   }
 

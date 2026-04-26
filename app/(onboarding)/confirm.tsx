@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { updateAvatar } from '../../src/lib/supabase/profile';
@@ -67,7 +68,10 @@ export default function ConfirmScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
+          onPress={() => {
+            trackNavigationClick('lets_begin_cta', '/first-draw');
+            router.push('/(onboarding)/first-draw');
+          }}
         >
           <Text style={styles.ctaText}>Let's Begin</Text>
         </Pressable>

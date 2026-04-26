@@ -1,6 +1,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { saveProfile } from '../../src/lib/supabase/profile';
@@ -18,6 +19,7 @@ export default function FirstDrawScreen() {
 
   async function handleDraw() {
     setOnboardingComplete(true);
+    trackNavigationClick('draw_cta', '/(tabs)');
 
     // Persist to Supabase if user exists
     if (user?.id && dateOfBirth && birthCards) {

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackSelectContent, trackNavigationClick } from '../../src/lib/analytics';
+import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
@@ -70,9 +72,11 @@ export default function RecommendationScreen() {
 
   const recommended = getRecommendation(quizScores);
   const [selected, setSelected] = useState<AvatarId>(recommended);
+  useScrollDepth('/recommendation');
 
   function handleConfirm() {
     setAvatar(selected);
+    trackNavigationClick('choose_avatar_cta', '/confirm');
     router.push('/(onboarding)/confirm');
   }
 
@@ -112,7 +116,10 @@ export default function RecommendationScreen() {
                   styles.avatarCard,
                   isSelected && { borderColor: accent.primary },
                 ]}
-                onPress={() => setSelected(id)}
+                onPress={() => {
+                  trackSelectContent('avatar', id);
+                  setSelected(id);
+                }}
               >
                 <Image
                   source={AVATAR_IMAGES[id]}
