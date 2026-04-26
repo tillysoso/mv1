@@ -43,8 +43,7 @@ export default function EntryScreen() {
       <Animated.View style={[styles.content, animatedStyle]}>
         <View style={styles.topSpacer} />
 
-        {/* TODO: Replace with Majestic emblem asset from assets/emblems/ once delivered */}
-        <View style={styles.emblemPlaceholder} />
+        <Text style={styles.wordmark}>Majestic</Text>
 
         <Text style={styles.headline}>
           Something in this city reads patterns.
@@ -72,14 +71,11 @@ const styles = StyleSheet.create({
   topSpacer: {
     flex: 1,
   },
-  emblemPlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: colors.bg.dusk,
-    opacity: 0.6,
+  wordmark: {
+    fontFamily: fonts.wordmark,
+    fontSize: 48,
+    color: colors.bone,
     marginBottom: 48,
-    // Pulse animation handled by avatar aura system in a later step
   },
   headline: {
     // TODO: fontFamily: fonts.display (Cinzel) — awaiting font delivery
