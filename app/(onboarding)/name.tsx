@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
@@ -17,6 +17,7 @@ export default function NameScreen() {
   const { setName } = useProfileStore();
   const [value, setValue] = useState('');
   const [visibleChars, setVisibleChars] = useState(0);
+  const [showError, setShowError] = useState(false);
 
   // Character-by-character prompt reveal
   useEffect(() => {
@@ -27,15 +28,27 @@ export default function NameScreen() {
     return () => clearTimeout(timer);
   }, [visibleChars]);
 
+  function handleChange(text: string) {
+    setValue(text);
+    if (showError) setShowError(false);
+  }
+
   function handleSubmit() {
     const trimmed = value.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setShowError(true);
+      return;
+    }
     setName(trimmed);
     router.push('/(onboarding)/dob');
   }
 
   return (
     <OnboardingScreen>
+      <Pressable style={styles.backLink} onPress={() => router.back()}>
+        <Text style={styles.backText}>‹ back</Text>
+      </Pressable>
+
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
         <Text style={styles.systemLine}>INITIALISING.</Text>
@@ -52,19 +65,33 @@ export default function NameScreen() {
         <Text style={styles.cursor}>&gt; </Text>
         <TerminalInput
           value={value}
-          onChangeText={setValue}
+          onChangeText={handleChange}
           onSubmit={handleSubmit}
           autoFocus={visibleChars >= PROMPT.length}
         />
       </View>
+
+      {showError && (
+        <Text style={styles.errorLine}>// a name is needed</Text>
+      )}
     </OnboardingScreen>
   );
 }
 
 const styles = StyleSheet.create({
+  backLink: {
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backText: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+  },
   terminalHeader: {
     marginBottom: 32,
-    marginTop: 20,
+    marginTop: 4,
   },
   systemLine: {
     fontFamily: fonts.terminal,
@@ -88,5 +115,13 @@ const styles = StyleSheet.create({
     fontFamily: fonts.terminal,
     fontSize: 20,
     color: colors.text.secondary,
+  },
+  errorLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginTop: 16,
+    opacity: 0.8,
   },
 });

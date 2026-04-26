@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,6 +16,7 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
 const MIN_DURATION_MS = 2000;
+const SLOW_THRESHOLD_MS = 5000;
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -23,9 +24,10 @@ export default function CalculatingScreen() {
   const router = useRouter();
   const { dateOfBirth, setBirthCards } = useProfileStore();
   const pulseOpacity = useSharedValue(0.4);
+  const [showSlowMsg, setShowSlowMsg] = useState(false);
 
   useEffect(() => {
-    // Slow atmospheric pulse
+    // Slow atmospheric pulse — runs until component unmounts on navigation
     pulseOpacity.value = withRepeat(
       withSequence(
         withTiming(1, { duration: 1200 }),
@@ -37,22 +39,37 @@ export default function CalculatingScreen() {
   }, []);
 
   useEffect(() => {
-    const start = Date.now();
+    let mounted = true;
 
-    let cards: BirthCards | undefined;
-    if (dateOfBirth) {
-      cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
-    }
+    const slowTimer = setTimeout(() => {
+      if (mounted) setShowSlowMsg(true);
+    }, SLOW_THRESHOLD_MS);
 
-    const elapsed = Date.now() - start;
-    const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
+    async function run() {
+      const start = Date.now();
 
-    const timer = setTimeout(() => {
+      let cards: BirthCards | undefined;
+      if (dateOfBirth) {
+        cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
+      }
+
+      // Wait for the minimum display duration measured against actual completion
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
+      await new Promise<void>((resolve) => setTimeout(resolve, remaining));
+
+      if (!mounted) return;
+      clearTimeout(slowTimer);
       if (cards) setBirthCards(cards);
       router.push('/(onboarding)/personality');
-    }, remaining);
+    }
 
-    return () => clearTimeout(timer);
+    run();
+
+    return () => {
+      mounted = false;
+      clearTimeout(slowTimer);
+    };
   }, []);
 
   const pulseStyle = useAnimatedStyle(() => ({
@@ -68,6 +85,11 @@ export default function CalculatingScreen() {
         <Text style={styles.subline}>
           The signal is reading your pattern.
         </Text>
+        {showSlowMsg && (
+          <Text style={styles.slowLine}>
+            // This is taking a moment. Still working.
+          </Text>
+        )}
       </View>
     </OnboardingScreen>
   );
@@ -91,5 +113,13 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     letterSpacing: 0.5,
+  },
+  slowLine: {
+    fontFamily: fonts.terminal,
+    fontSize: typeScale.bodyS.fontSize,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginTop: 20,
+    opacity: 0.7,
   },
 });

@@ -72,7 +72,6 @@ export default function PersonalityScreen() {
 
         {card && (
           <>
-            <Text style={styles.cardNumber}>{ROMAN[card.number] ?? card.number}</Text>
             <Text style={styles.cardName}>{card.name}</Text>
             <Text style={styles.essence}>
               This is who you are. Your shadow. Your essence.{'\n'}

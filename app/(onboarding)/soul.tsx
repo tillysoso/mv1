@@ -89,7 +89,6 @@ export default function SoulScreen() {
 
             {soulCard && (
               <>
-                <Text style={styles.cardNumber}>{ROMAN[soulCard.number] ?? soulCard.number}</Text>
                 <Text style={styles.cardName}>{soulCard.name}</Text>
                 <Text style={styles.essence}>
                   Your purpose. The direction of your growth.{'\n'}

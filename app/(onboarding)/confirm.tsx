@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -37,9 +37,12 @@ export default function ConfirmScreen() {
   const { user } = useAuthStore();
   const accent = avatarAccents[activeAvatar];
 
+  const [confirming, setConfirming] = useState(false);
+
   // Background accent bloom
   const overlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
+  const confirmOpacity = useSharedValue(0);
 
   useEffect(() => {
     overlayOpacity.value = withTiming(0.15, { duration: 1400, easing: Easing.out(Easing.ease) });
@@ -62,15 +65,35 @@ export default function ConfirmScreen() {
     opacity: contentOpacity.value,
   }));
 
+  const confirmStyle = useAnimatedStyle(() => ({
+    opacity: confirmOpacity.value,
+  }));
+
+  function handleBegin() {
+    if (confirming) return;
+    setConfirming(true);
+    confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
+    setTimeout(() => {
+      router.push('/(onboarding)/first-draw');
+    }, 600);
+  }
+
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
-        >
-          <Text style={styles.ctaText}>Let's Begin</Text>
-        </Pressable>
+        <View>
+          {confirming && (
+            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
+              // confirmed.
+            </Animated.Text>
+          )}
+          <Pressable
+            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+            onPress={handleBegin}
+          >
+            <Text style={styles.ctaText}>Let's Begin</Text>
+          </Pressable>
+        </View>
       }
     >
       {/* Elemental accent bloom overlay */}
@@ -118,6 +141,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
+  },
+  confirmLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    opacity: 0,
   },
   cta: {
     paddingVertical: 16,
