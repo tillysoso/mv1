@@ -32,13 +32,11 @@ export default function DobScreen() {
   function handleDayChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
-    if (digits.length === 2) monthRef.current?.focus();
   }
 
   function handleMonthChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
-    if (digits.length === 2) yearRef.current?.focus();
   }
 
   function handleYearChange(text: string) {
