@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   cta: {
     paddingVertical: 16,
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
   },
   ctaText: {
     fontSize: typeScale.label.fontSize,

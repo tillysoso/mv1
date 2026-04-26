@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
   },
   cta: {
     paddingVertical: 16,
-    paddingHorizontal: 48,
+    paddingHorizontal: 32,
     borderWidth: 1,
     borderColor: colors.ash,
-    alignSelf: 'center',
+    alignSelf: 'stretch',
   },
   ctaText: {
     fontSize: typeScale.label.fontSize,
