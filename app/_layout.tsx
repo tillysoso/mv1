@@ -5,6 +5,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
+import { isSupabaseConfigured } from '../src/lib/supabase/client';
 
 function useAuthRouting() {
   const router = useRouter();
@@ -13,38 +14,49 @@ function useAuthRouting() {
   const { birthCards } = useProfileStore();
 
   useEffect(() => {
+    // Prototype mode: no Supabase configured — go straight to the tabs
+    if (!isSupabaseConfigured) {
+      if (segments[0] !== '(tabs)') {
+        router.replace('/(tabs)');
+      }
+      return;
+    }
+
     if (!initialised) return;
 
     const inOnboarding = segments[0] === '(onboarding)';
     const inTabs = segments[0] === '(tabs)';
 
     if (!user) {
-      // Not signed in — go to onboarding entry if not already there
       if (!inOnboarding) {
         router.replace('/(onboarding)');
       }
     } else if (!birthCards) {
-      // Signed in but no profile — go to profile step
       if (!inOnboarding) {
         router.replace('/(onboarding)/profile');
       }
     } else {
-      // Fully onboarded — go to main app
       if (!inTabs) {
         router.replace('/(tabs)');
       }
     }
-  }, [user, initialised, birthCards]);
+  }, [user, initialised, birthCards, segments]);
 }
 
 export default function RootLayout() {
   const { initialised } = useAuthStore();
 
   useEffect(() => {
+    if (!isSupabaseConfigured) return;
     return initAuthListener();
   }, []);
 
   useAuthRouting();
+
+  // In prototype mode skip the loading gate entirely
+  if (!isSupabaseConfigured) {
+    return <Stack screenOptions={{ headerShown: false }} />;
+  }
 
   if (!initialised) {
     return (
