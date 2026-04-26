@@ -1,0 +1,269 @@
+/*
+ * src/theme/theme.css
+ * Majestic — CSS Custom Property Theme System
+ *
+ * ─── Architecture ─────────────────────────────────────────────────────────────
+ *
+ * Layer 1 — Primitives  : raw scale values on :root, never consumed by UI directly
+ * Layer 2 — Semantic    : --color-* tokens mapped from primitives, used by components
+ * Layer 3 — Themes      : four selector blocks that populate the semantic layer
+ *
+ *   :root                  → dark (Threshold City default; fallback for old browsers)
+ *   @media prefers light   → light via OS preference (no JS needed on initial load)
+ *   :root.theme-dark       → explicit dark override (JS class toggle)
+ *   :root.theme-light      → explicit light override (JS class toggle)
+ *
+ * The class-toggle blocks override the media query because :root.theme-<x>
+ * has specificity (0,2,0) vs the media query's :root at (0,1,0).
+ *
+ * ─── Adding a new theme ───────────────────────────────────────────────────────
+ *
+ * 1. Add a single block:  :root.theme-<name> { ... all --color-* tokens ... }
+ * 2. Register the class name in src/theme/cssVars.ts → themeClass
+ * No other file needs to change.
+ *
+ * ─── WCAG AA contrast verification ───────────────────────────────────────────
+ *
+ * All --color-fg-* values verified ≥ 4.5:1 against their paired backgrounds.
+ * Ratios are noted inline. Tested against both canvas and surface backgrounds
+ * for each theme.
+ *
+ *   Dark   canvas #1A1A2E (L 0.017)  surface #16213E (L 0.025)
+ *   Light  canvas #F5F3EF (L 0.898)  surface #FDFCF9 (L 0.977)
+ */
+
+/* ─── Layer 1: Primitive Scale ───────────────────────────────────────────────
+ * Raw values only. Reference these in theme blocks below, never in components.
+ */
+:root {
+  /* Purples */
+  --p-purple-900: #0D001F;
+  --p-purple-800: #1A0038;
+  --p-purple-700: #2D0063;
+  --p-purple-600: #4D008F;
+  --p-purple-500: #7800CC;
+  --p-purple-400: #9500FF;
+  --p-purple-300: #C87DFF;
+  --p-purple-200: #E2B8FF;
+  --p-purple-100: #F4E5FF;
+
+  /* Navies */
+  --p-navy-950: #0D0D14;
+  --p-navy-900: #1A1A2E;
+  --p-navy-800: #16213E;
+  --p-navy-700: #0F3460;
+  --p-navy-600: #4A5585;
+
+  /* Teals */
+  --p-teal-700: #2D5B6A;
+  --p-teal-600: #3D6B7A;
+  --p-teal-400: #4DBFCC;
+
+  /* Bone (warm off-whites) */
+  --p-bone-100: #FDFCF9;
+  --p-bone-200: #F5F3EF;
+  --p-bone-300: #EDE9E1;
+  --p-bone-400: #E2DDCF;
+  --p-bone-500: #D4CFC6;
+
+  /* Cool grays */
+  --p-gray-100: #F0EDE8;
+  --p-gray-300: #A8A8B8;
+  --p-gray-400: #8A8A9A;
+  --p-gray-600: #5E5E6E;
+  --p-gray-700: #4A4A5E;
+  --p-gray-800: #3A3A4A;
+  --p-gray-900: #1E1E2E;
+
+  /* World accents */
+  --p-dusk-dark:  #6B4F8C;
+  --p-dusk-light: #5B3F7C;
+
+  /* Feedback — dark-mode variants (lighter, high contrast on dark bg) */
+  --p-feedback-success-dark: #81C784;   /* L 0.490 → 8.0:1 on #1A1A2E  */
+  --p-feedback-warning-dark: #FFB74D;   /* L 0.576 → 9.3:1 on #1A1A2E  */
+  --p-feedback-error-dark:   #EF9A9A;   /* L 0.461 → 7.6:1 on #1A1A2E  */
+  --p-feedback-info-dark:    #64B5F6;   /* L 0.448 → 7.4:1 on #1A1A2E  */
+
+  /* Feedback — light-mode variants (darker, high contrast on light bg) */
+  --p-feedback-success-light: #1B5E20;  /* L 0.098 → 6.4:1 on #F5F3EF  */
+  --p-feedback-warning-light: #BF360C;  /* L 0.137 → 5.1:1 on #F5F3EF  */
+  --p-feedback-error-light:   #B71C1C;  /* L 0.111 → 5.9:1 on #F5F3EF  */
+  --p-feedback-info-light:    #0D47A1;  /* L 0.069 → 8.0:1 on #F5F3EF  */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Layer 2 + 3: Semantic Tokens — Theme: DARK (Threshold City)
+ *
+ * Applied by:  :root default  |  :root.theme-dark explicit class
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Backgrounds ──────────────────────────────────────────────────────── */
+  --color-bg-canvas:          var(--p-navy-900);      /* #1A1A2E  page/screen bg */
+  --color-bg-surface:         var(--p-navy-800);      /* #16213E  card / panel   */
+  --color-bg-elevated:        var(--p-navy-700);      /* #0F3460  modal / drawer */
+  --color-bg-inset:           var(--p-navy-950);      /* #0D0D14  input / recess */
+  --color-bg-overlay:         rgba(13, 13, 20, 0.85); /* scrim behind modals     */
+
+  /* ── Foreground / Text ───────────────────────────────────────────────── */
+  /* All ratios measured on canvas #1A1A2E (L 0.017) and surface #16213E (L 0.025) */
+  --color-fg-base:            var(--p-gray-100);      /* #F0EDE8  13.5:1 / 12.0:1 */
+  --color-fg-muted:           var(--p-gray-300);      /* #A8A8B8   7.0:1 /  6.3:1 */
+  --color-fg-subtle:          var(--p-gray-400);      /* #8A8A9A   5.0:1 /  4.5:1 */
+  --color-fg-on-accent:       #FFFFFF;                /* on --color-brand   5.5:1 */
+  --color-fg-on-feedback:     #FFFFFF;                /* on feedback bg surfaces  */
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --color-border-default:     var(--p-gray-800);      /* #3A3A4A */
+  --color-border-subtle:      var(--p-gray-900);      /* #1E1E2E */
+
+  /* ── Brand / Interactive ─────────────────────────────────────────────── */
+  --color-brand:              var(--p-purple-400);    /* #9500FF — decorative; use --color-interactive for text */
+  --color-interactive:        var(--p-purple-300);    /* #C87DFF — 5.8:1 on canvas; use for links / active text */
+  --color-interactive-hover:  var(--p-purple-200);    /* #E2B8FF — 9.3:1 on canvas */
+  --color-interactive-subtle: rgba(149, 0, 255, 0.15); /* tinted bg for chips / badges */
+
+  /* ── World palette (Threshold City tones) ─────────────────────────────── */
+  --color-world-signal:       var(--p-navy-600);      /* #4A5585 */
+  --color-world-canal:        var(--p-teal-600);      /* #3D6B7A */
+  --color-world-dusk:         var(--p-dusk-dark);     /* #6B4F8C */
+
+  /* ── Feedback ────────────────────────────────────────────────────────── */
+  --color-feedback-success:   var(--p-feedback-success-dark); /* #81C784  8.0:1 */
+  --color-feedback-warning:   var(--p-feedback-warning-dark); /* #FFB74D  9.3:1 */
+  --color-feedback-error:     var(--p-feedback-error-dark);   /* #EF9A9A  7.6:1 */
+  --color-feedback-info:      var(--p-feedback-info-dark);    /* #64B5F6  7.4:1 */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Layer 2 + 3: Semantic Tokens — Theme: LIGHT
+ *
+ * Applied by:  @media (prefers-color-scheme: light) (no JS required)
+ *              AND :root.theme-light explicit class
+ *
+ * These two blocks are intentionally identical — one handles the OS-preference
+ * no-JS path, the other handles the class-toggle JS path.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* ── Backgrounds ────────────────────────────────────────────────────── */
+    --color-bg-canvas:          var(--p-bone-200);      /* #F5F3EF  page/screen bg */
+    --color-bg-surface:         var(--p-bone-100);      /* #FDFCF9  card / panel   */
+    --color-bg-elevated:        var(--p-bone-300);      /* #EDE9E1  modal / drawer */
+    --color-bg-inset:           var(--p-bone-400);      /* #E2DDCF  input / recess */
+    --color-bg-overlay:         rgba(26, 26, 46, 0.65); /* scrim behind modals     */
+
+    /* ── Foreground / Text ────────────────────────────────────────────── */
+    /* All ratios measured on canvas #F5F3EF (L 0.898) and surface #FDFCF9 (L 0.977) */
+    --color-fg-base:            var(--p-navy-900);      /* #1A1A2E  14.1:1 / 15.3:1 */
+    --color-fg-muted:           var(--p-gray-700);      /* #4A4A5E   6.6:1 /  7.1:1 */
+    --color-fg-subtle:          var(--p-gray-600);      /* #5E5E6E   5.7:1 /  6.2:1 */
+    --color-fg-on-accent:       #FFFFFF;                /* on --color-brand   5.5:1 */
+    --color-fg-on-feedback:     #FFFFFF;                /* on feedback bg surfaces  */
+
+    /* ── Borders ──────────────────────────────────────────────────────── */
+    --color-border-default:     var(--p-bone-500);      /* #D4CFC6 */
+    --color-border-subtle:      var(--p-bone-300);      /* #EDE9E1 */
+
+    /* ── Brand / Interactive ─────────────────────────────────────────── */
+    --color-brand:              var(--p-purple-400);    /* #9500FF */
+    --color-interactive:        var(--p-purple-500);    /* #7800CC — 7.1:1 on canvas */
+    --color-interactive-hover:  var(--p-purple-600);    /* #4D008F — 11.1:1 on canvas */
+    --color-interactive-subtle: rgba(149, 0, 255, 0.08);
+
+    /* ── World palette ────────────────────────────────────────────────── */
+    --color-world-signal:       var(--p-navy-600);      /* #4A5585 */
+    --color-world-canal:        var(--p-teal-700);      /* #2D5B6A */
+    --color-world-dusk:         var(--p-dusk-light);    /* #5B3F7C */
+
+    /* ── Feedback ─────────────────────────────────────────────────────── */
+    --color-feedback-success:   var(--p-feedback-success-light); /* #1B5E20  6.4:1 */
+    --color-feedback-warning:   var(--p-feedback-warning-light); /* #BF360C  5.1:1 */
+    --color-feedback-error:     var(--p-feedback-error-light);   /* #B71C1C  5.9:1 */
+    --color-feedback-info:      var(--p-feedback-info-light);    /* #0D47A1  8.0:1 */
+  }
+}
+
+/* Explicit class: mirrors @media (prefers-color-scheme: light) above.
+ * Specificity (0,2,0) beats the media-query block's (0,1,0), so this
+ * correctly overrides even when OS preference says dark. */
+:root.theme-light {
+  /* ── Backgrounds ──────────────────────────────────────────────────────── */
+  --color-bg-canvas:          var(--p-bone-200);
+  --color-bg-surface:         var(--p-bone-100);
+  --color-bg-elevated:        var(--p-bone-300);
+  --color-bg-inset:           var(--p-bone-400);
+  --color-bg-overlay:         rgba(26, 26, 46, 0.65);
+
+  /* ── Foreground / Text ───────────────────────────────────────────────── */
+  --color-fg-base:            var(--p-navy-900);
+  --color-fg-muted:           var(--p-gray-700);
+  --color-fg-subtle:          var(--p-gray-600);
+  --color-fg-on-accent:       #FFFFFF;
+  --color-fg-on-feedback:     #FFFFFF;
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --color-border-default:     var(--p-bone-500);
+  --color-border-subtle:      var(--p-bone-300);
+
+  /* ── Brand / Interactive ─────────────────────────────────────────────── */
+  --color-brand:              var(--p-purple-400);
+  --color-interactive:        var(--p-purple-500);
+  --color-interactive-hover:  var(--p-purple-600);
+  --color-interactive-subtle: rgba(149, 0, 255, 0.08);
+
+  /* ── World palette ────────────────────────────────────────────────────── */
+  --color-world-signal:       var(--p-navy-600);
+  --color-world-canal:        var(--p-teal-700);
+  --color-world-dusk:         var(--p-dusk-light);
+
+  /* ── Feedback ────────────────────────────────────────────────────────── */
+  --color-feedback-success:   var(--p-feedback-success-light);
+  --color-feedback-warning:   var(--p-feedback-warning-light);
+  --color-feedback-error:     var(--p-feedback-error-light);
+  --color-feedback-info:      var(--p-feedback-info-light);
+}
+
+/* Explicit class: dark override. Specificity (0,2,0) beats the OS-preference
+ * media query, so this correctly overrides when OS preference says light but
+ * the user has explicitly chosen dark (e.g., stored preference applied by JS). */
+:root.theme-dark {
+  /* ── Backgrounds ──────────────────────────────────────────────────────── */
+  --color-bg-canvas:          var(--p-navy-900);
+  --color-bg-surface:         var(--p-navy-800);
+  --color-bg-elevated:        var(--p-navy-700);
+  --color-bg-inset:           var(--p-navy-950);
+  --color-bg-overlay:         rgba(13, 13, 20, 0.85);
+
+  /* ── Foreground / Text ───────────────────────────────────────────────── */
+  --color-fg-base:            var(--p-gray-100);
+  --color-fg-muted:           var(--p-gray-300);
+  --color-fg-subtle:          var(--p-gray-400);
+  --color-fg-on-accent:       #FFFFFF;
+  --color-fg-on-feedback:     #FFFFFF;
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --color-border-default:     var(--p-gray-800);
+  --color-border-subtle:      var(--p-gray-900);
+
+  /* ── Brand / Interactive ─────────────────────────────────────────────── */
+  --color-brand:              var(--p-purple-400);
+  --color-interactive:        var(--p-purple-300);
+  --color-interactive-hover:  var(--p-purple-200);
+  --color-interactive-subtle: rgba(149, 0, 255, 0.15);
+
+  /* ── World palette ────────────────────────────────────────────────────── */
+  --color-world-signal:       var(--p-navy-600);
+  --color-world-canal:        var(--p-teal-600);
+  --color-world-dusk:         var(--p-dusk-dark);
+
+  /* ── Feedback ────────────────────────────────────────────────────────── */
+  --color-feedback-success:   var(--p-feedback-success-dark);
+  --color-feedback-warning:   var(--p-feedback-warning-dark);
+  --color-feedback-error:     var(--p-feedback-error-dark);
+  --color-feedback-info:      var(--p-feedback-info-dark);
+}
