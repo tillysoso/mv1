@@ -8,8 +8,6 @@ import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 const AVATAR_DESCRIPTIONS: Record<AvatarId, string> = {
   casper:  'Direct. Decisive. Will not let you stall.',
   eli:     'Reframes everything. Sees what others miss.',
@@ -34,28 +32,13 @@ const AVATAR_IMAGES: Record<AvatarId, any> = {
   destiny: require('../../assets/avatars/destiny/destiny-active.png'), // no neutral yet
 };
 
-function getRecommendation(scores: Record<string, number>): AvatarId {
-  const avatarScores: Record<AvatarId, number> = {
-    casper:  scores['casper']  ?? 0,
-    eli:     scores['eli']     ?? 0,
-    olivia:  scores['olivia']  ?? 0,
-    destiny: scores['destiny'] ?? 0,
-  };
-
-  const max = Math.max(...Object.values(avatarScores));
-  const tied = (Object.keys(avatarScores) as AvatarId[]).filter(
-    (k) => avatarScores[k] === max,
-  );
+function getRecommendation(scores: Record<AvatarId, number>, tiebreaker: AvatarId | null): AvatarId {
+  const max = Math.max(...Object.values(scores));
+  const tied = (Object.keys(scores) as AvatarId[]).filter((k) => scores[k] === max);
 
   if (tied.length === 1) return tied[0];
 
-  // Tiebreaker: last answer (Q4) takes priority via _tiebreaker index
-  const tiebreakerIdx = scores['_tiebreaker'] as number | undefined;
-  if (tiebreakerIdx !== undefined) {
-    const tiebreakerMap: AvatarId[] = ['casper', 'destiny', 'eli', 'olivia'];
-    const tb = tiebreakerMap[tiebreakerIdx];
-    if (tied.includes(tb)) return tb;
-  }
+  if (tiebreaker && tied.includes(tiebreaker)) return tiebreaker;
 
   // Secondary tiebreaker: olivia beats eli
   if (tied.includes('olivia') && tied.includes('eli')) return 'olivia';
@@ -65,10 +48,10 @@ function getRecommendation(scores: Record<string, number>): AvatarId {
 
 export default function RecommendationScreen() {
   const router = useRouter();
-  const { quizScores } = useProfileStore();
+  const { quizScores, quizTiebreaker } = useProfileStore();
   const { setAvatar } = useAvatarStore();
 
-  const recommended = getRecommendation(quizScores);
+  const recommended = getRecommendation(quizScores, quizTiebreaker);
   const [selected, setSelected] = useState<AvatarId>(recommended);
 
   function handleConfirm() {
@@ -150,7 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
@@ -158,7 +140,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   caveat: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyS.fontSize,
     color: colors.mist,
     marginBottom: 36,
@@ -183,7 +164,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.bodyS.fontSize,
     fontWeight: '600',
     color: colors.bone,

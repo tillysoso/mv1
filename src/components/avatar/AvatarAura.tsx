@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { Canvas, Path, Skia, BlurMask } from '@shopify/react-native-skia';
 import { useSharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
@@ -112,9 +112,12 @@ export default function AvatarAura({
   const r = size * 0.44;
   const inset = size * 0.12;
 
-  const path = shape === 'livingCircle'
-    ? buildLivingCirclePath(cx, cy, r)
-    : buildArchPath(size, size, inset);
+  const path = useMemo(
+    () => shape === 'livingCircle'
+      ? buildLivingCirclePath(cx, cy, r)
+      : buildArchPath(size, size, inset),
+    [shape, cx, cy, r, size, inset],
+  );
 
   // Reanimated drives opacity — we use an Animated.View wrapper
   // since Skia's Paint alpha isn't directly driven by Reanimated shared values

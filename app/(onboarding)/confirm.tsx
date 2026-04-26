@@ -15,8 +15,6 @@ import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper:  'Casper',
   eli:     'Eli',
@@ -73,7 +71,6 @@ export default function ConfirmScreen() {
         </Pressable>
       }
     >
-      {/* Elemental accent bloom overlay */}
       <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
 
       <Animated.View style={[styles.content, contentStyle]}>
@@ -99,21 +96,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     letterSpacing: 1,
     marginBottom: 24,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
     fontSize: typeScale.displayXL.fontSize,
     fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 32,
   },
   firstWords: {
-    // TODO: fontFamily: fonts.body (Montserrat) medium
     fontSize: typeScale.bodyL.fontSize,
     fontWeight: '500',
     color: colors.bone,

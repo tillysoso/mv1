@@ -7,8 +7,6 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 // Quiz questions from the Majestic narrative spec (source of truth).
 // Note: prompt draft had slightly different wording — spec version used here
 // as it uses the finalized world-adjacent scenario copy.
@@ -66,18 +64,12 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
-  // Tiebreaker: last answer for Q4 (index 3)
-  const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
-
   function handleSelect(avatar: AvatarId) {
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
 
     if (currentQ === QUESTIONS.length - 1) {
-      // Q4 tiebreaker
-      setLastAnswer(avatar);
-      const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
-      setQuizScores(finalScores);
+      setQuizScores(newScores, avatar);
       router.push('/(onboarding)/recommendation');
     } else {
       setCurrentQ((q) => q + 1);
@@ -123,20 +115,17 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   introHeadline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 12,
   },
   introSub: {
-    // TODO: fontFamily: fonts.body (Montserrat)
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
   },
   prompt: {
-    // TODO: fontFamily: fonts.body (Montserrat)
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
@@ -156,7 +145,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff08',
   },
   optionText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.primary,
     lineHeight: typeScale.bodyS.lineHeight,

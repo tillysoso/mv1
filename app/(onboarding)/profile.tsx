@@ -4,22 +4,13 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-
-// TODO: fontFamily strings require expo-font preloading.
-// TODO: Replace card placeholders with actual card art once assets are delivered.
-
-const ROMAN: Record<number, string> = {
-  1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
-  8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII', 13: 'XIII',
-  14: 'XIV', 15: 'XV', 16: 'XVI', 17: 'XVII', 18: 'XVIII', 19: 'XIX',
-  20: 'XX', 21: 'XXI', 22: 'XXII',
-};
+import { toRoman } from '../../src/utils/roman';
 
 function MiniCard({ number, name, role }: { number: number; name: string; role: string }) {
   return (
     <View style={styles.miniCard}>
       <View style={styles.miniCardImage}>
-        <Text style={styles.miniCardRoman}>{ROMAN[number] ?? number}</Text>
+        <Text style={styles.miniCardRoman}>{toRoman(number)}</Text>
       </View>
       <Text style={styles.miniCardRole}>{role}</Text>
       <Text style={styles.miniCardName}>{name}</Text>
@@ -92,7 +83,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   heading: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.displayM.fontSize,
     fontWeight: '600',
     color: colors.bone,
@@ -101,7 +91,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   subheading: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -145,7 +134,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   miniCardName: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,
     letterSpacing: 0.5,
@@ -163,7 +151,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   resonanceNote: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,

@@ -7,10 +7,6 @@ import { saveProfile } from '../../src/lib/supabase/profile';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
-// TODO: Wire up actual card draw component in Step 5 (card draw feature).
-//       This screen currently acts as the ritual entry point / placeholder.
-// TODO: fontFamily strings require expo-font preloading.
-
 export default function FirstDrawScreen() {
   const router = useRouter();
   const { name, dateOfBirth, birthCards, setOnboardingComplete } = useProfileStore();
@@ -69,7 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greeting: {
-    // TODO: fontFamily: fonts.display (Cinzel)
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 2,
@@ -77,7 +72,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   subtext: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -95,10 +89,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.bg.dusk,
     borderRadius: 6,
-    // TODO: Add ambient shimmer animation using Reanimated in Step 5
   },
   note: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,

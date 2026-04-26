@@ -60,7 +60,7 @@ export function useDailyDraw() {
     }
 
     check();
-  }, [user?.id]);
+  }, [user?.id, todaysCard]);
 
   function resolveAuraContext(selected: TarotCard): TarotCard {
     // Recognition override if card matches profile cards
@@ -82,17 +82,19 @@ export function useDailyDraw() {
     if (user?.id) {
       const today = todayString();
       try {
-        await supabase.from('readings').insert({
-          user_id: user.id,
-          spread_type: 'single',
-          avatar_id: null,
-          cards: [selected],
-          reflection_note: null,
-        });
-        await supabase.from('streaks').upsert(
-          { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
-          { onConflict: 'user_id' },
-        );
+        await Promise.all([
+          supabase.from('readings').insert({
+            user_id: user.id,
+            spread_type: 'single',
+            avatar_id: null,
+            cards: [selected],
+            reflection_note: null,
+          }),
+          supabase.from('streaks').upsert(
+            { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
+            { onConflict: 'user_id' },
+          ),
+        ]);
       } catch {
         // Silently fail — local state is source of truth
       }
