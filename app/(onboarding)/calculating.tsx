@@ -66,7 +66,7 @@ export default function CalculatingScreen() {
           The pattern is forming.
         </Animated.Text>
         <Text style={styles.subline}>
-          The signal is reading your pattern.
+          Your birth cards are next.
         </Text>
       </View>
     </OnboardingScreen>
