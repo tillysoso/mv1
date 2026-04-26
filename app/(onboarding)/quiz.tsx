@@ -68,10 +68,16 @@ export default function QuizScreen() {
   });
   // Tiebreaker: last answer for Q4 (index 3)
   const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
-  function handleSelect(avatar: AvatarId) {
+  async function handleSelect(avatar: AvatarId, index: number) {
+    if (selectedOption !== null) return;
+    setSelectedOption(index);
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
+
+    await new Promise(r => setTimeout(r, 180));
+    setSelectedOption(null);
 
     if (currentQ === QUESTIONS.length - 1) {
       // Q4 tiebreaker
@@ -102,8 +108,9 @@ export default function QuizScreen() {
           {question.options.map((opt, i) => (
             <Pressable
               key={i}
-              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar)}
+              style={({ pressed }) => [styles.option, (pressed || selectedOption === i) && styles.optionPressed]}
+              onPress={() => handleSelect(opt.avatar, i)}
+              disabled={selectedOption !== null}
             >
               <Text style={styles.optionText}>{opt.text}</Text>
             </Pressable>
