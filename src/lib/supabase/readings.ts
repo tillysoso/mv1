@@ -1,6 +1,6 @@
 import { supabase } from './client';
-import type { AvatarId } from '../../types/avatar';
-import type { TarotCard } from '../../types/tarot';
+import type { AvatarId, TarotCard } from '../../types';
+import { TABLE } from '../../constants';
 
 export async function saveReading(userId: string, payload: {
   spreadType: 'single' | 'three_card';
@@ -9,7 +9,7 @@ export async function saveReading(userId: string, payload: {
   reflectionNote?: string;
 }) {
   const { error } = await supabase
-    .from('readings')
+    .from(TABLE.READINGS)
     .insert({
       user_id: userId,
       spread_type: payload.spreadType,
@@ -22,11 +22,11 @@ export async function saveReading(userId: string, payload: {
 
 export async function getRecentReadings(userId: string, limit = 10) {
   const { data, error } = await supabase
-    .from('readings')
+    .from(TABLE.READINGS)
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return data;
+  return data ?? [];
 }

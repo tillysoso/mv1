@@ -1,4 +1,5 @@
-import type { TarotCard, AuraContext } from '../../types/tarot';
+import type { TarotCard, AuraContext } from '../../types';
+import { AURA_CONTEXT, SUIT } from '../../constants';
 
 // Breakthrough cards per card-data-placeholder.md
 const BREAKTHROUGH_NAMES = new Set([
@@ -11,13 +12,13 @@ const SHADOW_NAMES = new Set([
 ]);
 
 function auraFor(name: string): AuraContext {
-  if (BREAKTHROUGH_NAMES.has(name)) return 'breakthrough';
-  if (SHADOW_NAMES.has(name)) return 'shadow';
-  return 'neutral';
+  if (BREAKTHROUGH_NAMES.has(name)) return AURA_CONTEXT.BREAKTHROUGH;
+  if (SHADOW_NAMES.has(name)) return AURA_CONTEXT.SHADOW;
+  return AURA_CONTEXT.NEUTRAL;
 }
 
 function card(id: string, name: string, number: number): TarotCard {
-  return { id, name, number, suit: 'major', auraContext: auraFor(name) };
+  return { id, name, number, suit: SUIT.MAJOR, auraContext: auraFor(name) };
 }
 
 // imagePath omitted — TarotCard type does not carry it yet.

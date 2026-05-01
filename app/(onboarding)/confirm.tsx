@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
@@ -6,14 +8,17 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useAuthStore } from '../../src/stores/authStore';
-import { updateAvatar } from '../../src/lib/supabase/profile';
+import { updateAvatar } from '../../src/lib/supabase/v2/profile';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -44,15 +49,17 @@ export default function ConfirmScreen() {
   const { user } = useAuthStore();
   const accent = avatarAccents[activeAvatar];
 
+  const [confirming, setConfirming] = useState(false);
+
   // Background accent bloom
   const overlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
+  const confirmOpacity = useSharedValue(0);
 
   useEffect(() => {
     overlayOpacity.value = withTiming(0.15, { duration: 1400, easing: Easing.out(Easing.ease) });
     contentOpacity.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.ease) });
 
-    // Save to Supabase if user exists
     if (user?.id) {
       updateAvatar(user.id, activeAvatar).catch(() => {
         // Silently fail — will sync on next session
@@ -69,24 +76,68 @@ export default function ConfirmScreen() {
     opacity: contentOpacity.value,
   }));
 
+  const confirmStyle = useAnimatedStyle(() => ({
+    opacity: confirmOpacity.value,
+  }));
+
+  function handleBegin() {
+    if (confirming) return;
+    setConfirming(true);
+    confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
+    setTimeout(() => {
+      router.push('/(onboarding)/first-draw');
+    }, 600);
+  }
+
   return (
     <OnboardingScreen
       bottomContent={
+        <View>
+          {confirming && (
+            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
+              // confirmed.
+            </Animated.Text>
+          )}
+          <Pressable
+            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+            onPress={handleBegin}
+          >
+            <Text style={styles.ctaText}>Let's Begin</Text>
+          </Pressable>
+        </View>
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
+          onPress={() => router.push(ROUTE.ONBOARDING_FIRST_DRAW)}
+          onPress={() => {
+            trackNavigationClick('lets_begin_cta', '/first-draw');
+            router.push('/(onboarding)/first-draw');
+          }}
         >
           <Text style={styles.ctaText}>Let's Begin</Text>
         </Pressable>
       }
     >
-      {/* Elemental accent bloom overlay */}
       <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
 
       <Animated.View style={[styles.content, contentStyle]}>
         <Text style={styles.presenceLine}>
           {AVATAR_NAMES[activeAvatar]} is with you.
         </Text>
+    <>
+      {/* Prevent back-swipe — avatar choice is committed */}
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      <OnboardingScreen
+        bottomContent={
+          <CTAButton label="Let's Begin" onPress={() => router.push('/(onboarding)/first-draw')} />
+        }
+      >
+        {/* Elemental accent bloom overlay */}
+        <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
+
+        <Animated.View style={[styles.content, contentStyle]}>
+          <Text style={styles.presenceLine}>
+            {AVATAR_NAMES[activeAvatar]} is with you.
+          </Text>
 
         <Image
           source={AVATAR_IMAGES[activeAvatar]}
@@ -97,12 +148,16 @@ export default function ConfirmScreen() {
         <Text style={[styles.avatarName, { color: accent.primary }]}>
           {AVATAR_NAMES[activeAvatar]}
         </Text>
+          <Text style={[styles.avatarName, { color: accent.primary }]}>
+            {AVATAR_NAMES[activeAvatar]}
+          </Text>
 
-        <Text style={styles.firstWords}>
-          "{FIRST_WORDS[activeAvatar]}"
-        </Text>
-      </Animated.View>
-    </OnboardingScreen>
+          <Text style={styles.firstWords}>
+            "{FIRST_WORDS[activeAvatar]}"
+          </Text>
+        </Animated.View>
+      </OnboardingScreen>
+    </>
   );
 }
 
@@ -112,7 +167,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.body,
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     letterSpacing: 1,
@@ -124,26 +180,36 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayXL.fontSize,
-    fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 32,
   },
   firstWords: {
-    // TODO: fontFamily: fonts.body (Montserrat) medium
+    fontFamily: fonts.bodyMedium,
     fontSize: typeScale.bodyL.fontSize,
-    fontWeight: '500',
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
   },
+  confirmLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    opacity: 0,
+  },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    alignSelf: 'stretch',
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

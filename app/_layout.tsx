@@ -1,11 +1,55 @@
 import '../global.css';
 
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
+import { useAuthStore, initAuthListener } from '../src/stores/authStore';
+import { useProfileStore } from '../src/stores/profileStore';
+import { trackPageView } from '../src/lib/analytics';
+
+function usePageTracking() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
 import { Component, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import { useFonts } from 'expo-font';
+import {
+  Cinzel_400Regular,
+  Cinzel_700Bold,
+} from '@expo-google-fonts/cinzel';
+import {
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  Cinzel_400Regular,
+  Cinzel_600SemiBold,
+  Cinzel_700Bold,
+} from '@expo-google-fonts/cinzel';
+import {
+  Montserrat_300Light,
+  Montserrat_400Regular,
+  Montserrat_500Medium,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+} from '@expo-google-fonts/montserrat';
+import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
+import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
+import { fontAssets } from '../src/theme/typography';
+
+SplashScreen.preventAutoHideAsync();
+import { useAuthStore, initAuthListener } from '../src/stores/authStore';
+import { useProfileStore } from '../src/stores/profileStore';
+import { localFontAssets } from '../src/theme/typography';
+import { colors } from '../src/theme/tokens';
+
+SplashScreen.preventAutoHideAsync();
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
+import { colors } from '../src/theme/tokens';
+import { ROUTE } from '../src/constants';
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -19,7 +63,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   render() {
     if (this.state.error) {
       return (
-        <ScrollView style={{ flex: 1, backgroundColor: '#0D0D14', padding: 24 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: colors.obsidian, padding: 24 }}>
           <Text style={{ color: '#FF4444', fontSize: 16, fontWeight: 'bold', marginTop: 60, marginBottom: 12 }}>
             Runtime Error
           </Text>
@@ -55,15 +99,15 @@ function useAuthRouting() {
 
     if (!user) {
       if (!inOnboarding) {
-        router.replace('/(onboarding)');
+        router.replace(ROUTE.ONBOARDING);
       }
     } else if (!birthCards) {
       if (!inOnboarding) {
-        router.replace('/(onboarding)/profile');
+        router.replace(ROUTE.ONBOARDING_PROFILE);
       }
     } else {
       if (!inTabs) {
-        router.replace('/(tabs)');
+        router.replace(ROUTE.TABS);
       }
     }
   }, [user, initialised, birthCards, segments]);
@@ -72,13 +116,46 @@ function useAuthRouting() {
 function AppContent() {
   const { initialised } = useAuthStore();
 
+  const [fontsLoaded] = useFonts({
+    Cinzel_400Regular,
+    Cinzel_700Bold,
+  const [fontsLoaded, fontError] = useFonts({
+    Cinzel_400Regular,
+    Cinzel_600SemiBold,
+    Cinzel_700Bold,
+    Montserrat_300Light,
+    Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+    SpaceMono_400Regular,
+    ...fontAssets,
+    ...localFontAssets,
+  });
+
   useEffect(() => {
     if (!isSupabaseConfigured) return;
     return initAuthListener();
   }, []);
 
-  useAuthRouting();
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
+  useAuthRouting();
+  usePageTracking();
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!initialised || !fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
+    return null;
   // In prototype mode skip the loading gate entirely
   if (!isSupabaseConfigured) {
     return <Stack screenOptions={{ headerShown: false }} />;
@@ -86,8 +163,8 @@ function AppContent() {
 
   if (!initialised) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0D0D14', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator color="#9500FF" size="large" />
+      <View style={{ flex: 1, backgroundColor: colors.obsidian, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color={colors.majestic} size="large" />
       </View>
     );
   }

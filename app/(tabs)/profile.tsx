@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -6,9 +7,8 @@ import CardPlaceholder from '../../src/components/cards/CardPlaceholder';
 import { MAJOR_ARCANA_CARDS } from '../../src/features/daily-draw/cardData';
 import { colors, avatarAccents } from '../../src/theme/tokens';
 import { typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
-
-const AVATAR_IDS: AvatarId[] = ['casper', 'eli', 'olivia', 'destiny'];
+import type { AvatarId } from '../../src/types';
+import { AVATAR_IDS, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../src/constants';
 
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper: 'Casper',
@@ -28,12 +28,14 @@ export default function ProfileScreen() {
   const { activeAvatar, setAvatar } = useAvatarStore();
   const { birthCards } = useProfileStore();
 
-  const personalityCard = birthCards
-    ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.personalityCard.number) ?? null
-    : null;
-  const soulCard = birthCards && !birthCards.sameCard
-    ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.soulCard.number) ?? null
-    : null;
+  const personalityCard = useMemo(
+    () => birthCards ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.personalityCard.number) ?? null : null,
+    [birthCards],
+  );
+  const soulCard = useMemo(
+    () => birthCards && !birthCards.sameCard ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.soulCard.number) ?? null : null,
+    [birthCards],
+  );
 
   return (
     <View style={styles.root}>
@@ -48,9 +50,9 @@ export default function ProfileScreen() {
           <View style={styles.portraitSection}>
             <AvatarPortrait
               avatarId={activeAvatar}
-              presenceLevel="hero"
-              auraContext="neutral"
-              imageState="neutral"
+              presenceLevel={PRESENCE_LEVEL.HERO}
+              auraContext={AURA_CONTEXT.NEUTRAL}
+              imageState={AVATAR_STATE.NEUTRAL}
             />
             <Text style={styles.avatarName}>{AVATAR_NAMES[activeAvatar]}</Text>
           </View>
