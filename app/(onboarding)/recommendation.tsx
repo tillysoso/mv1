@@ -207,4 +207,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
+  },
 });

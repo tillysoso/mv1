@@ -159,4 +159,18 @@ const styles = StyleSheet.create({
     lineHeight: typeScale.bodyS.lineHeight,
     fontStyle: 'italic',
   },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    // TODO: fontFamily: fonts.body (Montserrat)
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
+  },
 });
