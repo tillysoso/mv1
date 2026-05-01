@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts } from '../../src/theme/typography';
@@ -61,6 +62,12 @@ export default function TabsLayout() {
           textTransform: 'uppercase',
         },
       }}
+      screenListeners={{
+        tabPress: (e) => {
+          trackNavigationClick('tab_bar', e.target ?? 'unknown_tab');
+        },
+      }}
+    />
     >
       <Tabs.Screen
         name="index"

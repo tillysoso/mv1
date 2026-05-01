@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -22,6 +23,7 @@ export default function FirstDrawScreen() {
     if (drawing) return;
     setDrawing(true);
     setOnboardingComplete(true);
+    trackNavigationClick('draw_cta', '/(tabs)');
 
     if (user?.id && dateOfBirth && birthCards) {
       saveProfile(user.id, dateOfBirth, birthCards).catch(() => {

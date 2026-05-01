@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackFormSubmit } from '../../src/lib/analytics';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -33,6 +34,7 @@ export default function NameScreen() {
     const trimmed = value.trim();
     if (!trimmed) return;
     setName(trimmed);
+    trackFormSubmit('name_entry', 'onboarding_name');
     router.push('/(onboarding)/dob');
   }
 

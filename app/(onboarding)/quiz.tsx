@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackQuizAnswer } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -114,6 +115,8 @@ export default function QuizScreen() {
     );
   }
 
+  function handleSelect(avatar: AvatarId, answerText: string) {
+    trackQuizAnswer(currentQ, answerText, avatar);
   function handleSelect(avatar: AvatarId) {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
@@ -172,6 +175,8 @@ export default function QuizScreen() {
           {question.options.map((opt, i) => (
             <Pressable
               key={i}
+              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+              onPress={() => handleSelect(opt.avatar, opt.text)}
               style={[
                 styles.option,
                 selectedIndex === i && styles.optionSelected,

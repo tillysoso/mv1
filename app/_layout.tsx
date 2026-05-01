@@ -1,5 +1,17 @@
 import '../global.css';
 
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
+import { useAuthStore, initAuthListener } from '../src/stores/authStore';
+import { useProfileStore } from '../src/stores/profileStore';
+import { trackPageView } from '../src/lib/analytics';
+
+function usePageTracking() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
 import { Component, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -131,6 +143,7 @@ function AppContent() {
   }, [fontsLoaded, fontError]);
 
   useAuthRouting();
+  usePageTracking();
 
   useEffect(() => {
     if (fontsLoaded) {

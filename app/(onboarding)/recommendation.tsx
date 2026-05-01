@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackSelectContent, trackNavigationClick } from '../../src/lib/analytics';
+import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
@@ -54,9 +56,11 @@ export default function RecommendationScreen() {
 
   const recommended = getRecommendation(quizScores, quizTiebreaker);
   const [selected, setSelected] = useState<AvatarId>(recommended);
+  useScrollDepth('/recommendation');
 
   function handleConfirm() {
     setAvatar(selected);
+    trackNavigationClick('choose_avatar_cta', '/confirm');
     router.push('/(onboarding)/confirm');
   }
 
@@ -78,6 +82,54 @@ export default function RecommendationScreen() {
           <Text style={styles.caveat}>
             This is a suggestion. The choice is always yours.
           </Text>
+        </Pressable>
+      }
+    >
+      <View style={styles.content}>
+        <Text style={styles.eyebrow}>Right now —</Text>
+        <Text style={styles.headline}>
+          {AVATAR_LABELS[recommended]} tends to find people like you.
+        </Text>
+
+        <Text style={styles.caveat}>
+          This is a suggestion. The choice is always yours.
+        </Text>
+
+        <View style={styles.grid}>
+          {AVATAR_ORDER.map((id) => {
+            const accent = avatarAccents[id];
+            const isSelected = selected === id;
+            const isRecommended = id === recommended;
+
+            return (
+              <Pressable
+                key={id}
+                style={[
+                  styles.avatarCard,
+                  isSelected && { borderColor: accent.primary },
+                ]}
+                onPress={() => {
+                  trackSelectContent('avatar', id);
+                  setSelected(id);
+                }}
+              >
+                <Image
+                  source={AVATAR_IMAGES[id]}
+                  style={styles.avatarImage}
+                  resizeMode="cover"
+                />
+                <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
+                  {AVATAR_LABELS[id]}
+                </Text>
+                <Text style={styles.avatarDesc}>{AVATAR_DESCRIPTIONS[id]}</Text>
+                {isRecommended && (
+                  <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
+                    <Text style={styles.recommendedText}>Suggested</Text>
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
 
           <View style={styles.grid}>
             {AVATAR_ORDER.map((id) => {

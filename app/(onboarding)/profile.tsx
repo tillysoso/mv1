@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
+import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -25,6 +27,7 @@ function MiniCard({ number, name, role }: { number: number; name: string; role: 
 export default function ProfileScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
+  useScrollDepth('/profile');
   const { width } = useWindowDimensions();
   const useRow = width >= 360;
 
@@ -33,6 +36,15 @@ export default function ProfileScreen() {
   return (
     <OnboardingScreen
       bottomContent={
+        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => {
+            trackNavigationClick('enter_the_world_cta', '/quiz');
+            router.push('/(onboarding)/quiz');
+          }}
+        >
+          <Text style={styles.ctaText}>Enter the World</Text>
+        </Pressable>
         <CTAButton label="Enter the World" onPress={() => router.push('/(onboarding)/quiz')} />
       }
     >

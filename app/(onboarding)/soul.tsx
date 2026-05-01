@@ -11,6 +11,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackNavigationClick } from '../../src/lib/analytics';
+import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -40,6 +42,19 @@ function CardPlaceholder({ number }: { number: number }) {
 export default function SoulScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
+  useScrollDepth('/soul');
+  const translateY = useSharedValue(60);
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
+    opacity.value = withDelay(100, withTiming(1, { duration: 500 }));
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
   const animatedStyle = useEntranceAnimation();
 
   const isSameCard = birthCards?.sameCard ?? false;
@@ -48,6 +63,15 @@ export default function SoulScreen() {
   return (
     <OnboardingScreen
       bottomContent={
+        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => {
+            trackNavigationClick('continue_cta', '/profile');
+            router.push('/(onboarding)/profile');
+          }}
+        >
+          <Text style={styles.ctaText}>Continue</Text>
+        </Pressable>
         <CTAButton label="Continue" onPress={() => router.push('/(onboarding)/profile')} />
       }
     >
