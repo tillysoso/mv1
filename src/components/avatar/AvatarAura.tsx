@@ -1,3 +1,7 @@
+import { useEffect, useMemo } from 'react';
+import { View } from 'react-native';
+import { Canvas, Path, Skia, BlurMask } from '@shopify/react-native-skia';
+import { useSharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View, Platform } from 'react-native';
 import Animated, {
@@ -7,6 +11,16 @@ import Animated, {
 import { avatarAccents } from '../../theme/tokens';
 import type { AvatarId, PortalShape } from '../../types/avatar';
 import type { AuraContext } from '../../types/tarot';
+
+// Conditionally import Skia — only loaded on native where WASM is not needed
+let Canvas: any, Path: any, Skia: any, BlurMask: any;
+if (Platform.OS !== 'web') {
+  const skia = require('@shopify/react-native-skia');
+  Canvas = skia.Canvas;
+  Path = skia.Path;
+  Skia = skia.Skia;
+  BlurMask = skia.BlurMask;
+}
 
 // Conditionally import Skia — only loaded on native where WASM is not needed
 let Canvas: any, Path: any, Skia: any, BlurMask: any;
@@ -139,9 +153,12 @@ export default function AvatarAura({
   const r = size * 0.44;
   const inset = size * 0.12;
 
-  const path = shape === 'livingCircle'
-    ? buildLivingCirclePath(cx, cy, r)
-    : buildArchPath(size, size, inset);
+  const path = useMemo(
+    () => shape === 'livingCircle'
+      ? buildLivingCirclePath(cx, cy, r)
+      : buildArchPath(size, size, inset),
+    [shape, cx, cy, r, size, inset],
+  );
 
   return (
     <View style={{ width: size, height: size }}>

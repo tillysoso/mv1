@@ -59,5 +59,3 @@ export const avatarAccents = {
     particleEnd: '#C49A4A',
   },
 } as const;
-
-export type AvatarId = keyof typeof avatarAccents;
