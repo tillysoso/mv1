@@ -2,6 +2,9 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { avatarAccents, colors } from '../../theme/tokens';
 import { fonts } from '../../theme/typography';
 import type { TarotCard, AvatarId } from '../../types';
+import type { TarotCard } from '../../types/tarot';
+import type { AvatarId } from '../../types/avatar';
+import { toRoman } from '../../utils/roman';
 
 // Conditionally import Skia — only on native
 let Canvas: any, LinearGradient: any, Rect: any, vec: any;
@@ -24,13 +27,6 @@ interface CardPlaceholderProps {
   avatarId: AvatarId;
   size: 'full' | 'daily' | 'thumb';
 }
-
-const ROMAN: Record<number, string> = {
-  0:'0', 1:'I', 2:'II', 3:'III', 4:'IV', 5:'V', 6:'VI', 7:'VII',
-  8:'VIII', 9:'IX', 10:'X', 11:'XI', 12:'XII', 13:'XIII',
-  14:'XIV', 15:'XV', 16:'XVI', 17:'XVII', 18:'XVIII', 19:'XIX',
-  20:'XX', 21:'XXI',
-};
 
 export default function CardPlaceholder({ card, avatarId, size }: CardPlaceholderProps) {
   const { width, height } = SIZES[size];
@@ -59,7 +55,7 @@ export default function CardPlaceholder({ card, avatarId, size }: CardPlaceholde
       {!isThumb && (
         <View style={styles.content}>
           <Text style={[styles.roman, { color: accent.secondary }]}>
-            {ROMAN[card.number] ?? String(card.number)}
+            {toRoman(card.number)}
           </Text>
           <Text style={[styles.name, { color: colors.bone }]} numberOfLines={2}>
             {card.name}

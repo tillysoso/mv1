@@ -1,4 +1,7 @@
+import React, { memo } from 'react';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import React from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { colors } from '../../theme/tokens';
@@ -13,14 +16,13 @@ interface OnboardingScreenProps {
 // React Native has no built-in radial gradient. expo-linear-gradient only
 // supports linear — when Skia particle/aura system is wired up in a later
 // step, replace this with a Canvas radial gradient.
-function AtmosphereLayer() {
+const AtmosphereLayer = memo(function AtmosphereLayer() {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {/* Centre glow — #1A1A2E bleeding outward */}
       <View style={styles.atmosphereCenter} />
     </View>
   );
-}
+});
 
 export default function OnboardingScreen({
   children,
@@ -54,7 +56,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: colors.bg.primary,
     opacity: 0.45,
-    // Soften with scale — gives a radial feel without a gradient library
     transform: [{ scaleX: 1.4 }, { scaleY: 1.0 }],
   },
   safe: {

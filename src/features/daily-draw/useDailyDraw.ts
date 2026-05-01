@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
 import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase/client';
+import { handleSupabaseError } from '../../utils/handleError';
+import { saveReading } from '../../lib/supabase/v2/readings';
 import { MAJOR_ARCANA_CARDS } from './cardData';
 import type { TarotCard } from '../../types';
 import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
@@ -16,19 +18,17 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 export function useDailyDraw() {
-  const { user } = useAuthStore();
-  const { todaysCard, setTodaysCard, birthCards } = useProfileStore();
-  const [hasDrawnToday, setHasDrawnToday] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const todaysCard = useProfileStore((s) => s.todaysCard);
+  const setTodaysCard = useProfileStore((s) => s.setTodaysCard);
+  const birthCards = useProfileStore((s) => s.birthCards);
   const [isLoading, setIsLoading] = useState(true);
-  const [card, setCard] = useState<TarotCard | null>(null);
 
   useEffect(() => {
     async function check() {
       setIsLoading(true);
 
       if (todaysCard) {
-        setCard(todaysCard);
-        setHasDrawnToday(true);
         setIsLoading(false);
         return;
       }
@@ -38,22 +38,27 @@ export function useDailyDraw() {
           const today = todayString();
           const { data } = await supabase
             .from(TABLE.STREAKS)
+          const { data, error } = await supabase
+            .from('streaks')
             .select('last_draw_date, last_card_id')
             .eq('user_id', user.id)
             .single();
 
+          if (error && error.code !== 'PGRST116') {
+            console.error('[DailyDraw] streak lookup failed:', handleSupabaseError(error).message);
+          }
+
           if (data?.last_draw_date === today && data?.last_card_id) {
+          if (data && data.last_draw_date === today && data.last_card_id) {
             const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
             if (found) {
-              setCard(found);
               setTodaysCard(found);
-              setHasDrawnToday(true);
               setIsLoading(false);
               return;
             }
           }
-        } catch {
-          // Supabase not configured — fall through to local draw
+        } catch (e) {
+          console.error('[DailyDraw] streak check error, falling back to local draw:', e);
         }
       }
 
@@ -61,23 +66,21 @@ export function useDailyDraw() {
     }
 
     check();
-  }, [user?.id]);
+  }, [user?.id, todaysCard]);
 
-  function resolveAuraContext(selected: TarotCard): TarotCard {
-    // Recognition override if card matches profile cards
+  function resolveAuraContext(selected: (typeof MAJOR_ARCANA_CARDS)[number]): (typeof MAJOR_ARCANA_CARDS)[number] {
     if (birthCards) {
       const isProfileCard =
         selected.number === birthCards.personalityCard.number ||
         selected.number === birthCards.soulCard.number;
       if (isProfileCard) return { ...selected, auraContext: AURA_CONTEXT.RECOGNITION };
+      if (isProfileCard) return { ...selected, auraContext: 'recognition' as const };
     }
     return selected;
   }
 
   async function draw() {
     const selected = resolveAuraContext(pickRandom(MAJOR_ARCANA_CARDS));
-    setCard(selected);
-    setHasDrawnToday(true);
     setTodaysCard(selected);
 
     if (user?.id) {
@@ -91,14 +94,29 @@ export function useDailyDraw() {
           reflection_note: null,
         });
         await supabase.from(TABLE.STREAKS).upsert(
+        await Promise.all([
+          supabase.from('readings').insert({
+            user_id: user.id,
+            spread_type: 'single',
+            avatar_id: null,
+            cards: [selected],
+            reflection_note: null,
+          }),
+          supabase.from('streaks').upsert(
+            { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
+            { onConflict: 'user_id' },
+          ),
+        ]);
+        await saveReading(user.id, { spreadType: 'single', avatarId: null, cards: [selected] });
+        await supabase.from('streaks').upsert(
           { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
           { onConflict: 'user_id' },
         );
-      } catch {
-        // Silently fail — local state is source of truth
+      } catch (e) {
+        console.error('[DailyDraw] failed to persist reading/streak:', e);
       }
     }
   }
 
-  return { card, hasDrawnToday, isLoading, draw };
+  return { card: todaysCard, hasDrawnToday: todaysCard !== null, isLoading, draw };
 }

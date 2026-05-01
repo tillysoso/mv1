@@ -28,5 +28,5 @@ export async function getRecentReadings(userId: string, limit = 10) {
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return data;
+  return data ?? [];
 }
