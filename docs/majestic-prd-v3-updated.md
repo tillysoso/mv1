@@ -333,6 +333,6 @@ It succeeds when the user, after a decision they have been avoiding, looks back 
 
 ---
 
-*Majestic — PRD v3.1 — Working Document*
+*Majestic — PRD v3.0 — Working Document*
 *Design System, Brand Voice, and all reference documents take priority where direction conflicts.*
 *Your adventure. But Majestic.*
