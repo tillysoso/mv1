@@ -11,6 +11,7 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
 const PROMPT = 'What do you go by?';
+const REVEAL_DELAY_MS = 30;
 const REVEAL_DELAY_MS = 30; // per character
 
 export default function NameScreen() {

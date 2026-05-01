@@ -3,6 +3,22 @@
 // Weight variants are separate families in React Native — use the appropriate
 // alias rather than combining fontFamily + fontWeight across platforms.
 export const fonts = {
+  // Cinzel — display headings, card names, Roman numerals
+  display: 'Cinzel_400Regular',
+  displayBold: 'Cinzel_700Bold',
+
+  // Montserrat — body, UI labels, avatar voice
+  body: 'Montserrat_400Regular',
+  bodyMedium: 'Montserrat_500Medium',
+  bodySemiBold: 'Montserrat_600SemiBold',
+  bodyBold: 'Montserrat_700Bold',
+
+  // Space Mono — terminal register, system lines, coords
+  terminal: 'SpaceMono_400Regular',
+
+  // Wordmark font — Remachine Script (designed by Luke)
+  // Files: assets/fonts/RemachineScript.woff2 / .ttf / .eot
+  // Use ONLY for the Majestic wordmark lockup — never for body or UI text
   // Display — Cinzel (@expo-google-fonts/cinzel)
   display:         'Cinzel_400Regular',
   displaySemiBold: 'Cinzel_600SemiBold',

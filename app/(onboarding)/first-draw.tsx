@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   subtext: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   note: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,

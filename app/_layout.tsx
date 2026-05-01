@@ -4,6 +4,11 @@ import { Component, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useFonts } from 'expo-font';
+import {
+  Cinzel_400Regular,
+  Cinzel_700Bold,
+} from '@expo-google-fonts/cinzel';
+import {
 import * as SplashScreen from 'expo-splash-screen';
 import {
   Cinzel_400Regular,
@@ -18,6 +23,12 @@ import {
   Montserrat_700Bold,
 } from '@expo-google-fonts/montserrat';
 import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
+import * as SplashScreen from 'expo-splash-screen';
+import { useAuthStore, initAuthListener } from '../src/stores/authStore';
+import { useProfileStore } from '../src/stores/profileStore';
+import { fontAssets } from '../src/theme/typography';
+
+SplashScreen.preventAutoHideAsync();
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
 import { localFontAssets } from '../src/theme/typography';
@@ -91,6 +102,9 @@ function useAuthRouting() {
 function AppContent() {
   const { initialised } = useAuthStore();
 
+  const [fontsLoaded] = useFonts({
+    Cinzel_400Regular,
+    Cinzel_700Bold,
   const [fontsLoaded, fontError] = useFonts({
     Cinzel_400Regular,
     Cinzel_600SemiBold,
@@ -101,6 +115,7 @@ function AppContent() {
     Montserrat_600SemiBold,
     Montserrat_700Bold,
     SpaceMono_400Regular,
+    ...fontAssets,
     ...localFontAssets,
   });
 
@@ -117,6 +132,13 @@ function AppContent() {
 
   useAuthRouting();
 
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!initialised || !fontsLoaded) {
   if (!fontsLoaded && !fontError) {
     return null;
   // In prototype mode skip the loading gate entirely

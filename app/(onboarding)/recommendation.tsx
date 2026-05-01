@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   caveat: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.mist,
@@ -164,6 +165,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   avatarName: {
+    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,

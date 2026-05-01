@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   heading: {
+    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
     color: colors.bone,
@@ -90,6 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   subheading: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -154,6 +156,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   resonanceNote: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,

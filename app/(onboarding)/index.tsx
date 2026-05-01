@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   headline: {
+    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
     color: colors.bone,

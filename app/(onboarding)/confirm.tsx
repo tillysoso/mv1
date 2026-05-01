@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,

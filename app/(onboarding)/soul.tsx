@@ -20,6 +20,13 @@ import { toRoman } from '../../src/utils/roman';
 import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
 import { toRoman } from '../../src/utils/romanNumerals';
 
+const ROMAN: Record<number, string> = {
+  1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
+  8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII', 13: 'XIII',
+  14: 'XIV', 15: 'XV', 16: 'XVI', 17: 'XVII', 18: 'XVIII', 19: 'XIX',
+  20: 'XX', 21: 'XXI', 22: 'XXII',
+};
+
 // TODO: Replace CardPlaceholder with actual card art once assets are delivered.
 
 function CardPlaceholder({ number }: { number: number }) {
@@ -46,7 +53,6 @@ export default function SoulScreen() {
     >
       <Animated.View style={[styles.content, animatedStyle]}>
         {isSameCard ? (
-          // Same-card state — distinct callout
           <>
             <Text style={styles.label}>Both cards are the same{name ? `, ${name}` : ''}.</Text>
             <View style={styles.sameCardCallout}>
@@ -61,7 +67,6 @@ export default function SoulScreen() {
             </Text>
           </>
         ) : (
-          // Standard soul card layout
           <>
             <Text style={styles.label}>Your Soul Card</Text>
             <Text style={styles.sublabel}>
@@ -101,6 +106,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   sublabel: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
@@ -159,6 +165,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   sameCardSubtext: {
+    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
