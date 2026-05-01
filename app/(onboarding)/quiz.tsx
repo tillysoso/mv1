@@ -1,5 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -66,29 +74,89 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
-  // Tiebreaker: last answer for Q4 (index 3)
-  const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Reset scores on mount so back-navigation from recommendation can't corrupt results
+  useEffect(() => {
+    setQuizScores({});
+  }, []);
+
+  function handleSelect(avatar: AvatarId, index: number) {
+    if (selectedIndex !== null) return; // prevent double-tap during confirmation delay
+
+    setSelectedIndex(index);
+
+    setTimeout(() => {
+      const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
+      setScores(newScores);
+      setSelectedIndex(null);
+
+      if (currentQ === QUESTIONS.length - 1) {
+        const finalScores: Record<string, number> = {
+          ...newScores,
+          _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
+        };
+        setQuizScores(finalScores);
+        router.push('/(onboarding)/recommendation');
+      } else {
+        setCurrentQ((q) => q + 1);
+      }
+    }, 320);
+  const opacity = useSharedValue(1);
+  const isTransitioning = useRef(false);
+
+  function advanceTo(newQ: number) {
+    opacity.value = withSequence(
+      withTiming(0, { duration: 180 }),
+      withTiming(0, { duration: 20 }, () => {
+        runOnJS(setCurrentQ)(newQ);
+        opacity.value = withTiming(1, { duration: 280 });
+        runOnJS(() => { isTransitioning.current = false; })();
+      }),
+    );
+  }
 
   function handleSelect(avatar: AvatarId) {
+    if (isTransitioning.current) return;
+    isTransitioning.current = true;
+
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
 
     if (currentQ === QUESTIONS.length - 1) {
-      // Q4 tiebreaker
-      setLastAnswer(avatar);
-      const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
-      setQuizScores(finalScores);
-      router.push('/(onboarding)/recommendation');
+      const finalScores: Record<string, number> = {
+        ...newScores,
+        _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
+      };
+      opacity.value = withTiming(0, { duration: 200 }, () => {
+        runOnJS(setQuizScores)(finalScores);
+        runOnJS(router.push)('/(onboarding)/recommendation');
+      });
     } else {
-      setCurrentQ((q) => q + 1);
+      advanceTo(currentQ + 1);
     }
   }
 
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
   const question = QUESTIONS[currentQ];
 
   return (
     <OnboardingScreen>
       <View style={styles.content}>
+        {/* Step indicator */}
+        <View style={styles.stepRow}>
+          {QUESTIONS.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.stepDot,
+                i < currentQ && styles.stepDotDone,
+                i === currentQ && styles.stepDotActive,
+              ]}
+            />
+          ))}
+        </View>
+
         {currentQ === 0 && (
           <View style={styles.intro}>
             <Text style={styles.introHeadline}>The world has patterns too.</Text>
@@ -102,13 +170,45 @@ export default function QuizScreen() {
           {question.options.map((opt, i) => (
             <Pressable
               key={i}
-              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar)}
+              style={[
+                styles.option,
+                selectedIndex === i && styles.optionSelected,
+              ]}
+              onPress={() => handleSelect(opt.avatar, i)}
             >
               <Text style={styles.optionText}>{opt.text}</Text>
             </Pressable>
+        <View style={styles.progressRow}>
+          {QUESTIONS.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.progressDot, i === currentQ && styles.progressDotActive]}
+            />
           ))}
         </View>
+
+        <Animated.View style={[styles.questionWrap, animatedStyle]}>
+          {currentQ === 0 && (
+            <View style={styles.intro}>
+              <Text style={styles.introHeadline}>The world has patterns too.</Text>
+              <Text style={styles.introSub}>Four questions. No wrong answers. Just how you move.</Text>
+            </View>
+          )}
+
+          <Text style={styles.prompt}>{question.prompt}</Text>
+
+          <View style={styles.options}>
+            {question.options.map((opt, i) => (
+              <Pressable
+                key={i}
+                style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+                onPress={() => handleSelect(opt.avatar)}
+              >
+                <Text style={styles.optionText}>{opt.text}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </Animated.View>
       </View>
     </OnboardingScreen>
   );
@@ -118,6 +218,41 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 20,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 32,
+  },
+  stepDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.ash,
+  },
+  stepDotDone: {
+    backgroundColor: colors.mist,
+  },
+  stepDotActive: {
+    backgroundColor: colors.bone,
+    width: 18,
+    borderRadius: 3,
+  progressRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 32,
+  },
+  progressDot: {
+    width: 20,
+    height: 2,
+    backgroundColor: colors.ash,
+    borderRadius: 1,
+  },
+  progressDotActive: {
+    backgroundColor: colors.mist,
+  },
+  questionWrap: {
+    flex: 1,
   },
   intro: {
     marginBottom: 40,
@@ -151,9 +286,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  optionPressed: {
+  optionSelected: {
     borderColor: colors.mist,
-    backgroundColor: '#ffffff08',
+    backgroundColor: '#ffffff10',
   },
   optionText: {
     // TODO: fontFamily: fonts.body (Montserrat)

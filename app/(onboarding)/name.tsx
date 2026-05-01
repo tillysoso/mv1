@@ -1,7 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -34,8 +37,25 @@ export default function NameScreen() {
     router.push('/(onboarding)/dob');
   }
 
+  const isReady = value.trim().length > 0;
+  const canSubmit = value.trim().length > 0;
+
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        isReady ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
+        <Pressable
+          style={({ pressed }) => [
+            styles.cta,
+            !canSubmit && styles.ctaDisabled,
+            pressed && canSubmit && { opacity: 0.7 },
+          ]}
+          onPress={handleSubmit}
+        >
+          <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
+        </Pressable>
+      }
+    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
         <Text style={styles.systemLine}>INITIALISING.</Text>
@@ -54,7 +74,7 @@ export default function NameScreen() {
           value={value}
           onChangeText={setValue}
           onSubmit={handleSubmit}
-          autoFocus={visibleChars >= PROMPT.length}
+          autoFocus
         />
       </View>
     </OnboardingScreen>
@@ -88,5 +108,25 @@ const styles = StyleSheet.create({
     fontFamily: fonts.terminal,
     fontSize: 20,
     color: colors.text.secondary,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+  },
+  ctaDisabled: {
+    borderColor: colors.bg.tertiary,
+    opacity: 0.4,
+  },
+  ctaText: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
+  },
+  ctaTextDisabled: {
+    color: colors.text.tertiary,
   },
 });
