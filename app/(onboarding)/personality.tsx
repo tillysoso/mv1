@@ -13,22 +13,15 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { toRoman } from '../../src/utils/romanNumerals';
 
-const ROMAN: Record<number, string> = {
-  1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
-  8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII', 13: 'XIII',
-  14: 'XIV', 15: 'XV', 16: 'XVI', 17: 'XVII', 18: 'XVIII', 19: 'XIX',
-  20: 'XX', 21: 'XXI', 22: 'XXII',
-};
-
-// TODO: fontFamily strings require expo-font preloading.
 // TODO: Replace CardPlaceholder with actual card image from assets/cards/major-arcana/
 //       once card art is delivered in a later step.
 
 function CardPlaceholder({ number }: { number: number }) {
   return (
     <View style={styles.cardPlaceholder}>
-      <Text style={styles.cardPlaceholderText}>{ROMAN[number] ?? number}</Text>
+      <Text style={styles.cardPlaceholderText}>{toRoman(number)}</Text>
     </View>
   );
 }
@@ -68,7 +61,7 @@ export default function PersonalityScreen() {
 
         {card && (
           <>
-            <Text style={styles.cardNumber}>{ROMAN[card.number] ?? card.number}</Text>
+            <Text style={styles.cardNumber}>{toRoman(card.number)}</Text>
             <Text style={styles.cardName}>{card.name}</Text>
             <Text style={styles.essence}>
               This is who you are. Your shadow. Your essence.{'\n'}
@@ -97,16 +90,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   label: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.text.secondary,
     letterSpacing: 1,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
   sublabel: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -125,35 +117,34 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   cardPlaceholderText: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: 28,
     color: colors.mist,
     letterSpacing: 2,
   },
   cardNumber: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 8,
   },
   cardName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayL.fontSize,
-    fontWeight: '700',
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 20,
   },
   essence: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
     marginBottom: 16,
   },
   resonance: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -167,9 +158,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   ctaText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

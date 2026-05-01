@@ -45,7 +45,6 @@ export default function ConfirmScreen() {
   const { user } = useAuthStore();
   const accent = avatarAccents[activeAvatar];
 
-  // Background accent bloom
   const overlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
 
@@ -53,7 +52,6 @@ export default function ConfirmScreen() {
     overlayOpacity.value = withTiming(0.15, { duration: 1400, easing: Easing.out(Easing.ease) });
     contentOpacity.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.ease) });
 
-    // Save to Supabase if user exists
     if (user?.id) {
       updateAvatar(user.id, activeAvatar).catch(() => {
         // Silently fail — will sync on next session
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     letterSpacing: 1,
@@ -127,16 +125,14 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel) bold
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayXL.fontSize,
-    fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 32,
   },
   firstWords: {
-    // TODO: fontFamily: fonts.body (Montserrat) medium
+    fontFamily: fonts.bodyMedium,
     fontSize: typeScale.bodyL.fontSize,
-    fontWeight: '500',
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
   },
@@ -148,8 +144,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },
