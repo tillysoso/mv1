@@ -73,6 +73,20 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
+  // Track per-question answers so back can undo scores
+  const [answers, setAnswers] = useState<AvatarId[]>([]);
+
+  function handleBack() {
+    if (currentQ === 0) {
+      router.back();
+      return;
+    }
+    // Undo the previous answer's score
+    const prev = answers[currentQ - 1];
+    setScores((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1) }));
+    setAnswers((a) => a.slice(0, -1));
+    setCurrentQ((q) => q - 1);
+  }
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Reset scores on mount so back-navigation from recommendation can't corrupt results
@@ -123,8 +137,11 @@ export default function QuizScreen() {
 
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
+    setAnswers((a) => [...a, avatar]);
 
     if (currentQ === QUESTIONS.length - 1) {
+      // Q4 tiebreaker
+      const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
       setQuizScores(newScores, avatar);
       // Q4 tiebreaker: encode last answer as index for deterministic resolution
       const finalScores: Record<string, number> = {
@@ -148,6 +165,9 @@ export default function QuizScreen() {
   return (
     <OnboardingScreen>
       <View style={styles.content}>
+        <Pressable style={styles.backLink} onPress={handleBack}>
+          <Text style={styles.backText}>‹ back</Text>
+        </Pressable>
         {/* Step indicator */}
         <View style={styles.stepRow}>
           {QUESTIONS.map((_, i) => (
@@ -224,7 +244,17 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 4,
+  },
+  backLink: {
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  backText: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
   },
   stepRow: {
     flexDirection: 'row',

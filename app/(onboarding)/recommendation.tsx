@@ -121,7 +121,7 @@ export default function RecommendationScreen() {
                 <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
                   {AVATAR_LABELS[id]}
                 </Text>
-                <Text style={styles.avatarDesc}>{AVATAR_DESCRIPTIONS[id]}</Text>
+                <Text style={styles.avatarDesc} numberOfLines={2} ellipsizeMode="tail">{AVATAR_DESCRIPTIONS[id]}</Text>
                 {isRecommended && (
                   <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
                     <Text style={styles.recommendedText}>Suggested</Text>
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
   },
   avatarCard: {
     width: '47%',
+    minHeight: 200,
     borderWidth: 1,
     borderColor: colors.ash,
     padding: 12,

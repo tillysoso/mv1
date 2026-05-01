@@ -27,17 +27,22 @@ export default function DobScreen() {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
 
+  function clearError() {
+    if (errorMsg) setErrorMsg('');
+  }
   const isReady = day.length === 2 && month.length === 2 && year.length === 4;
 
   function handleDayChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
+    clearError();
     setError('');
     setDateError('');
     if (digits.length === 2) monthRef.current?.focus();
@@ -46,6 +51,7 @@ export default function DobScreen() {
   function handleMonthChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
+    clearError();
     setError('');
     setDateError('');
     if (digits.length === 2) yearRef.current?.focus();
@@ -54,6 +60,7 @@ export default function DobScreen() {
   function handleYearChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 4);
     setYear(digits);
+    clearError();
     setError('');
     setDateError('');
   }
@@ -64,6 +71,7 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
+      setErrorMsg('// that date doesn\'t resolve — try again');
       setError("— that date doesn't exist.");
       setDateError('> That date does not compute. Try again.');
       return;
@@ -77,6 +85,11 @@ export default function DobScreen() {
   const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
 
   return (
+    <OnboardingScreen>
+      <Pressable style={styles.backLink} onPress={() => router.back()}>
+        <Text style={styles.backText}>‹ back</Text>
+      </Pressable>
+
     <OnboardingScreen
       bottomContent={
         canSubmit ? (
@@ -163,6 +176,9 @@ export default function DobScreen() {
         </View>
       </View>
 
+      {errorMsg ? (
+        <Text style={styles.errorLine}>{errorMsg}</Text>
+      ) : null}
       {error ? <Text style={styles.errorLine}>{error}</Text> : null}
       {dateError ? (
         <Text style={styles.errorLine}>{dateError}</Text>
@@ -179,9 +195,19 @@ export default function DobScreen() {
 }
 
 const styles = StyleSheet.create({
+  backLink: {
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backText: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+  },
   terminalHeader: {
     marginBottom: 32,
-    marginTop: 20,
+    marginTop: 4,
   },
   systemLine: {
     fontFamily: fonts.terminal,
@@ -227,6 +253,13 @@ const styles = StyleSheet.create({
     padding: 0,
     minWidth: 48,
   },
+  errorLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginTop: 20,
+    opacity: 0.8,
   cta: {
     paddingVertical: 16,
     alignSelf: 'flex-start',
