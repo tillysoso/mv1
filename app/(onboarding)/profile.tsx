@@ -1,6 +1,7 @@
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -31,12 +32,7 @@ export default function ProfileScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/quiz')}
-        >
-          <Text style={styles.ctaText}>Enter the World</Text>
-        </Pressable>
+        <CTAButton label="Enter the World" onPress={() => router.push('/(onboarding)/quiz')} />
       }
     >
       <View style={styles.content}>
@@ -164,7 +160,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {

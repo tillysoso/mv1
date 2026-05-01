@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
-import { onAuthStateChange } from '../lib/supabase/auth';
+import { onAuthStateChange } from '../lib/supabase/v2/auth';
 
 interface AuthStore {
   user: User | null;
@@ -19,9 +19,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
 // Initialise auth listener
 export function initAuthListener() {
   const { setUser, setInitialised } = useAuthStore.getState();
-  const { data: { subscription } } = onAuthStateChange((user) => {
+  const unsubscribe = onAuthStateChange((user) => {
     setUser(user);
     setInitialised();
   });
-  return () => subscription.unsubscribe();
+  return unsubscribe;
 }

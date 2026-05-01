@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { colors } from '../../theme/tokens';
 
@@ -30,7 +30,7 @@ export default function OnboardingScreen({
     <View style={styles.root}>
       <AtmosphereLayer />
       <SafeAreaView style={[styles.safe, style]}>
-        <View style={styles.content}>{children}</View>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>{children}</ScrollView>
         {bottomContent && (
           <View style={styles.bottom}>{bottomContent}</View>
         )}
@@ -58,8 +58,10 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  content: {
     paddingHorizontal: 32,
     paddingTop: 60,
     paddingBottom: 24,
