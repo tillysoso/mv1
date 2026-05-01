@@ -6,7 +6,8 @@ import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE, AVATAR_IDS as AVATAR_ORDER } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -24,7 +25,6 @@ const AVATAR_LABELS: Record<AvatarId, string> = {
   destiny: 'Destiny',
 };
 
-const AVATAR_ORDER: AvatarId[] = ['casper', 'eli', 'olivia', 'destiny'];
 
 // Avatar portrait images (neutral state)
 const AVATAR_IMAGES: Record<AvatarId, any> = {
@@ -73,7 +73,7 @@ export default function RecommendationScreen() {
 
   function handleConfirm() {
     setAvatar(selected);
-    router.push('/(onboarding)/confirm');
+    router.push(ROUTE.ONBOARDING_CONFIRM);
   }
 
   return (

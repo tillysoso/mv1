@@ -6,6 +6,8 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
+import { colors } from '../src/theme/tokens';
+import { ROUTE } from '../src/constants';
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -19,7 +21,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   render() {
     if (this.state.error) {
       return (
-        <ScrollView style={{ flex: 1, backgroundColor: '#0D0D14', padding: 24 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: colors.obsidian, padding: 24 }}>
           <Text style={{ color: '#FF4444', fontSize: 16, fontWeight: 'bold', marginTop: 60, marginBottom: 12 }}>
             Runtime Error
           </Text>
@@ -55,15 +57,15 @@ function useAuthRouting() {
 
     if (!user) {
       if (!inOnboarding) {
-        router.replace('/(onboarding)');
+        router.replace(ROUTE.ONBOARDING);
       }
     } else if (!birthCards) {
       if (!inOnboarding) {
-        router.replace('/(onboarding)/profile');
+        router.replace(ROUTE.ONBOARDING_PROFILE);
       }
     } else {
       if (!inTabs) {
-        router.replace('/(tabs)');
+        router.replace(ROUTE.TABS);
       }
     }
   }, [user, initialised, birthCards, segments]);
@@ -86,8 +88,8 @@ function AppContent() {
 
   if (!initialised) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0D0D14', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator color="#9500FF" size="large" />
+      <View style={{ flex: 1, backgroundColor: colors.obsidian, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color={colors.majestic} size="large" />
       </View>
     );
   }

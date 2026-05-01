@@ -7,7 +7,8 @@ import CardFace from '../../src/components/cards/CardFace';
 import { interpretationPlaceholder } from '../../src/features/reading/interpretationPlaceholder';
 import { colors } from '../../src/theme/tokens';
 import { typeScale } from '../../src/theme/typography';
-import type { AuraContext } from '../../src/types/tarot';
+import type { AuraContext } from '../../src/types';
+import { AURA_CONTEXT } from '../../src/constants';
 
 export default function HomeScreen() {
   const { activeAvatar } = useAvatarStore();
@@ -15,8 +16,8 @@ export default function HomeScreen() {
   const [drawing, setDrawing] = useState(false);
 
   const auraContext: AuraContext | 'gathering' = drawing
-    ? 'gathering'
-    : card?.auraContext ?? 'neutral';
+    ? AURA_CONTEXT.GATHERING
+    : card?.auraContext ?? AURA_CONTEXT.NEUTRAL;
 
   async function handleDraw() {
     setDrawing(true);

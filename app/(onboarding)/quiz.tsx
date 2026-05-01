@@ -5,7 +5,8 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -78,7 +79,7 @@ export default function QuizScreen() {
       setLastAnswer(avatar);
       const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
       setQuizScores(finalScores);
-      router.push('/(onboarding)/recommendation');
+      router.push(ROUTE.ONBOARDING_RECOMMEND);
     } else {
       setCurrentQ((q) => q + 1);
     }

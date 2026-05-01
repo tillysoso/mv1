@@ -4,6 +4,7 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 // TODO: Replace card placeholders with actual card art once assets are delivered.
@@ -40,7 +41,7 @@ export default function ProfileScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/quiz')}
+          onPress={() => router.push(ROUTE.ONBOARDING_QUIZ)}
         >
           <Text style={styles.ctaText}>Enter the World</Text>
         </Pressable>

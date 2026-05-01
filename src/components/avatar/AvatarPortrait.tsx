@@ -1,8 +1,8 @@
 import { View, Image, StyleSheet } from 'react-native';
 import AvatarAura from './AvatarAura';
 import { colors } from '../../theme/tokens';
-import type { AvatarId, AvatarPresenceLevel, PortalShape } from '../../types/avatar';
-import type { AuraContext } from '../../types/tarot';
+import type { AvatarId, AvatarPresenceLevel, PortalShape, AuraContext } from '../../types';
+import { PORTAL_SHAPE, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../constants';
 
 // Avatar portrait images — neutral state preferred, fall back to active
 const IMAGES: Record<AvatarId, Record<string, any>> = {
@@ -31,30 +31,30 @@ const IMAGES: Record<AvatarId, Record<string, any>> = {
 };
 
 // Portal shape by presence level per aura spec
-const PORTAL_SHAPE: Record<AvatarPresenceLevel, PortalShape> = {
-  hero:     'arch',
-  presence: 'livingCircle',
-  signal:   'livingCircle',
-  mark:     'livingCircle',
-  none:     'livingCircle',
+const PORTAL_SHAPE_MAP: Record<AvatarPresenceLevel, PortalShape> = {
+  [PRESENCE_LEVEL.HERO]:     PORTAL_SHAPE.ARCH,
+  [PRESENCE_LEVEL.PRESENCE]: PORTAL_SHAPE.LIVING_CIRCLE,
+  [PRESENCE_LEVEL.SIGNAL]:   PORTAL_SHAPE.LIVING_CIRCLE,
+  [PRESENCE_LEVEL.MARK]:     PORTAL_SHAPE.LIVING_CIRCLE,
+  [PRESENCE_LEVEL.NONE]:     PORTAL_SHAPE.LIVING_CIRCLE,
 };
 
 // Aura canvas size by presence level
 const AURA_SIZE: Record<AvatarPresenceLevel, number> = {
-  hero:     280,
-  presence: 200,
-  signal:   160,
-  mark:     80,
-  none:     0,
+  [PRESENCE_LEVEL.HERO]:     280,
+  [PRESENCE_LEVEL.PRESENCE]: 200,
+  [PRESENCE_LEVEL.SIGNAL]:   160,
+  [PRESENCE_LEVEL.MARK]:     80,
+  [PRESENCE_LEVEL.NONE]:     0,
 };
 
 // Portrait image size inside the aura
 const PORTRAIT_SIZE: Record<AvatarPresenceLevel, number> = {
-  hero:     220,
-  presence: 140,
-  signal:   0,   // arc only
-  mark:     0,   // emblem only — TODO replace with Lottie emblem
-  none:     0,
+  [PRESENCE_LEVEL.HERO]:     220,
+  [PRESENCE_LEVEL.PRESENCE]: 140,
+  [PRESENCE_LEVEL.SIGNAL]:   0,   // arc only
+  [PRESENCE_LEVEL.MARK]:     0,   // emblem only — TODO replace with Lottie emblem
+  [PRESENCE_LEVEL.NONE]:     0,
 };
 
 interface AvatarPortraitProps {
@@ -67,15 +67,15 @@ interface AvatarPortraitProps {
 export default function AvatarPortrait({
   avatarId,
   presenceLevel,
-  auraContext = 'neutral',
-  imageState = 'neutral',
+  auraContext = AURA_CONTEXT.NEUTRAL,
+  imageState = AVATAR_STATE.NEUTRAL,
 }: AvatarPortraitProps) {
   const auraSize = AURA_SIZE[presenceLevel];
   const portraitSize = PORTRAIT_SIZE[presenceLevel];
-  const shape = PORTAL_SHAPE[presenceLevel];
+  const shape = PORTAL_SHAPE_MAP[presenceLevel];
   const showPortrait = portraitSize > 0;
 
-  if (presenceLevel === 'none') return null;
+  if (presenceLevel === PRESENCE_LEVEL.NONE) return null;
 
   return (
     <View style={[styles.root, { width: auraSize, height: auraSize }]}>
@@ -101,7 +101,7 @@ export default function AvatarPortrait({
       )}
 
       {/* mark: emblem placeholder — TODO: replace with Lottie emblem when assets land */}
-      {presenceLevel === 'mark' && (
+      {presenceLevel === PRESENCE_LEVEL.MARK && (
         <View style={[styles.emblemPlaceholder, { backgroundColor: colors.charcoal }]} />
       )}
     </View>

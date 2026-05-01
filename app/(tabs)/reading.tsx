@@ -9,22 +9,22 @@ import { interpretationPlaceholder } from '../../src/features/reading/interpreta
 import { MAJOR_ARCANA_CARDS } from '../../src/features/daily-draw/cardData';
 import { colors } from '../../src/theme/tokens';
 import { typeScale } from '../../src/theme/typography';
-import type { TarotCard, AuraContext } from '../../src/types/tarot';
-import type { AvatarPresenceLevel } from '../../src/types/avatar';
+import type { TarotCard, AuraContext, AvatarPresenceLevel } from '../../src/types';
+import { SPREAD_TYPE, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../src/constants';
 
 type SpreadType = 'single' | 'three_card';
 type ReadingPhase = 'select' | 'shuffle';
 
 const POSITIONS: Record<SpreadType, string[]> = {
-  single: ['What needs attention'],
-  three_card: ['Past', 'Present', 'Future'],
+  [SPREAD_TYPE.SINGLE]:     ['What needs attention'],
+  [SPREAD_TYPE.THREE_CARD]: ['Past', 'Present', 'Future'],
 };
 
 function pickCards(count: number, profileNumbers: number[]): TarotCard[] {
   const shuffled = [...MAJOR_ARCANA_CARDS].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count).map(card => {
     if (profileNumbers.includes(card.number)) {
-      return { ...card, auraContext: 'recognition' as AuraContext };
+      return { ...card, auraContext: AURA_CONTEXT.RECOGNITION as AuraContext };
     }
     return card;
   });
@@ -38,12 +38,12 @@ export default function ReadingScreen() {
     : [];
 
   const [phase, setPhase] = useState<ReadingPhase>('select');
-  const [spreadType, setSpreadType] = useState<SpreadType>('single');
+  const [spreadType, setSpreadType] = useState<SpreadType>(SPREAD_TYPE.SINGLE);
   const [cards, setCards] = useState<TarotCard[]>([]);
   const [revealed, setRevealed] = useState<boolean[]>([]);
 
   function startReading(type: SpreadType) {
-    const count = type === 'single' ? 1 : 3;
+    const count = type === SPREAD_TYPE.SINGLE ? 1 : 3;
     const picked = pickCards(count, profileNumbers);
     setSpreadType(type);
     setCards(picked);
@@ -69,10 +69,10 @@ export default function ReadingScreen() {
   const allRevealed = revealed.length > 0 && revealed.every(r => r);
 
   // Avatar presence: hero during shuffle, signal after first reveal
-  const avatarPresence: AvatarPresenceLevel = revealedCount === 0 ? 'hero' : 'signal';
+  const avatarPresence: AvatarPresenceLevel = revealedCount === 0 ? PRESENCE_LEVEL.HERO : PRESENCE_LEVEL.SIGNAL;
 
   // Aura: gathering before any reveal, then last-revealed card's context
-  let currentAuraContext: AuraContext | 'gathering' = 'gathering';
+  let currentAuraContext: AuraContext | 'gathering' = AURA_CONTEXT.GATHERING;
   if (revealedCount > 0) {
     for (let i = cards.length - 1; i >= 0; i--) {
       if (revealed[i]) {
@@ -92,7 +92,7 @@ export default function ReadingScreen() {
 
             <TouchableOpacity
               style={styles.spreadOption}
-              onPress={() => startReading('single')}
+              onPress={() => startReading(SPREAD_TYPE.SINGLE)}
               activeOpacity={0.75}
             >
               <Text style={styles.spreadTitle}>Single Card</Text>
@@ -101,7 +101,7 @@ export default function ReadingScreen() {
 
             <TouchableOpacity
               style={styles.spreadOption}
-              onPress={() => startReading('three_card')}
+              onPress={() => startReading(SPREAD_TYPE.THREE_CARD)}
               activeOpacity={0.75}
             >
               <Text style={styles.spreadTitle}>Three Card</Text>
@@ -128,7 +128,7 @@ export default function ReadingScreen() {
               avatarId={activeAvatar}
               presenceLevel={avatarPresence}
               auraContext={currentAuraContext}
-              imageState={revealedCount > 0 ? 'reflective' : 'neutral'}
+              imageState={revealedCount > 0 ? AVATAR_STATE.REFLECTIVE : AVATAR_STATE.NEUTRAL}
             />
           </View>
 

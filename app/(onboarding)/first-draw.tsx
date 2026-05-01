@@ -6,6 +6,7 @@ import { useAuthStore } from '../../src/stores/authStore';
 import { saveProfile } from '../../src/lib/supabase/profile';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 // TODO: Wire up actual card draw component in Step 5 (card draw feature).
 //       This screen currently acts as the ritual entry point / placeholder.
@@ -26,7 +27,7 @@ export default function FirstDrawScreen() {
       });
     }
 
-    router.replace('/(tabs)');
+    router.replace(ROUTE.TABS);
   }
 
   return (

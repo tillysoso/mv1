@@ -1,12 +1,12 @@
 import { supabase } from './client';
-import type { BirthCards } from '../../types/tarot';
-import type { AvatarId } from '../../types/avatar';
+import type { BirthCards, AvatarId } from '../../types';
+import { TABLE } from '../../constants';
 
 export async function saveProfile(userId: string, dob: {
   day: number; month: number; year: number
 }, birthCards: BirthCards) {
   const { error } = await supabase
-    .from('profiles')
+    .from(TABLE.PROFILES)
     .update({
       date_of_birth_day: dob.day,
       date_of_birth_month: dob.month,
@@ -23,7 +23,7 @@ export async function saveProfile(userId: string, dob: {
 
 export async function getProfile(userId: string) {
   const { data, error } = await supabase
-    .from('profiles')
+    .from(TABLE.PROFILES)
     .select('*')
     .eq('id', userId)
     .single();
@@ -33,7 +33,7 @@ export async function getProfile(userId: string) {
 
 export async function updateAvatar(userId: string, avatarId: AvatarId) {
   const { error } = await supabase
-    .from('profiles')
+    .from(TABLE.PROFILES)
     .update({ active_avatar: avatarId })
     .eq('id', userId);
   if (error) throw error;

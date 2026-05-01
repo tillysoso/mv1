@@ -6,6 +6,7 @@ import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -55,7 +56,7 @@ export default function DobScreen() {
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
-    router.push('/(onboarding)/calculating');
+    router.push(ROUTE.ONBOARDING_CALCULATING);
   }
 
   return (

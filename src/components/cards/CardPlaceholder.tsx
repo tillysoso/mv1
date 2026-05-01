@@ -1,8 +1,7 @@
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { avatarAccents, colors } from '../../theme/tokens';
 import { fonts } from '../../theme/typography';
-import type { TarotCard } from '../../types/tarot';
-import type { AvatarId } from '../../types/avatar';
+import type { TarotCard, AvatarId } from '../../types';
 
 // Conditionally import Skia — only on native
 let Canvas: any, LinearGradient: any, Rect: any, vec: any;

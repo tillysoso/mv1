@@ -6,9 +6,8 @@ import CardPlaceholder from '../../src/components/cards/CardPlaceholder';
 import { MAJOR_ARCANA_CARDS } from '../../src/features/daily-draw/cardData';
 import { colors, avatarAccents } from '../../src/theme/tokens';
 import { typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
-
-const AVATAR_IDS: AvatarId[] = ['casper', 'eli', 'olivia', 'destiny'];
+import type { AvatarId } from '../../src/types';
+import { AVATAR_IDS, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../src/constants';
 
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper: 'Casper',
@@ -48,9 +47,9 @@ export default function ProfileScreen() {
           <View style={styles.portraitSection}>
             <AvatarPortrait
               avatarId={activeAvatar}
-              presenceLevel="hero"
-              auraContext="neutral"
-              imageState="neutral"
+              presenceLevel={PRESENCE_LEVEL.HERO}
+              auraContext={AURA_CONTEXT.NEUTRAL}
+              imageState={AVATAR_STATE.NEUTRAL}
             />
             <Text style={styles.avatarName}>{AVATAR_NAMES[activeAvatar]}</Text>
           </View>

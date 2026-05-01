@@ -10,7 +10,8 @@ import Animated, {
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
-import type { BirthCards } from '../../src/types/tarot';
+import type { BirthCards } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -49,7 +50,7 @@ export default function CalculatingScreen() {
 
     const timer = setTimeout(() => {
       if (cards) setBirthCards(cards);
-      router.push('/(onboarding)/personality');
+      router.push(ROUTE.ONBOARDING_PERSONALITY);
     }, remaining);
 
     return () => clearTimeout(timer);

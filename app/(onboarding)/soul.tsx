@@ -12,6 +12,7 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 const ROMAN: Record<number, string> = {
   1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
@@ -55,7 +56,7 @@ export default function SoulScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/profile')}
+          onPress={() => router.push(ROUTE.ONBOARDING_PROFILE)}
         >
           <Text style={styles.ctaText}>Continue</Text>
         </Pressable>

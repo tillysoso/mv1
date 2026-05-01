@@ -13,7 +13,8 @@ import { useAuthStore } from '../../src/stores/authStore';
 import { updateAvatar } from '../../src/lib/supabase/profile';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -74,7 +75,7 @@ export default function ConfirmScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
+          onPress={() => router.push(ROUTE.ONBOARDING_FIRST_DRAW)}
         >
           <Text style={styles.ctaText}>Let's Begin</Text>
         </Pressable>

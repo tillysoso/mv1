@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 // TODO: Replace Text fontFamily strings with loaded Cinzel/Montserrat once
 // Luke's font assets are delivered. Use expo-font for preloading.
@@ -34,7 +35,7 @@ export default function EntryScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
-          onPress={() => router.push('/(onboarding)/name')}
+          onPress={() => router.push(ROUTE.ONBOARDING_NAME)}
         >
           <Text style={styles.ctaText}>Begin</Text>
         </Pressable>

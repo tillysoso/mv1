@@ -5,8 +5,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { avatarAccents } from '../../theme/tokens';
-import type { AvatarId } from '../../types/avatar';
-import type { AuraContext, PortalShape } from '../../types/avatar';
+import type { AvatarId, AuraContext, PortalShape } from '../../types';
+import { AURA_CONTEXT, PORTAL_SHAPE } from '../../constants';
 
 // Conditionally import Skia — only loaded on native where WASM is not needed
 let Canvas: any, Path: any, Skia: any, BlurMask: any;
@@ -26,11 +26,11 @@ interface AvatarAuraProps {
 }
 
 const INTENSITY: Record<string, number> = {
-  neutral:      0.4,
-  gathering:    0.7,
-  breakthrough: 0.8,
-  shadow:       0.3,
-  recognition:  0.6,
+  [AURA_CONTEXT.NEUTRAL]:      0.4,
+  [AURA_CONTEXT.GATHERING]:    0.7,
+  [AURA_CONTEXT.BREAKTHROUGH]: 0.8,
+  [AURA_CONTEXT.SHADOW]:       0.3,
+  [AURA_CONTEXT.RECOGNITION]:  0.6,
 };
 
 function buildLivingCirclePath(cx: number, cy: number, r: number) {
@@ -67,7 +67,7 @@ export default function AvatarAura({
 
   useEffect(() => {
     const b = INTENSITY[auraContext] ?? 0.4;
-    if (auraContext === 'neutral' || auraContext === 'gathering') {
+    if (auraContext === AURA_CONTEXT.NEUTRAL || auraContext === AURA_CONTEXT.GATHERING) {
       strokeOpacity.value = withRepeat(
         withSequence(
           withTiming(b + 0.15, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
@@ -84,13 +84,13 @@ export default function AvatarAura({
         -1,
         false,
       );
-    } else if (auraContext === 'breakthrough') {
+    } else if (auraContext === AURA_CONTEXT.BREAKTHROUGH) {
       strokeOpacity.value = withSequence(withTiming(0.95, { duration: 300 }), withTiming(b, { duration: 700 }));
       glowOpacity.value = withSequence(withTiming(0.4, { duration: 300 }), withTiming(b * 0.3, { duration: 700 }));
-    } else if (auraContext === 'shadow') {
+    } else if (auraContext === AURA_CONTEXT.SHADOW) {
       strokeOpacity.value = withTiming(b, { duration: 800 });
       glowOpacity.value = withTiming(b * 0.3, { duration: 800 });
-    } else if (auraContext === 'recognition') {
+    } else if (auraContext === AURA_CONTEXT.RECOGNITION) {
       strokeOpacity.value = withSequence(
         withDelay(500, withTiming(0.9, { duration: 400 })),
         withTiming(b, { duration: 600 }),
@@ -105,7 +105,7 @@ export default function AvatarAura({
   // Web fallback: animated border circle/arc — no Skia WASM needed
   if (Platform.OS === 'web') {
     const r = size * 0.44;
-    const isCircle = shape === 'livingCircle';
+    const isCircle = shape === PORTAL_SHAPE.LIVING_CIRCLE;
     return (
       <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
         {/* Glow ring */}
@@ -139,7 +139,7 @@ export default function AvatarAura({
   const r = size * 0.44;
   const inset = size * 0.12;
 
-  const path = shape === 'livingCircle'
+  const path = shape === PORTAL_SHAPE.LIVING_CIRCLE
     ? buildLivingCirclePath(cx, cy, r)
     : buildArchPath(size, size, inset);
 
