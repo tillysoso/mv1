@@ -6,8 +6,9 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { updateAvatar } from '../../src/lib/supabase/profile';
@@ -70,23 +71,21 @@ export default function ConfirmScreen() {
   }));
 
   return (
-    <OnboardingScreen
-      bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
-        >
-          <Text style={styles.ctaText}>Let's Begin</Text>
-        </Pressable>
-      }
-    >
-      {/* Elemental accent bloom overlay */}
-      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
+    <>
+      {/* Prevent back-swipe — avatar choice is committed */}
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      <OnboardingScreen
+        bottomContent={
+          <CTAButton label="Let's Begin" onPress={() => router.push('/(onboarding)/first-draw')} />
+        }
+      >
+        {/* Elemental accent bloom overlay */}
+        <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
 
-      <Animated.View style={[styles.content, contentStyle]}>
-        <Text style={styles.presenceLine}>
-          {AVATAR_NAMES[activeAvatar]} is with you.
-        </Text>
+        <Animated.View style={[styles.content, contentStyle]}>
+          <Text style={styles.presenceLine}>
+            {AVATAR_NAMES[activeAvatar]} is with you.
+          </Text>
 
         <Image
           source={AVATAR_IMAGES[activeAvatar]}
@@ -97,12 +96,16 @@ export default function ConfirmScreen() {
         <Text style={[styles.avatarName, { color: accent.primary }]}>
           {AVATAR_NAMES[activeAvatar]}
         </Text>
+          <Text style={[styles.avatarName, { color: accent.primary }]}>
+            {AVATAR_NAMES[activeAvatar]}
+          </Text>
 
-        <Text style={styles.firstWords}>
-          "{FIRST_WORDS[activeAvatar]}"
-        </Text>
-      </Animated.View>
-    </OnboardingScreen>
+          <Text style={styles.firstWords}>
+            "{FIRST_WORDS[activeAvatar]}"
+          </Text>
+        </Animated.View>
+      </OnboardingScreen>
+    </>
   );
 }
 
@@ -136,15 +139,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
-  },
-  cta: {
-    paddingVertical: 16,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

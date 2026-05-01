@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -34,8 +35,14 @@ export default function NameScreen() {
     router.push('/(onboarding)/dob');
   }
 
+  const isReady = value.trim().length > 0;
+
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        isReady ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
+      }
+    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
         <Text style={styles.systemLine}>INITIALISING.</Text>
@@ -54,7 +61,7 @@ export default function NameScreen() {
           value={value}
           onChangeText={setValue}
           onSubmit={handleSubmit}
-          autoFocus={visibleChars >= PROMPT.length}
+          autoFocus
         />
       </View>
     </OnboardingScreen>

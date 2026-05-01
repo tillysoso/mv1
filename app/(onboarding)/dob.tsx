@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
@@ -25,23 +26,31 @@ export default function DobScreen() {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [error, setError] = useState('');
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
 
+  const isReady = day.length === 2 && month.length === 2 && year.length === 4;
+
   function handleDayChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
+    setError('');
+    if (digits.length === 2) monthRef.current?.focus();
   }
 
   function handleMonthChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
+    setError('');
+    if (digits.length === 2) yearRef.current?.focus();
   }
 
   function handleYearChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 4);
     setYear(digits);
+    setError('');
   }
 
   function handleSubmit() {
@@ -50,7 +59,7 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
-      Alert.alert('Invalid date', 'Please enter a real date.');
+      setError("— that date doesn't exist.");
       return;
     }
 
@@ -59,7 +68,11 @@ export default function DobScreen() {
   }
 
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        <CTAButton label="Continue" onPress={handleSubmit} disabled={!isReady} />
+      }
+    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>
           {name ? `${name}.` : ''}
@@ -132,6 +145,8 @@ export default function DobScreen() {
           </View>
         </View>
       </View>
+
+      {error ? <Text style={styles.errorLine}>{error}</Text> : null}
     </OnboardingScreen>
   );
 }
@@ -184,5 +199,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     padding: 0,
     minWidth: 48,
+  },
+  errorLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: '#C94B2C',
+    letterSpacing: 0.5,
+    marginTop: 20,
   },
 });
