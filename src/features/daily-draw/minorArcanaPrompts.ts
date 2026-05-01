@@ -5,13 +5,14 @@
 // After generation: apply card frame via Figma template (task #77).
 // File naming: [suit]-[number]-[name].png e.g. wands-01-ace.png
 
-export type Suit = "wands" | "cups" | "swords" | "pentacles";
+import type { CardSuit } from '../../types/tarot';
+
 export type CardRank =
   | "ace" | "two" | "three" | "four" | "five" | "six" | "seven"
   | "eight" | "nine" | "ten" | "page" | "knight" | "queen" | "king";
 
 export interface MinorArcanaPrompt {
-  suit: Suit;
+  suit: CardSuit;
   rank: CardRank;
   number: number; // 1–14
   name: string;   // e.g. "Ace of Wands"
@@ -329,10 +330,10 @@ export const MINOR_ARCANA_PROMPTS: MinorArcanaPrompt[] = [
 ];
 
 // ─── Lookup helpers ───────────────────────────────────────────────────────────
-export function getPromptsBySuit(suit: Suit): MinorArcanaPrompt[] {
+export function getPromptsBySuit(suit: CardSuit): MinorArcanaPrompt[] {
   return MINOR_ARCANA_PROMPTS.filter((p) => p.suit === suit);
 }
 
-export function getPrompt(suit: Suit, rank: CardRank): MinorArcanaPrompt | undefined {
+export function getPrompt(suit: CardSuit, rank: CardRank): MinorArcanaPrompt | undefined {
   return MINOR_ARCANA_PROMPTS.find((p) => p.suit === suit && p.rank === rank);
 }

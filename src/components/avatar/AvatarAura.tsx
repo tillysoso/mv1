@@ -9,6 +9,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { avatarAccents } from '../../theme/tokens';
+import type { AvatarId, PortalShape } from '../../types/avatar';
+import type { AuraContext } from '../../types/tarot';
 import type { AvatarId, AuraContext, PortalShape } from '../../types';
 import { AURA_CONTEXT, PORTAL_SHAPE } from '../../constants';
 import type { AvatarId, PortalShape } from '../../types/avatar';
