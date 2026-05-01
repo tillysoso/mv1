@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -53,12 +54,7 @@ export default function PersonalityScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/soul')}
-        >
-          <Text style={styles.ctaText}>Continue</Text>
-        </Pressable>
+        <CTAButton label="Continue" onPress={() => router.push('/(onboarding)/soul')} />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
@@ -126,6 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 28,
+    alignSelf: 'center',
   },
   cardPlaceholderText: {
     // TODO: fontFamily: fonts.display (Cinzel)
@@ -163,7 +160,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
