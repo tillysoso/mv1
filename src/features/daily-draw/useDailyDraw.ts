@@ -39,7 +39,7 @@ export function useDailyDraw() {
             .eq('user_id', user.id)
             .single();
 
-          if (data?.last_draw_date === today && data?.last_card_id) {
+          if (data && data.last_draw_date === today && data.last_card_id) {
             const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
             if (found) {
               setTodaysCard(found);
