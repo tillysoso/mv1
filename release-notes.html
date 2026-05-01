@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Release Notes — Majestic</title>
+  <style>
+    /* ── Design tokens (mirrors src/theme/tokens.ts) ── */
+    :root {
+      --brand:        #9500FF;
+      --brand-dim:    #6B00BB;
+      --bg-primary:   #1A1A2E;
+      --bg-secondary: #16213E;
+      --bg-card:      #1E1E2E;
+      --border:       #3A3A4A;
+      --text-primary: #F0EDE8;
+      --text-secondary: #A8A8B8;
+      --text-tertiary:  #6B6B7B;
+      --moon:         #C8D0D8;
+    }
+
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .wordmark {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 0.75rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      max-width: 480px;
+    }
+
+    /* ── Month section ── */
+    .month-group {
+      margin-bottom: 3rem;
+    }
+
+    .month-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 1.25rem;
+    }
+
+    .month-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Release entry ── */
+    .entry {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.15s ease;
+    }
+
+    .entry:hover { border-color: var(--brand-dim); }
+
+    .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .entry-date {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    .entry-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.15em 0.55em;
+      border-radius: 4px;
+      border: 1px solid currentColor;
+    }
+
+    .tag-launch  { color: var(--brand); }
+    .tag-feature { color: #4DBFCC; }
+    .tag-content { color: #D4A843; }
+    .tag-fix     { color: #A8B4C8; }
+
+    .entry h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .entry p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ── "First" entry accent for major milestones ── */
+    .entry--major {
+      border-color: var(--brand-dim);
+      background: linear-gradient(135deg, #1E1E2E 0%, #1a1630 100%);
+    }
+
+    /* ── Format guide ── */
+    .format-guide {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .format-guide h2 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 1rem;
+    }
+
+    .format-guide pre {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--moon);
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .format-guide p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .entry { padding: 1rem 1.125rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- Page header -->
+    <header class="page-header">
+      <span class="wordmark">Majestic</span>
+      <h1>Release Notes</h1>
+      <p>A running log of what's new — features, content, and fixes, newest first.</p>
+    </header>
+
+    <main>
+
+      <!-- ═══════════════════════════════════════════════
+           APRIL 2026
+           ═══════════════════════════════════════════════ -->
+      <section class="month-group" aria-label="April 2026">
+        <h2 class="month-heading">April 2026</h2>
+
+        <article class="entry">
+          <div class="entry-meta">
+            <time class="entry-date" datetime="2026-04-06">Apr 6, 2026</time>
+            <span class="entry-tag tag-fix">Fix</span>
+          </div>
+          <h3>Wordmark font name corrected in typography tokens</h3>
+          <p>
+            The Remachine Script font name in <code>src/theme/typography.ts</code> was updated
+            to match the asset file exactly, preventing silent fallback to the system font on web.
+            No visual change for users — this is a developer-facing correctness fix that ensures
+            font loading is reliable across Expo native and web targets.
+          </p>
+        </article>
+
+        <article class="entry">
+          <div class="entry-meta">
+            <time class="entry-date" datetime="2026-04-06">Apr 6, 2026</time>
+            <span class="entry-tag tag-content">Content</span>
+          </div>
+          <h3>Minor Arcana Midjourney prompt libraries added</h3>
+          <p>
+            All four suits of the Minor Arcana — Wands, Cups, Swords, and Pentacles — now have
+            complete Midjourney prompt libraries (tasks #81–84). Each of the 56 Minor Arcana cards
+            has a dedicated visual prompt for AI image generation, available in
+            <code>src/features/daily-draw/minorArcanaPrompts.ts</code>. This brings full 78-card
+            coverage to the daily draw feature's illustration pipeline.
+          </p>
+        </article>
+
+        <article class="entry">
+          <div class="entry-meta">
+            <time class="entry-date" datetime="2026-04-06">Apr 6, 2026</time>
+            <span class="entry-tag tag-content">Content</span>
+          </div>
+          <h3>Major Arcana personality and soul card readings</h3>
+          <p>
+            Added interpretations for all 22 Major Arcana cards covering both the personality card
+            (birth-month archetype) and soul card (life-path archetype) roles (task #44). Readings
+            are surfaced during the onboarding flow after a user enters their date of birth, and
+            live in <code>src/features/onboarding/cardInterpretations.ts</code>.
+          </p>
+        </article>
+
+        <article class="entry">
+          <div class="entry-meta">
+            <time class="entry-date" datetime="2026-04-05">Apr 5, 2026</time>
+            <span class="entry-tag tag-feature">Feature</span>
+          </div>
+          <h3>Remachine Script wordmark font integrated</h3>
+          <p>
+            Remachine Script is now registered as Majestic's official wordmark typeface,
+            loaded through Expo's font system in TTF, EOT, and WOFF2 formats (task #79).
+            It is available as the <code>wordmark</code> font family in typography tokens and
+            renders on the splash screen, onboarding header, and any surface displaying the full
+            app logo.
+          </p>
+        </article>
+
+        <article class="entry entry--major">
+          <div class="entry-meta">
+            <time class="entry-date" datetime="2026-04-05">Apr 5, 2026</time>
+            <span class="entry-tag tag-launch">Launch</span>
+          </div>
+          <h3>Majestic v1 — initial release</h3>
+          <p>
+            The first version of Majestic is live. Built on Expo Router with file-based navigation,
+            Zustand state management, and a Supabase backend, the app ships with an 11-screen
+            onboarding flow, four selectable avatar companions (Casper, Eli, Olivia, and Destiny),
+            and a birth-card numerology engine that derives personality and soul cards from a user's
+            date of birth. Authentication, profile creation, and the daily draw reading flow are
+            all available at launch.
+          </p>
+        </article>
+
+      </section>
+
+      <!-- ═══════════════════════════════════════════════
+           FORMAT GUIDE FOR FUTURE ENTRIES
+           ═══════════════════════════════════════════════ -->
+      <aside class="format-guide" aria-label="Format guide for contributors">
+        <h2>Adding a new entry</h2>
+        <p>
+          Copy the block below into the correct month <code>&lt;section&gt;</code> (newest entry
+          first). Create a new <code>&lt;section&gt;</code> if the month doesn't exist yet.
+          Aim for 2–3 sentences: what changed, where it lives in the codebase, and why it matters
+          to the user.
+        </p>
+        <pre>&lt;article class="entry"&gt;
+  &lt;div class="entry-meta"&gt;
+    &lt;time class="entry-date" datetime="YYYY-MM-DD"&gt;Mon D, YYYY&lt;/time&gt;
+    &lt;span class="entry-tag tag-{type}"&gt;{Type}&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;h3&gt;Short headline — what changed&lt;/h3&gt;
+  &lt;p&gt;
+    Sentence 1: what was added or fixed, and where in the app it appears.
+    Sentence 2: any technical detail worth noting (file path, task #, etc.).
+    Sentence 3 (optional): user-facing impact or what it unblocks.
+  &lt;/p&gt;
+&lt;/article&gt;</pre>
+        <p style="margin-top:0.75rem">
+          <strong>Tag types:</strong>
+          <code class="entry-tag tag-launch" style="margin:0 0.25rem">Launch</code> major milestone ·
+          <code class="entry-tag tag-feature" style="margin:0 0.25rem">Feature</code> new capability ·
+          <code class="entry-tag tag-content" style="margin:0 0.25rem">Content</code> card data / copy ·
+          <code class="entry-tag tag-fix" style="margin:0 0.25rem">Fix</code> bug / correction
+        </p>
+      </aside>
+
+    </main>
+  </div>
+</body>
+</html>
