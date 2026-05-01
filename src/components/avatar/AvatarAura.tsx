@@ -5,8 +5,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { avatarAccents } from '../../theme/tokens';
-import type { AvatarId } from '../../types/avatar';
-import type { AuraContext, PortalShape } from '../../types/avatar';
+import type { AvatarId, PortalShape } from '../../types/avatar';
+import type { AuraContext } from '../../types/tarot';
 
 // Conditionally import Skia — only loaded on native where WASM is not needed
 let Canvas: any, Path: any, Skia: any, BlurMask: any;
