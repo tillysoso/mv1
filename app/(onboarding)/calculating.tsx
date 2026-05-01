@@ -67,6 +67,7 @@ export default function CalculatingScreen() {
         </Animated.Text>
         <Text style={styles.subline}>
           Your birth cards are next.
+          Your numbers are unusual.
         </Text>
       </View>
     </OnboardingScreen>

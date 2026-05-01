@@ -40,6 +40,12 @@ export default function FirstDrawScreen() {
     <OnboardingScreen
       bottomContent={
         <CTAButton label="Draw" onPress={handleDraw} disabled={drawing} align="center" />
+        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={handleDraw}
+        >
+          <Text style={styles.ctaText}>Enter</Text>
+        </Pressable>
       }
     >
       <View style={styles.content}>
