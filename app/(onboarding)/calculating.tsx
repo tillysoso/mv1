@@ -17,15 +17,12 @@ import { fonts, typeScale } from '../../src/theme/typography';
 
 const MIN_DURATION_MS = 2000;
 
-// TODO: fontFamily strings require expo-font preloading.
-
 export default function CalculatingScreen() {
   const router = useRouter();
   const { dateOfBirth, setBirthCards } = useProfileStore();
   const pulseOpacity = useSharedValue(0.4);
 
   useEffect(() => {
-    // Slow atmospheric pulse
     pulseOpacity.value = withRepeat(
       withSequence(
         withTiming(1, { duration: 1200 }),
@@ -66,7 +63,8 @@ export default function CalculatingScreen() {
           The pattern is forming.
         </Animated.Text>
         <Text style={styles.subline}>
-          The signal is reading your pattern.
+          Your birth cards are next.
+          Your numbers are unusual.
         </Text>
       </View>
     </OnboardingScreen>
@@ -79,9 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '400',
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 16,
