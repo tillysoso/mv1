@@ -73,6 +73,13 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
+  // Tiebreaker: last answer for Q4 (index 3)
+  const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+
+  async function handleSelect(avatar: AvatarId, index: number) {
+    if (selectedOption !== null) return;
+    setSelectedOption(index);
   // Track per-question answers so back can undo scores
   const [answers, setAnswers] = useState<AvatarId[]>([]);
 
@@ -139,6 +146,9 @@ export default function QuizScreen() {
     setScores(newScores);
     setAnswers((a) => [...a, avatar]);
 
+    await new Promise(r => setTimeout(r, 180));
+    setSelectedOption(null);
+
     if (currentQ === QUESTIONS.length - 1) {
       // Q4 tiebreaker
       const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
@@ -195,6 +205,9 @@ export default function QuizScreen() {
           {question.options.map((opt, i) => (
             <Pressable
               key={i}
+              style={({ pressed }) => [styles.option, (pressed || selectedOption === i) && styles.optionPressed]}
+              onPress={() => handleSelect(opt.avatar, i)}
+              disabled={selectedOption !== null}
               style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
               onPress={() => handleSelect(opt.avatar, opt.text)}
               style={[
