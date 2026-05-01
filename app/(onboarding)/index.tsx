@@ -14,6 +14,7 @@ import { trackNavigationClick } from '../../src/lib/analytics';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 export default function EntryScreen() {
   const router = useRouter();
@@ -49,6 +50,7 @@ export default function EntryScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
+          onPress={() => router.push(ROUTE.ONBOARDING_NAME)}
           onPress={() => {
             trackNavigationClick('begin_cta', '/name');
             router.push('/(onboarding)/name');

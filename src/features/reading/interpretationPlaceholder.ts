@@ -1,7 +1,9 @@
 // Placeholder avatar interpretations — replace with real content
 // Source: _discovery/brand/majestic-brand-voice.md
 
-export const interpretationPlaceholder = {
+import type { AvatarId } from '../types';
+
+export const interpretationPlaceholder: Record<AvatarId, (cardName: string) => string> = {
   casper: (cardName: string) =>
     `${cardName}. You already know what this means. Act on it.`,
   eli: (cardName: string) =>
@@ -10,4 +12,4 @@ export const interpretationPlaceholder = {
     `${cardName}. What does this actually look like on an ordinary Wednesday?`,
   destiny: (cardName: string) =>
     `${cardName}. Something in you already felt this coming.`,
-} as const;
+};

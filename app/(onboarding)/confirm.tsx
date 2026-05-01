@@ -17,7 +17,8 @@ import { useAuthStore } from '../../src/stores/authStore';
 import { updateAvatar } from '../../src/lib/supabase/v2/profile';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 
 // TODO: fontFamily strings require expo-font preloading.
 
@@ -106,6 +107,7 @@ export default function ConfirmScreen() {
         </View>
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => router.push(ROUTE.ONBOARDING_FIRST_DRAW)}
           onPress={() => {
             trackNavigationClick('lets_begin_cta', '/first-draw');
             router.push('/(onboarding)/first-draw');

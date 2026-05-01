@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { AvatarId } from '../types/avatar';
+import type { AvatarId } from '../types';
+import { DEFAULT_AVATAR_ID } from '../constants';
 
 interface AvatarStore {
   activeAvatar: AvatarId;
@@ -7,6 +8,6 @@ interface AvatarStore {
 }
 
 export const useAvatarStore = create<AvatarStore>((set) => ({
-  activeAvatar: 'casper',
+  activeAvatar: DEFAULT_AVATAR_ID,
   setAvatar: (id) => set({ activeAvatar: id }),
 }));

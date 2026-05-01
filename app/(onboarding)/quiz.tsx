@@ -14,7 +14,8 @@ import { trackQuizAnswer } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types/avatar';
+import type { AvatarId } from '../../src/types';
+import { ROUTE } from '../../src/constants';
 
 // Quiz questions from the Majestic narrative spec (source of truth).
 // Note: prompt draft had slightly different wording — spec version used here
@@ -159,6 +160,7 @@ export default function QuizScreen() {
         _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
       };
       setQuizScores(finalScores);
+      router.push(ROUTE.ONBOARDING_RECOMMEND);
       router.push('/(onboarding)/recommendation');
       opacity.value = withTiming(0, { duration: 200 }, () => {
         runOnJS(setQuizScores)(finalScores);

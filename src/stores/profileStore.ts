@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import type { BirthCards, TarotCard } from '../types/tarot';
-import type { AvatarId } from '../types/avatar';
+import type { BirthCards, TarotCard, AvatarId } from '../types';
 
 interface ProfileStore {
   name: string | null;

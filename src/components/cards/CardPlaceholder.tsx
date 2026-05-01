@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { avatarAccents, colors } from '../../theme/tokens';
 import { fonts } from '../../theme/typography';
+import type { TarotCard, AvatarId } from '../../types';
 import type { TarotCard } from '../../types/tarot';
 import type { AvatarId } from '../../types/avatar';
 import { toRoman } from '../../utils/roman';

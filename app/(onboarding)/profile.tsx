@@ -7,6 +7,7 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 import { toRoman } from '../../src/utils/roman';
 import { toRoman } from '../../src/utils/romanNumerals';
 
@@ -38,6 +39,7 @@ export default function ProfileScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => router.push(ROUTE.ONBOARDING_QUIZ)}
           onPress={() => {
             trackNavigationClick('enter_the_world_cta', '/quiz');
             router.push('/(onboarding)/quiz');

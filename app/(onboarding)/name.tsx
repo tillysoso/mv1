@@ -10,6 +10,7 @@ import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 const PROMPT = 'What do you go by?';
 const REVEAL_DELAY_MS = 30;
@@ -43,6 +44,7 @@ export default function NameScreen() {
       return;
     }
     setName(trimmed);
+    router.push(ROUTE.ONBOARDING_DOB);
     trackFormSubmit('name_entry', 'onboarding_name');
     router.push('/(onboarding)/dob');
   }

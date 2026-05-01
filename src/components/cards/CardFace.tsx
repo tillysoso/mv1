@@ -1,7 +1,6 @@
 import { Pressable } from 'react-native';
 import CardPlaceholder from './CardPlaceholder';
-import type { TarotCard } from '../../types/tarot';
-import type { AvatarId } from '../../types/avatar';
+import type { TarotCard, AvatarId } from '../../types';
 
 // TODO: When card images land, conditionally render <Image> instead of
 // <CardPlaceholder>. imagePath will be added to TarotCard type at that point.

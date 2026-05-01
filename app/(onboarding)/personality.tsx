@@ -17,6 +17,7 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
 import { toRoman } from '../../src/utils/roman';
 import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
@@ -66,6 +67,7 @@ export default function PersonalityScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => router.push(ROUTE.ONBOARDING_SOUL)}
           onPress={() => {
             trackNavigationClick('continue_cta', '/soul');
             router.push('/(onboarding)/soul');

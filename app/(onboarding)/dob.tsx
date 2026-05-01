@@ -10,6 +10,7 @@ import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 function isValidDate(day: number, month: number, year: number): boolean {
   if (year < 1900 || year > new Date().getFullYear()) return false;
@@ -78,6 +79,7 @@ export default function DobScreen() {
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
+    router.push(ROUTE.ONBOARDING_CALCULATING);
     trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
     router.push('/(onboarding)/calculating');
   }

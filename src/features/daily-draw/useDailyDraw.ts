@@ -5,6 +5,8 @@ import { supabase } from '../../lib/supabase/client';
 import { handleSupabaseError } from '../../utils/handleError';
 import { saveReading } from '../../lib/supabase/v2/readings';
 import { MAJOR_ARCANA_CARDS } from './cardData';
+import type { TarotCard } from '../../types';
+import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
 
 function todayString(): string {
   const d = new Date();
@@ -34,6 +36,8 @@ export function useDailyDraw() {
       if (user?.id) {
         try {
           const today = todayString();
+          const { data } = await supabase
+            .from(TABLE.STREAKS)
           const { data, error } = await supabase
             .from('streaks')
             .select('last_draw_date, last_card_id')
@@ -69,6 +73,7 @@ export function useDailyDraw() {
       const isProfileCard =
         selected.number === birthCards.personalityCard.number ||
         selected.number === birthCards.soulCard.number;
+      if (isProfileCard) return { ...selected, auraContext: AURA_CONTEXT.RECOGNITION };
       if (isProfileCard) return { ...selected, auraContext: 'recognition' as const };
     }
     return selected;
@@ -81,6 +86,14 @@ export function useDailyDraw() {
     if (user?.id) {
       const today = todayString();
       try {
+        await supabase.from(TABLE.READINGS).insert({
+          user_id: user.id,
+          spread_type: SPREAD_TYPE.SINGLE,
+          avatar_id: null,
+          cards: [selected],
+          reflection_note: null,
+        });
+        await supabase.from(TABLE.STREAKS).upsert(
         await Promise.all([
           supabase.from('readings').insert({
             user_id: user.id,

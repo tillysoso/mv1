@@ -9,6 +9,7 @@ import { useAuthStore } from '../../src/stores/authStore';
 import { saveProfile } from '../../src/lib/supabase/v2/profile';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { ROUTE } from '../../src/constants';
 
 // TODO: Wire up actual card draw component in Step 5 (card draw feature).
 //       This screen currently acts as the ritual entry point / placeholder.
@@ -31,6 +32,7 @@ export default function FirstDrawScreen() {
       });
     }
 
+    router.replace(ROUTE.TABS);
     // Placeholder pause for the ritual moment — replace with card flip animation in Step 5
     await new Promise((r) => setTimeout(r, 800));
     router.replace('/(tabs)');
