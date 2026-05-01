@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -28,12 +29,14 @@ export default function ProfileScreen() {
   const { activeAvatar, setAvatar } = useAvatarStore();
   const { birthCards } = useProfileStore();
 
-  const personalityCard = birthCards
-    ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.personalityCard.number) ?? null
-    : null;
-  const soulCard = birthCards && !birthCards.sameCard
-    ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.soulCard.number) ?? null
-    : null;
+  const personalityCard = useMemo(
+    () => birthCards ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.personalityCard.number) ?? null : null,
+    [birthCards],
+  );
+  const soulCard = useMemo(
+    () => birthCards && !birthCards.sameCard ? MAJOR_ARCANA_CARDS.find(c => c.number === birthCards.soulCard.number) ?? null : null,
+    [birthCards],
+  );
 
   return (
     <View style={styles.root}>
