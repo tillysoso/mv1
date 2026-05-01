@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { updateAvatar } from '../../src/lib/supabase/profile';
@@ -16,6 +17,13 @@ import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
 // TODO: fontFamily strings require expo-font preloading.
+
+const AVATAR_IMAGES: Record<AvatarId, any> = {
+  casper:  require('../../assets/avatars/casper/casper-neutral.png'),
+  eli:     require('../../assets/avatars/eli/eli-neutral.png'),
+  olivia:  require('../../assets/avatars/olivia/olivia-neutral.png'),
+  destiny: require('../../assets/avatars/destiny/destiny-active.png'),
+};
 
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper:  'Casper',
@@ -63,33 +71,41 @@ export default function ConfirmScreen() {
   }));
 
   return (
-    <OnboardingScreen
-      bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/first-draw')}
-        >
-          <Text style={styles.ctaText}>Let's Begin</Text>
-        </Pressable>
-      }
-    >
-      {/* Elemental accent bloom overlay */}
-      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
+    <>
+      {/* Prevent back-swipe — avatar choice is committed */}
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      <OnboardingScreen
+        bottomContent={
+          <CTAButton label="Let's Begin" onPress={() => router.push('/(onboarding)/first-draw')} />
+        }
+      >
+        {/* Elemental accent bloom overlay */}
+        <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
 
-      <Animated.View style={[styles.content, contentStyle]}>
-        <Text style={styles.presenceLine}>
-          {AVATAR_NAMES[activeAvatar]} is with you.
-        </Text>
+        <Animated.View style={[styles.content, contentStyle]}>
+          <Text style={styles.presenceLine}>
+            {AVATAR_NAMES[activeAvatar]} is with you.
+          </Text>
+
+        <Image
+          source={AVATAR_IMAGES[activeAvatar]}
+          style={styles.portrait}
+          resizeMode="cover"
+        />
 
         <Text style={[styles.avatarName, { color: accent.primary }]}>
           {AVATAR_NAMES[activeAvatar]}
         </Text>
+          <Text style={[styles.avatarName, { color: accent.primary }]}>
+            {AVATAR_NAMES[activeAvatar]}
+          </Text>
 
-        <Text style={styles.firstWords}>
-          "{FIRST_WORDS[activeAvatar]}"
-        </Text>
-      </Animated.View>
-    </OnboardingScreen>
+          <Text style={styles.firstWords}>
+            "{FIRST_WORDS[activeAvatar]}"
+          </Text>
+        </Animated.View>
+      </OnboardingScreen>
+    </>
   );
 }
 
@@ -103,6 +119,11 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     letterSpacing: 1,
+    marginBottom: 24,
+  },
+  portrait: {
+    width: 120,
+    height: 180,
     marginBottom: 24,
   },
   avatarName: {

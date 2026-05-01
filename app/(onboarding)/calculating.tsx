@@ -66,6 +66,7 @@ export default function CalculatingScreen() {
           The pattern is forming.
         </Animated.Text>
         <Text style={styles.subline}>
+          Your birth cards are next.
           Your numbers are unusual.
         </Text>
       </View>
