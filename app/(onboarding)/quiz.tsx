@@ -1,13 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { trackQuizAnswer } from '../../src/lib/analytics';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
-
-// TODO: fontFamily strings require expo-font preloading.
 
 // Quiz questions from the Majestic narrative spec (source of truth).
 // Note: prompt draft had slightly different wording — spec version used here
@@ -68,27 +75,123 @@ export default function QuizScreen() {
   });
   // Tiebreaker: last answer for Q4 (index 3)
   const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
+  async function handleSelect(avatar: AvatarId, index: number) {
+    if (selectedOption !== null) return;
+    setSelectedOption(index);
+  // Track per-question answers so back can undo scores
+  const [answers, setAnswers] = useState<AvatarId[]>([]);
+
+  function handleBack() {
+    if (currentQ === 0) {
+      router.back();
+      return;
+    }
+    // Undo the previous answer's score
+    const prev = answers[currentQ - 1];
+    setScores((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1) }));
+    setAnswers((a) => a.slice(0, -1));
+    setCurrentQ((q) => q - 1);
+  }
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Reset scores on mount so back-navigation from recommendation can't corrupt results
+  useEffect(() => {
+    setQuizScores({});
+  }, []);
+
+  function handleSelect(avatar: AvatarId, index: number) {
+    if (selectedIndex !== null) return; // prevent double-tap during confirmation delay
+
+    setSelectedIndex(index);
+
+    setTimeout(() => {
+      const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
+      setScores(newScores);
+      setSelectedIndex(null);
+
+      if (currentQ === QUESTIONS.length - 1) {
+        const finalScores: Record<string, number> = {
+          ...newScores,
+          _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
+        };
+        setQuizScores(finalScores);
+        router.push('/(onboarding)/recommendation');
+      } else {
+        setCurrentQ((q) => q + 1);
+      }
+    }, 320);
+  const opacity = useSharedValue(1);
+  const isTransitioning = useRef(false);
+
+  function advanceTo(newQ: number) {
+    opacity.value = withSequence(
+      withTiming(0, { duration: 180 }),
+      withTiming(0, { duration: 20 }, () => {
+        runOnJS(setCurrentQ)(newQ);
+        opacity.value = withTiming(1, { duration: 280 });
+        runOnJS(() => { isTransitioning.current = false; })();
+      }),
+    );
+  }
+
+  function handleSelect(avatar: AvatarId, answerText: string) {
+    trackQuizAnswer(currentQ, answerText, avatar);
   function handleSelect(avatar: AvatarId) {
+    if (isTransitioning.current) return;
+    isTransitioning.current = true;
+
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
+    setAnswers((a) => [...a, avatar]);
+
+    await new Promise(r => setTimeout(r, 180));
+    setSelectedOption(null);
 
     if (currentQ === QUESTIONS.length - 1) {
       // Q4 tiebreaker
-      setLastAnswer(avatar);
       const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
+      setQuizScores(newScores, avatar);
+      // Q4 tiebreaker: encode last answer as index for deterministic resolution
+      const finalScores: Record<string, number> = {
+        ...newScores,
+        _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
+      };
       setQuizScores(finalScores);
       router.push('/(onboarding)/recommendation');
+      opacity.value = withTiming(0, { duration: 200 }, () => {
+        runOnJS(setQuizScores)(finalScores);
+        runOnJS(router.push)('/(onboarding)/recommendation');
+      });
     } else {
-      setCurrentQ((q) => q + 1);
+      advanceTo(currentQ + 1);
     }
   }
 
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
   const question = QUESTIONS[currentQ];
 
   return (
     <OnboardingScreen>
       <View style={styles.content}>
+        <Pressable style={styles.backLink} onPress={handleBack}>
+          <Text style={styles.backText}>‹ back</Text>
+        </Pressable>
+        {/* Step indicator */}
+        <View style={styles.stepRow}>
+          {QUESTIONS.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.stepDot,
+                i < currentQ && styles.stepDotDone,
+                i === currentQ && styles.stepDotActive,
+              ]}
+            />
+          ))}
+        </View>
+
         {currentQ === 0 && (
           <View style={styles.intro}>
             <Text style={styles.introHeadline}>The world has patterns too.</Text>
@@ -102,13 +205,50 @@ export default function QuizScreen() {
           {question.options.map((opt, i) => (
             <Pressable
               key={i}
+              style={({ pressed }) => [styles.option, (pressed || selectedOption === i) && styles.optionPressed]}
+              onPress={() => handleSelect(opt.avatar, i)}
+              disabled={selectedOption !== null}
               style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar)}
+              onPress={() => handleSelect(opt.avatar, opt.text)}
+              style={[
+                styles.option,
+                selectedIndex === i && styles.optionSelected,
+              ]}
+              onPress={() => handleSelect(opt.avatar, i)}
             >
               <Text style={styles.optionText}>{opt.text}</Text>
             </Pressable>
+        <View style={styles.progressRow}>
+          {QUESTIONS.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.progressDot, i === currentQ && styles.progressDotActive]}
+            />
           ))}
         </View>
+
+        <Animated.View style={[styles.questionWrap, animatedStyle]}>
+          {currentQ === 0 && (
+            <View style={styles.intro}>
+              <Text style={styles.introHeadline}>The world has patterns too.</Text>
+              <Text style={styles.introSub}>Four questions. No wrong answers. Just how you move.</Text>
+            </View>
+          )}
+
+          <Text style={styles.prompt}>{question.prompt}</Text>
+
+          <View style={styles.options}>
+            {question.options.map((opt, i) => (
+              <Pressable
+                key={i}
+                style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+                onPress={() => handleSelect(opt.avatar)}
+              >
+                <Text style={styles.optionText}>{opt.text}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </Animated.View>
       </View>
     </OnboardingScreen>
   );
@@ -117,26 +257,71 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 4,
+  },
+  backLink: {
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  backText: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 32,
+  },
+  stepDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.ash,
+  },
+  stepDotDone: {
+    backgroundColor: colors.mist,
+  },
+  stepDotActive: {
+    backgroundColor: colors.bone,
+    width: 18,
+    borderRadius: 3,
+  progressRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 32,
+  },
+  progressDot: {
+    width: 20,
+    height: 2,
+    backgroundColor: colors.ash,
+    borderRadius: 1,
+  },
+  progressDotActive: {
+    backgroundColor: colors.mist,
+  },
+  questionWrap: {
+    flex: 1,
   },
   intro: {
     marginBottom: 40,
   },
   introHeadline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 12,
   },
   introSub: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
   },
   prompt: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
@@ -151,12 +336,14 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  optionPressed: {
+  optionSelected: {
     borderColor: colors.mist,
-    backgroundColor: '#ffffff08',
+    // 8% white overlay for press feedback — no dedicated token
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: '#ffffff10',
   },
   optionText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.primary,
     lineHeight: typeScale.bodyS.lineHeight,
