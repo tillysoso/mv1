@@ -18,6 +18,16 @@ if (Platform.OS !== 'web') {
   BlurMask = skia.BlurMask;
 }
 
+// Conditionally import Skia — only loaded on native where WASM is not needed
+let Canvas: any, Path: any, Skia: any, BlurMask: any;
+if (Platform.OS !== 'web') {
+  const skia = require('@shopify/react-native-skia');
+  Canvas = skia.Canvas;
+  Path = skia.Path;
+  Skia = skia.Skia;
+  BlurMask = skia.BlurMask;
+}
+
 interface AvatarAuraProps {
   avatarId: AvatarId;
   shape: PortalShape;

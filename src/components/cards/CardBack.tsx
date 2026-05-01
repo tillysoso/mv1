@@ -52,17 +52,20 @@ export default function CardBack({ size, onPress }: CardBackProps) {
       <View style={{
         width: r2 * 2, height: r2 * 2,
         borderRadius: r2,
+        borderWidth: 1, borderColor: colors.signal + '50',
         borderWidth: 1, borderColor: colors.bg.signal + '50',
         alignItems: 'center', justifyContent: 'center',
       }}>
         <View style={{
           width: r1 * 2, height: r1 * 2,
           borderRadius: r1,
+          borderWidth: 1.5, borderColor: colors.signal + '35',
           borderWidth: 1.5, borderColor: colors.bg.signal + '35',
         }} />
       </View>
       <View style={{
         position: 'absolute', top: 8, left: 8, right: 8, bottom: 8,
+        borderWidth: 1, borderColor: colors.signal + '30', borderRadius: 4,
         borderWidth: 1, borderColor: colors.bg.signal + '30', borderRadius: 4,
       }} />
     </View>
@@ -77,6 +80,8 @@ export default function CardBack({ size, onPress }: CardBackProps) {
             colors={[colors.bg.secondary, colors.obsidian, colors.bg.tertiary + '55']}
           />
         </Rect>
+        <Path path={buildArcPath(cx, cy, r2)} color={colors.signal + '50'} style="stroke" strokeWidth={1} />
+        <Path path={buildArcPath(cx, cy, r1)} color={colors.signal + '35'} style="stroke" strokeWidth={1.5}>
         <Path path={buildArcPath(cx, cy, r2)} color={colors.bg.signal + '50'} style="stroke" strokeWidth={1} />
         <Path path={buildArcPath(cx, cy, r1)} color={colors.bg.signal + '35'} style="stroke" strokeWidth={1.5}>
           <BlurMask blur={4} style="normal" />
@@ -85,6 +90,7 @@ export default function CardBack({ size, onPress }: CardBackProps) {
       </Canvas>
       <View style={{
         position: 'absolute', top: 8, left: 8, right: 8, bottom: 8,
+        borderWidth: 1, borderColor: colors.signal + '30', borderRadius: 4,
         borderWidth: 1, borderColor: colors.bg.signal + '30', borderRadius: 4,
       }} />
     </View>
