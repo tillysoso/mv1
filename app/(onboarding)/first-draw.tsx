@@ -11,7 +11,6 @@ import { fonts, typeScale } from '../../src/theme/typography';
 
 // TODO: Wire up actual card draw component in Step 5 (card draw feature).
 //       This screen currently acts as the ritual entry point / placeholder.
-// TODO: fontFamily strings require expo-font preloading.
 
 export default function FirstDrawScreen() {
   const router = useRouter();
@@ -24,7 +23,6 @@ export default function FirstDrawScreen() {
     setDrawing(true);
     setOnboardingComplete(true);
 
-    // Persist to Supabase if user exists
     if (user?.id && dateOfBirth && birthCards) {
       saveProfile(user.id, dateOfBirth, birthCards).catch(() => {
         // Silently fail — local state is source of truth until sync
@@ -77,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greeting: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 2,
@@ -85,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   subtext: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -106,11 +104,24 @@ const styles = StyleSheet.create({
     // TODO: Add ambient shimmer animation using Reanimated in Step 5
   },
   note: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  cta: {
+    paddingVertical: 16,
+    paddingHorizontal: 48,
+    borderWidth: 1,
+    borderColor: colors.ash,
+    alignSelf: 'center',
+  },
+  ctaText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: typeScale.label.fontSize,
+    color: colors.bone,
+    letterSpacing: 2,
   },
 });

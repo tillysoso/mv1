@@ -15,8 +15,6 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
-// TODO: fontFamily strings require expo-font preloading.
-
 // Quiz questions from the Majestic narrative spec (source of truth).
 // Note: prompt draft had slightly different wording — spec version used here
 // as it uses the finalized world-adjacent scenario copy.
@@ -124,10 +122,13 @@ export default function QuizScreen() {
     setScores(newScores);
 
     if (currentQ === QUESTIONS.length - 1) {
+      // Q4 tiebreaker: encode last answer as index for deterministic resolution
       const finalScores: Record<string, number> = {
         ...newScores,
         _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
       };
+      setQuizScores(finalScores);
+      router.push('/(onboarding)/recommendation');
       opacity.value = withTiming(0, { duration: 200 }, () => {
         runOnJS(setQuizScores)(finalScores);
         runOnJS(router.push)('/(onboarding)/recommendation');
@@ -258,20 +259,20 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   introHeadline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 12,
   },
   introSub: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
   },
   prompt: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
@@ -288,10 +289,12 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: colors.mist,
+    // 8% white overlay for press feedback — no dedicated token
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     backgroundColor: '#ffffff10',
   },
   optionText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.primary,
     lineHeight: typeScale.bodyS.lineHeight,
