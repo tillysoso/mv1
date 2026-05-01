@@ -56,7 +56,8 @@ export default function CalculatingScreen() {
           The pattern is forming.
         </Animated.Text>
         <Text style={styles.subline}>
-          The signal is reading your pattern.
+          Your birth cards are next.
+          Your numbers are unusual.
         </Text>
       </View>
     </OnboardingScreen>
@@ -69,8 +70,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headline: {
+    fontFamily: fonts.display,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '400',
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 16,

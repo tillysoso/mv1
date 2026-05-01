@@ -1,13 +1,35 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  Easing,
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
 import { toRoman } from '../../src/utils/roman';
 import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
+import { toRoman } from '../../src/utils/romanNumerals';
+
+// TODO: Replace CardPlaceholder with actual card image from assets/cards/major-arcana/
+//       once card art is delivered in a later step.
+
+function CardPlaceholder({ number }: { number: number }) {
+  return (
+    <View style={styles.cardPlaceholder}>
+      <Text style={styles.cardPlaceholderText}>{toRoman(number)}</Text>
+    </View>
+  );
+}
 
 export default function PersonalityScreen() {
   const router = useRouter();
@@ -19,12 +41,7 @@ export default function PersonalityScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/soul')}
-        >
-          <Text style={styles.ctaText}>Continue</Text>
-        </Pressable>
+        <CTAButton label="Continue" onPress={() => router.push('/(onboarding)/soul')} />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
@@ -67,51 +84,77 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   label: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.text.secondary,
     letterSpacing: 1,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
   sublabel: {
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
     marginBottom: 32,
   },
   cardNumber: {
+  cardPlaceholder: {
+    width: 140,
+    height: 220,
+    backgroundColor: colors.bg.tertiary,
+    borderWidth: 1,
+    borderColor: colors.ash,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 28,
+    alignSelf: 'center',
+  },
+  cardPlaceholderText: {
+    fontFamily: fonts.display,
+    fontSize: 28,
+    color: colors.mist,
+    letterSpacing: 2,
+  },
+  cardNumber: {
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 8,
   },
   cardName: {
+    fontFamily: fonts.displayBold,
     fontSize: typeScale.displayL.fontSize,
-    fontWeight: '700',
     color: colors.bone,
     letterSpacing: 1,
     marginBottom: 20,
   },
   essence: {
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
     marginBottom: 16,
   },
   resonance: {
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     fontStyle: 'italic',
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

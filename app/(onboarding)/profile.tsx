@@ -1,10 +1,14 @@
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { toRoman } from '../../src/utils/roman';
+import { toRoman } from '../../src/utils/romanNumerals';
+
+// TODO: Replace card placeholders with actual card art once assets are delivered.
 
 function MiniCard({ number, name, role }: { number: number; name: string; role: string }) {
   return (
@@ -29,12 +33,7 @@ export default function ProfileScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/quiz')}
-        >
-          <Text style={styles.ctaText}>Enter the World</Text>
-        </Pressable>
+        <CTAButton label="Enter the World" onPress={() => router.push('/(onboarding)/quiz')} />
       }
     >
       <View style={styles.content}>
@@ -83,14 +82,15 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   heading: {
+    fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 1,
     lineHeight: 36,
     marginBottom: 16,
   },
   subheading: {
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
@@ -121,19 +121,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   miniCardRoman: {
+    fontFamily: fonts.display,
     fontSize: 22,
     color: colors.mist,
     letterSpacing: 2,
   },
   miniCardRole: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.micro.fontSize,
-    fontWeight: '600',
     color: colors.text.tertiary,
     letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 4,
   },
   miniCardName: {
+    fontFamily: fonts.display,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,
     letterSpacing: 0.5,
@@ -146,23 +148,28 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.ash,
   },
   sameCardNoteText: {
+    fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     fontStyle: 'italic',
   },
   resonanceNote: {
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     fontStyle: 'italic',
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

@@ -1,0 +1,210 @@
+{
+  "version": "1.0.0",
+  "skills": {
+    "nextlevelbuilder/ui-ux-pro-max-skill": {
+      "name": "ui-ux-pro-max",
+      "version": "latest",
+      "source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "installed": "2026-04-26"
+    },
+    "vercel-labs/agent-skills": {
+      "skills": [
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns/SKILL.md"
+        },
+        {
+          "name": "deploy-to-vercel",
+          "path": ".claude/skills/deploy-to-vercel/SKILL.md"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices/SKILL.md"
+        },
+        {
+          "name": "vercel-react-native-skills",
+          "path": ".claude/skills/vercel-react-native-skills/SKILL.md"
+        },
+        {
+          "name": "vercel-react-view-transitions",
+          "path": ".claude/skills/vercel-react-view-transitions/SKILL.md"
+        },
+        {
+          "name": "vercel-cli-with-tokens",
+          "path": ".claude/skills/vercel-cli-with-tokens/SKILL.md"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/vercel-labs/agent-skills",
+      "installed": "2026-04-26"
+    },
+    "giuseppe-trisciuoglio/developer-kit": {
+      "skills": [
+        {
+          "name": "react-patterns",
+          "path": ".claude/skills/react-patterns/SKILL.md"
+        },
+        {
+          "name": "react-code-review",
+          "path": ".claude/skills/react-code-review/SKILL.md"
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": ".claude/skills/tailwind-css-patterns/SKILL.md"
+        },
+        {
+          "name": "tailwind-design-system",
+          "path": ".claude/skills/tailwind-design-system/SKILL.md"
+        },
+        {
+          "name": "typescript-docs",
+          "path": ".claude/skills/typescript-docs/SKILL.md"
+        },
+        {
+          "name": "typescript-security-review",
+          "path": ".claude/skills/typescript-security-review/SKILL.md"
+        },
+        {
+          "name": "shadcn-ui",
+          "path": ".claude/skills/shadcn-ui/SKILL.md"
+        },
+        {
+          "name": "zod-validation-utilities",
+          "path": ".claude/skills/zod-validation-utilities/SKILL.md"
+        },
+        {
+          "name": "adr-drafting",
+          "path": ".claude/skills/adr-drafting/SKILL.md"
+        },
+        {
+          "name": "memory-md-management",
+          "path": ".claude/skills/memory-md-management/SKILL.md"
+        },
+        {
+          "name": "docs-updater",
+          "path": ".claude/skills/docs-updater/SKILL.md"
+        },
+        {
+          "name": "github-issue-workflow",
+          "path": ".claude/skills/github-issue-workflow/SKILL.md"
+        },
+        {
+          "name": "prompt-engineering",
+          "path": ".claude/skills/prompt-engineering/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/giuseppe-trisciuoglio/developer-kit",
+      "version": "2.8.1",
+      "installed": "2026-04-26"
+    },
+    "mblode/agent-skills": {
+      "skills": [
+        {
+          "name": "agent-native",
+          "path": ".claude/skills/agent-native/SKILL.md"
+        },
+        {
+          "name": "agent-skills-creator",
+          "path": ".claude/skills/agent-skills-creator/SKILL.md"
+        },
+        {
+          "name": "agents-md",
+          "path": ".claude/skills/agents-md/SKILL.md"
+        },
+        {
+          "name": "autoship",
+          "path": ".claude/skills/autoship/SKILL.md"
+        },
+        {
+          "name": "babysit-pr",
+          "path": ".claude/skills/babysit-pr/SKILL.md"
+        },
+        {
+          "name": "blog-post",
+          "path": ".claude/skills/blog-post/SKILL.md"
+        },
+        {
+          "name": "copywriting",
+          "path": ".claude/skills/copywriting/SKILL.md"
+        },
+        {
+          "name": "define-architecture",
+          "path": ".claude/skills/define-architecture/SKILL.md"
+        },
+        {
+          "name": "docs-writing",
+          "path": ".claude/skills/docs-writing/SKILL.md"
+        },
+        {
+          "name": "linear-worktree",
+          "path": ".claude/skills/linear-worktree/SKILL.md"
+        },
+        {
+          "name": "mermaid",
+          "path": ".claude/skills/mermaid/SKILL.md"
+        },
+        {
+          "name": "multi-tenant-architecture",
+          "path": ".claude/skills/multi-tenant-architecture/SKILL.md"
+        },
+        {
+          "name": "optimise-seo",
+          "path": ".claude/skills/optimise-seo/SKILL.md"
+        },
+        {
+          "name": "presentation-creator",
+          "path": ".claude/skills/presentation-creator/SKILL.md"
+        },
+        {
+          "name": "readme-creator",
+          "path": ".claude/skills/readme-creator/SKILL.md"
+        },
+        {
+          "name": "review-pr",
+          "path": ".claude/skills/review-pr/SKILL.md"
+        },
+        {
+          "name": "scaffold-cli",
+          "path": ".claude/skills/scaffold-cli/SKILL.md"
+        },
+        {
+          "name": "scaffold-nextjs",
+          "path": ".claude/skills/scaffold-nextjs/SKILL.md"
+        },
+        {
+          "name": "typography-audit",
+          "path": ".claude/skills/typography-audit/SKILL.md"
+        },
+        {
+          "name": "ui-animation",
+          "path": ".claude/skills/ui-animation/SKILL.md"
+        },
+        {
+          "name": "ui-audit",
+          "path": ".claude/skills/ui-audit/SKILL.md"
+        },
+        {
+          "name": "ui-design",
+          "path": ".claude/skills/ui-design/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/mblode/agent-skills",
+      "installed": "2026-04-26",
+      "flags": "--all -y"
+    },
+    "mistyhx/frontend-design-audit": {
+      "skills": [
+        {
+          "name": "frontend-design-audit",
+          "path": ".claude/skills/frontend-design-audit/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/mistyhx/frontend-design-audit",
+      "installed": "2026-04-26"
+    }
+  }
+}

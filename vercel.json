@@ -1,0 +1,7 @@
+{
+  "buildCommand": "EXPO_OFFLINE=1 ./node_modules/.bin/expo export --platform web",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
