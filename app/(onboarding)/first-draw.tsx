@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.bg.dusk,
     borderRadius: 6,
-    // TODO: Add ambient shimmer animation using Reanimated in Step 5
   },
   note: {
     fontFamily: fonts.bodyLight,

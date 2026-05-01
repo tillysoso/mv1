@@ -122,6 +122,7 @@ export default function QuizScreen() {
     setScores(newScores);
 
     if (currentQ === QUESTIONS.length - 1) {
+      setQuizScores(newScores, avatar);
       // Q4 tiebreaker: encode last answer as index for deterministic resolution
       const finalScores: Record<string, number> = {
         ...newScores,

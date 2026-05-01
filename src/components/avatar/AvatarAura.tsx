@@ -1,3 +1,7 @@
+import { useEffect, useMemo } from 'react';
+import { View } from 'react-native';
+import { Canvas, Path, Skia, BlurMask } from '@shopify/react-native-skia';
+import { useSharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View, Platform } from 'react-native';
 import Animated, {
@@ -149,9 +153,12 @@ export default function AvatarAura({
   const r = size * 0.44;
   const inset = size * 0.12;
 
-  const path = shape === 'livingCircle'
-    ? buildLivingCirclePath(cx, cy, r)
-    : buildArchPath(size, size, inset);
+  const path = useMemo(
+    () => shape === 'livingCircle'
+      ? buildLivingCirclePath(cx, cy, r)
+      : buildArchPath(size, size, inset),
+    [shape, cx, cy, r, size, inset],
+  );
 
   return (
     <View style={{ width: size, height: size }}>

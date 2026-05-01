@@ -10,7 +10,6 @@ import Animated, {
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
-import type { BirthCards } from '../../src/types/tarot';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
@@ -19,7 +18,6 @@ const MIN_DURATION_MS = 2000;
 
 export default function CalculatingScreen() {
   const router = useRouter();
-  const { dateOfBirth, setBirthCards } = useProfileStore();
   const pulseOpacity = useSharedValue(0.4);
 
   useEffect(() => {
@@ -34,20 +32,15 @@ export default function CalculatingScreen() {
   }, []);
 
   useEffect(() => {
-    const start = Date.now();
-
-    let cards: BirthCards | undefined;
-    if (dateOfBirth) {
-      cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
-    }
-
-    const elapsed = Date.now() - start;
-    const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
+    const { dateOfBirth, setBirthCards } = useProfileStore.getState();
+    const cards = dateOfBirth
+      ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
+      : undefined;
 
     const timer = setTimeout(() => {
       if (cards) setBirthCards(cards);
       router.push('/(onboarding)/personality');
-    }, remaining);
+    }, MIN_DURATION_MS);
 
     return () => clearTimeout(timer);
   }, []);

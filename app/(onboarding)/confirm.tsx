@@ -69,6 +69,22 @@ export default function ConfirmScreen() {
   }));
 
   return (
+    <OnboardingScreen
+      bottomContent={
+        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={() => router.push('/(onboarding)/first-draw')}
+        >
+          <Text style={styles.ctaText}>Let's Begin</Text>
+        </Pressable>
+      }
+    >
+      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
+
+      <Animated.View style={[styles.content, contentStyle]}>
+        <Text style={styles.presenceLine}>
+          {AVATAR_NAMES[activeAvatar]} is with you.
+        </Text>
     <>
       {/* Prevent back-swipe — avatar choice is committed */}
       <Stack.Screen options={{ gestureEnabled: false }} />

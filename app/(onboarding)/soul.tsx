@@ -1,3 +1,5 @@
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -13,6 +15,9 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
+import { toRoman } from '../../src/utils/roman';
+import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
 import { toRoman } from '../../src/utils/romanNumerals';
 
 // TODO: Replace CardPlaceholder with actual card art once assets are delivered.
@@ -28,18 +33,7 @@ function CardPlaceholder({ number }: { number: number }) {
 export default function SoulScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
-  const translateY = useSharedValue(60);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    translateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-    opacity.value = withDelay(100, withTiming(1, { duration: 500 }));
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  }));
+  const animatedStyle = useEntranceAnimation();
 
   const isSameCard = birthCards?.sameCard ?? false;
   const soulCard = birthCards?.soulCard;
@@ -74,7 +68,7 @@ export default function SoulScreen() {
               Not who you are. Who you are here to become.
             </Text>
 
-            {soulCard && <CardPlaceholder number={soulCard.number} />}
+            {soulCard && <NumberCardPlaceholder number={soulCard.number} />}
 
             {soulCard && (
               <>

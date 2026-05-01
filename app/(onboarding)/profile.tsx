@@ -5,6 +5,7 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import { toRoman } from '../../src/utils/roman';
 import { toRoman } from '../../src/utils/romanNumerals';
 
 // TODO: Replace card placeholders with actual card art once assets are delivered.

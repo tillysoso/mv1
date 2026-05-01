@@ -1,3 +1,5 @@
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -13,6 +15,9 @@ import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
+import { toRoman } from '../../src/utils/roman';
+import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
 import { toRoman } from '../../src/utils/romanNumerals';
 
 // TODO: Replace CardPlaceholder with actual card image from assets/cards/major-arcana/
@@ -29,18 +34,7 @@ function CardPlaceholder({ number }: { number: number }) {
 export default function PersonalityScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
-  const translateY = useSharedValue(60);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    translateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-    opacity.value = withDelay(100, withTiming(1, { duration: 500 }));
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  }));
+  const animatedStyle = useEntranceAnimation();
 
   const card = birthCards?.personalityCard;
 
@@ -57,7 +51,7 @@ export default function PersonalityScreen() {
           The face you show the world.
         </Text>
 
-        {card && <CardPlaceholder number={card.number} />}
+        {card && <NumberCardPlaceholder number={card.number} />}
 
         {card && (
           <>
@@ -104,6 +98,7 @@ const styles = StyleSheet.create({
     lineHeight: typeScale.bodyS.lineHeight,
     marginBottom: 32,
   },
+  cardNumber: {
   cardPlaceholder: {
     width: 140,
     height: 220,
