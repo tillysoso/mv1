@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,6 +17,13 @@ import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
 
 // TODO: fontFamily strings require expo-font preloading.
+
+const AVATAR_IMAGES: Record<AvatarId, any> = {
+  casper:  require('../../assets/avatars/casper/casper-neutral.png'),
+  eli:     require('../../assets/avatars/eli/eli-neutral.png'),
+  olivia:  require('../../assets/avatars/olivia/olivia-neutral.png'),
+  destiny: require('../../assets/avatars/destiny/destiny-active.png'),
+};
 
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper:  'Casper',
@@ -80,6 +87,15 @@ export default function ConfirmScreen() {
             {AVATAR_NAMES[activeAvatar]} is with you.
           </Text>
 
+        <Image
+          source={AVATAR_IMAGES[activeAvatar]}
+          style={styles.portrait}
+          resizeMode="cover"
+        />
+
+        <Text style={[styles.avatarName, { color: accent.primary }]}>
+          {AVATAR_NAMES[activeAvatar]}
+        </Text>
           <Text style={[styles.avatarName, { color: accent.primary }]}>
             {AVATAR_NAMES[activeAvatar]}
           </Text>
@@ -103,6 +119,11 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     letterSpacing: 1,
+    marginBottom: 24,
+  },
+  portrait: {
+    width: 120,
+    height: 180,
     marginBottom: 24,
   },
   avatarName: {

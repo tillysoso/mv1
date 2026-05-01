@@ -55,6 +55,7 @@ export default function EntryScreen() {
       <Animated.View style={[styles.content, animatedStyle]}>
         <View style={styles.topSpacer} />
 
+        <Text style={styles.wordmark}>Majestic</Text>
         {/* TODO: Replace with Majestic emblem asset from assets/emblems/ once delivered */}
         <Animated.View style={[styles.emblemPlaceholder, emblemStyle]} />
 
@@ -84,6 +85,10 @@ const styles = StyleSheet.create({
   topSpacer: {
     flex: 1,
   },
+  wordmark: {
+    fontFamily: fonts.wordmark,
+    fontSize: 48,
+    color: colors.bone,
   emblemPlaceholder: {
     width: 64,
     height: 64,
