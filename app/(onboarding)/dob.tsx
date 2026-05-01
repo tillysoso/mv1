@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -71,9 +72,19 @@ export default function DobScreen() {
     router.push('/(onboarding)/calculating');
   }
 
+  const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
+
   return (
     <OnboardingScreen
       bottomContent={
+        canSubmit ? (
+          <Pressable
+            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+            onPress={handleSubmit}
+          >
+            <Text style={styles.ctaText}>Continue</Text>
+          </Pressable>
+        ) : null
         <CTAButton label="Continue" onPress={handleSubmit} disabled={!isReady} />
       }
     >
@@ -214,6 +225,12 @@ const styles = StyleSheet.create({
     padding: 0,
     minWidth: 48,
   },
+  cta: {
+    paddingVertical: 16,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    // TODO: fontFamily: fonts.body (Montserrat)
   errorLine: {
     fontFamily: fonts.terminal,
     fontSize: 13,
