@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
@@ -23,25 +26,35 @@ export default function DobScreen() {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [error, setError] = useState('');
+  const [dateError, setDateError] = useState('');
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
 
+  const isReady = day.length === 2 && month.length === 2 && year.length === 4;
+
   function handleDayChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
+    setError('');
+    setDateError('');
     if (digits.length === 2) monthRef.current?.focus();
   }
 
   function handleMonthChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
+    setError('');
+    setDateError('');
     if (digits.length === 2) yearRef.current?.focus();
   }
 
   function handleYearChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 4);
     setYear(digits);
+    setError('');
+    setDateError('');
   }
 
   function handleSubmit() {
@@ -50,7 +63,8 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
-      Alert.alert('Invalid date', 'Please enter a real date.');
+      setError("— that date doesn't exist.");
+      setDateError('> That date does not compute. Try again.');
       return;
     }
 
@@ -58,8 +72,22 @@ export default function DobScreen() {
     router.push('/(onboarding)/calculating');
   }
 
+  const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
+
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        canSubmit ? (
+          <Pressable
+            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+            onPress={handleSubmit}
+          >
+            <Text style={styles.ctaText}>Continue</Text>
+          </Pressable>
+        ) : null
+        <CTAButton label="Continue" onPress={handleSubmit} disabled={!isReady} />
+      }
+    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>
           {name ? `${name}.` : ''}
@@ -132,6 +160,18 @@ export default function DobScreen() {
           </View>
         </View>
       </View>
+
+      {error ? <Text style={styles.errorLine}>{error}</Text> : null}
+      {dateError ? (
+        <Text style={styles.errorLine}>{dateError}</Text>
+      ) : null}
+
+      <Pressable
+        style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+        onPress={handleSubmit}
+      >
+        <Text style={styles.ctaText}>Continue</Text>
+      </Pressable>
     </OnboardingScreen>
   );
 }
@@ -184,5 +224,35 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     padding: 0,
     minWidth: 48,
+  },
+  cta: {
+    paddingVertical: 16,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    // TODO: fontFamily: fonts.body (Montserrat)
+  errorLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: '#C94B2C',
+    letterSpacing: 0.5,
+    marginTop: 20,
+    color: colors.mist,
+    letterSpacing: 0.5,
+    marginTop: 24,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+    marginTop: 32,
+  },
+  ctaText: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
   },
 });

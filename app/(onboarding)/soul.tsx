@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,9 +11,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
+import { toRoman } from '../../src/utils/roman';
+import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
+import { toRoman } from '../../src/utils/romanNumerals';
 
 const ROMAN: Record<number, string> = {
   1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
@@ -25,7 +32,7 @@ const ROMAN: Record<number, string> = {
 function CardPlaceholder({ number }: { number: number }) {
   return (
     <View style={styles.cardPlaceholder}>
-      <Text style={styles.cardPlaceholderText}>{ROMAN[number] ?? number}</Text>
+      <Text style={styles.cardPlaceholderText}>{toRoman(number)}</Text>
     </View>
   );
 }
@@ -33,18 +40,7 @@ function CardPlaceholder({ number }: { number: number }) {
 export default function SoulScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
-  const translateY = useSharedValue(60);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    translateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-    opacity.value = withDelay(100, withTiming(1, { duration: 500 }));
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  }));
+  const animatedStyle = useEntranceAnimation();
 
   const isSameCard = birthCards?.sameCard ?? false;
   const soulCard = birthCards?.soulCard;
@@ -52,18 +48,13 @@ export default function SoulScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push('/(onboarding)/profile')}
-        >
-          <Text style={styles.ctaText}>Continue</Text>
-        </Pressable>
+        <CTAButton label="Continue" onPress={() => router.push('/(onboarding)/profile')} />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
         {isSameCard ? (
           <>
-            <Text style={styles.label}>Both cards are the same, {name ?? 'traveller'}.</Text>
+            <Text style={styles.label}>Both cards are the same{name ? `, ${name}` : ''}.</Text>
             <View style={styles.sameCardCallout}>
               <Text style={styles.sameCardText}>
                 You carry your nature.
@@ -82,11 +73,11 @@ export default function SoulScreen() {
               Not who you are. Who you are here to become.
             </Text>
 
-            {soulCard && <CardPlaceholder number={soulCard.number} />}
+            {soulCard && <NumberCardPlaceholder number={soulCard.number} />}
 
             {soulCard && (
               <>
-                <Text style={styles.cardNumber}>{ROMAN[soulCard.number] ?? soulCard.number}</Text>
+                <Text style={styles.cardNumber}>{toRoman(soulCard.number)}</Text>
                 <Text style={styles.cardName}>{soulCard.name}</Text>
                 <Text style={styles.essence}>
                   Your purpose. The direction of your growth.{'\n'}
@@ -116,6 +107,7 @@ const styles = StyleSheet.create({
   },
   sublabel: {
     fontFamily: fonts.body,
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
@@ -131,6 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 28,
+    alignSelf: 'center',
   },
   cardPlaceholderText: {
     fontFamily: fonts.display,
@@ -173,12 +166,17 @@ const styles = StyleSheet.create({
   },
   sameCardSubtext: {
     fontFamily: fonts.body,
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    alignSelf: 'stretch',
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
