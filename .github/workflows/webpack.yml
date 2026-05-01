@@ -1,4 +1,5 @@
 name: Build
+name: CI
 
 on:
   push:
@@ -7,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
 
     strategy:
@@ -26,3 +27,11 @@ jobs:
       run: |
         npm install
         npm run build:web
+    - name: Install dependencies
+      run: npm install
+
+    - name: TypeScript type check
+      run: npx tsc --noEmit
+
+    - name: Run tests
+      run: node --test src/features/birth-card/birthCardCalculator.test.mjs

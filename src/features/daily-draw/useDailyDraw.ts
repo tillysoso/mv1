@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
 import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase/client';
+import { saveReading } from '../../lib/supabase/v2/readings';
 import { MAJOR_ARCANA_CARDS } from './cardData';
 
 function todayString(): string {
@@ -74,13 +75,7 @@ export function useDailyDraw() {
     if (user?.id) {
       const today = todayString();
       try {
-        await supabase.from('readings').insert({
-          user_id: user.id,
-          spread_type: 'single',
-          avatar_id: null,
-          cards: [selected],
-          reflection_note: null,
-        });
+        await saveReading(user.id, { spreadType: 'single', avatarId: null, cards: [selected] });
         await supabase.from('streaks').upsert(
           { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
           { onConflict: 'user_id' },

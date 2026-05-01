@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types/avatar';
-
-// TODO: fontFamily strings require expo-font preloading.
 
 const AVATAR_DESCRIPTIONS: Record<AvatarId, string> = {
   casper:  'Direct. Decisive. Will not let you stall.',
@@ -77,63 +76,60 @@ export default function RecommendationScreen() {
   }
 
   return (
-    <OnboardingScreen
-      bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={handleConfirm}
-        >
-          <Text style={styles.ctaText}>
-            Choose {AVATAR_LABELS[selected]}
+    <>
+      {/* Prevent back-swipe — quiz scores are committed, going back would corrupt them */}
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      <OnboardingScreen
+        bottomContent={
+          <CTAButton label={`Choose ${AVATAR_LABELS[selected]}`} onPress={handleConfirm} />
+        }
+      >
+        <View style={styles.content}>
+          <Text style={styles.eyebrow}>Right now —</Text>
+          <Text style={styles.headline}>
+            {AVATAR_LABELS[recommended]} tends to find people like you.
           </Text>
-        </Pressable>
-      }
-    >
-      <View style={styles.content}>
-        <Text style={styles.eyebrow}>Right now —</Text>
-        <Text style={styles.headline}>
-          {AVATAR_LABELS[recommended]} tends to find people like you.
-        </Text>
 
-        <Text style={styles.caveat}>
-          This is a suggestion. The choice is always yours.
-        </Text>
+          <Text style={styles.caveat}>
+            This is a suggestion. The choice is always yours.
+          </Text>
 
-        <View style={styles.grid}>
-          {AVATAR_ORDER.map((id) => {
-            const accent = avatarAccents[id];
-            const isSelected = selected === id;
-            const isRecommended = id === recommended;
+          <View style={styles.grid}>
+            {AVATAR_ORDER.map((id) => {
+              const accent = avatarAccents[id];
+              const isSelected = selected === id;
+              const isRecommended = id === recommended;
 
-            return (
-              <Pressable
-                key={id}
-                style={[
-                  styles.avatarCard,
-                  isSelected && { borderColor: accent.primary },
-                ]}
-                onPress={() => setSelected(id)}
-              >
-                <Image
-                  source={AVATAR_IMAGES[id]}
-                  style={styles.avatarImage}
-                  resizeMode="cover"
-                />
-                <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
-                  {AVATAR_LABELS[id]}
-                </Text>
-                <Text style={styles.avatarDesc}>{AVATAR_DESCRIPTIONS[id]}</Text>
-                {isRecommended && (
-                  <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
-                    <Text style={styles.recommendedText}>Suggested</Text>
-                  </View>
-                )}
-              </Pressable>
-            );
-          })}
+              return (
+                <Pressable
+                  key={id}
+                  style={[
+                    styles.avatarCard,
+                    isSelected && { borderColor: accent.primary },
+                  ]}
+                  onPress={() => setSelected(id)}
+                >
+                  <Image
+                    source={AVATAR_IMAGES[id]}
+                    style={styles.avatarImage}
+                    resizeMode="cover"
+                  />
+                  <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
+                    {AVATAR_LABELS[id]}
+                  </Text>
+                  <Text style={styles.avatarDesc}>{AVATAR_DESCRIPTIONS[id]}</Text>
+                  {isRecommended && (
+                    <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
+                      <Text style={styles.recommendedText}>Suggested</Text>
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
-      </View>
-    </OnboardingScreen>
+      </OnboardingScreen>
+    </>
   );
 }
 
@@ -150,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headline: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.display,
     fontSize: typeScale.displayS.fontSize,
     color: colors.bone,
     letterSpacing: 1,
@@ -158,7 +154,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   caveat: {
-    // TODO: fontFamily: fonts.body (Montserrat) light
+    fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.mist,
     marginBottom: 36,
@@ -183,14 +179,14 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   avatarName: {
-    // TODO: fontFamily: fonts.display (Cinzel)
+    fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.bodyS.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     marginBottom: 4,
     letterSpacing: 0.5,
   },
   avatarDesc: {
+    fontFamily: fonts.body,
     fontSize: typeScale.micro.fontSize,
     color: colors.text.secondary,
     lineHeight: 16,
@@ -204,18 +200,21 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   recommendedText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: 9,
-    color: '#fff',
-    fontWeight: '700',
+    color: colors.bone,
     letterSpacing: 0.5,
   },
   cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
     paddingVertical: 16,
+    paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },
   ctaText: {
+    fontFamily: fonts.bodySemiBold,
     fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
   },

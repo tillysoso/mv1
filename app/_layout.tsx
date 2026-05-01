@@ -3,8 +3,27 @@ import '../global.css';
 import { Component, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  Cinzel_400Regular,
+  Cinzel_600SemiBold,
+  Cinzel_700Bold,
+} from '@expo-google-fonts/cinzel';
+import {
+  Montserrat_300Light,
+  Montserrat_400Regular,
+  Montserrat_500Medium,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+} from '@expo-google-fonts/montserrat';
+import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
+import { localFontAssets } from '../src/theme/typography';
+import { colors } from '../src/theme/tokens';
+
+SplashScreen.preventAutoHideAsync();
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
@@ -72,13 +91,34 @@ function useAuthRouting() {
 function AppContent() {
   const { initialised } = useAuthStore();
 
+  const [fontsLoaded, fontError] = useFonts({
+    Cinzel_400Regular,
+    Cinzel_600SemiBold,
+    Cinzel_700Bold,
+    Montserrat_300Light,
+    Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+    SpaceMono_400Regular,
+    ...localFontAssets,
+  });
+
   useEffect(() => {
     if (!isSupabaseConfigured) return;
     return initAuthListener();
   }, []);
 
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
   useAuthRouting();
 
+  if (!fontsLoaded && !fontError) {
+    return null;
   // In prototype mode skip the loading gate entirely
   if (!isSupabaseConfigured) {
     return <Stack screenOptions={{ headerShown: false }} />;
@@ -86,8 +126,8 @@ function AppContent() {
 
   if (!initialised) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0D0D14', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator color="#9500FF" size="large" />
+      <View style={{ flex: 1, backgroundColor: colors.obsidian, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color={colors.majestic} size="large" />
       </View>
     );
   }
