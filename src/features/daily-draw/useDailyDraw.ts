@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
 import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase/client';
+import { handleSupabaseError } from '../../utils/handleError';
 import { MAJOR_ARCANA_CARDS } from './cardData';
 import type { TarotCard } from '../../types/tarot';
 
@@ -35,11 +36,15 @@ export function useDailyDraw() {
       if (user?.id) {
         try {
           const today = todayString();
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from('streaks')
             .select('last_draw_date, last_card_id')
             .eq('user_id', user.id)
             .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('[DailyDraw] streak lookup failed:', handleSupabaseError(error).message);
+          }
 
           if (data?.last_draw_date === today && data?.last_card_id) {
             const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
@@ -51,8 +56,8 @@ export function useDailyDraw() {
               return;
             }
           }
-        } catch {
-          // Supabase not configured — fall through to local draw
+        } catch (e) {
+          console.error('[DailyDraw] streak check error, falling back to local draw:', e);
         }
       }
 
@@ -93,8 +98,8 @@ export function useDailyDraw() {
           { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
           { onConflict: 'user_id' },
         );
-      } catch {
-        // Silently fail — local state is source of truth
+      } catch (e) {
+        console.error('[DailyDraw] failed to persist reading/streak:', e);
       }
     }
   }
