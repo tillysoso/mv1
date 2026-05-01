@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 
 interface OnboardingScreenProps {
   children: React.ReactNode;
