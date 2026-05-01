@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.ash,
     paddingVertical: 16,
+    alignSelf: 'stretch',
     paddingHorizontal: 32,
     alignSelf: 'flex-start',
   },

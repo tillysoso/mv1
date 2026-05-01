@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderColor: colors.ash,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
   },
   ctaPressed: {
     borderColor: colors.mist,
