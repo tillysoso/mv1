@@ -5,7 +5,7 @@ import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAuthStore } from '../../src/stores/authStore';
-import { saveProfile } from '../../src/lib/supabase/profile';
+import { saveProfile } from '../../src/lib/supabase/v2/profile';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
