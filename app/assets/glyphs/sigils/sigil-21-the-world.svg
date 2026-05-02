@@ -1,0 +1,11 @@
+<svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 21 — The World -->
+  <circle cx="24" cy="24" r="17" fill="none" stroke="black" stroke-width="1.5"/>
+  <ellipse cx="24" cy="24" rx="8" ry="15" stroke="black" stroke-width="1.5" fill="none"/>
+  <line x1="7" y1="24" x2="41" y2="24" stroke="black" stroke-width="1.5"/>
+  <circle cx="24" cy="7" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="24" cy="41" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="7" cy="24" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="41" cy="24" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="24" cy="24" r="2.5" fill="none" stroke="black" stroke-width="1"/>
+</svg>

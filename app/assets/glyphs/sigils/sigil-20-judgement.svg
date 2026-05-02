@@ -1,0 +1,14 @@
+<svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 20 — Judgement -->
+  <line x1="24" y1="40" x2="24" y2="14" stroke="black" stroke-width="1.5"/>
+  <path d="M 12 26 Q 24 14 36 26" stroke="black" stroke-width="1.5" fill="none"/>
+  <path d="M 16 32 Q 24 22 32 32" stroke="black" stroke-width="1.5" fill="none"/>
+  <line x1="18" y1="8" x2="24" y2="14" stroke="black" stroke-width="1.5"/>
+  <line x1="30" y1="8" x2="24" y2="14" stroke="black" stroke-width="1.5"/>
+  <circle cx="24" cy="40" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="24" cy="14" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="12" cy="26" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="36" cy="26" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="18" cy="8" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="30" cy="8" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+</svg>

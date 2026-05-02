@@ -1,0 +1,11 @@
+<svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 14 — Temperance -->
+  <path d="M 12 10 L 12 28 Q 12 38 24 38 Q 36 38 36 28 L 36 10" stroke="black" stroke-width="1.5" fill="none"/>
+  <line x1="12" y1="10" x2="36" y2="10" stroke="black" stroke-width="1.5"/>
+  <path d="M 16 22 Q 24 28 32 22" stroke="black" stroke-width="1.5" fill="none"/>
+  <circle cx="12" cy="10" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="36" cy="10" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="24" cy="38" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="16" cy="22" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="32" cy="22" r="1.8" fill="none" stroke="black" stroke-width="1"/>
+</svg>
