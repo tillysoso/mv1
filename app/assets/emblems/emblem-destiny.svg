@@ -1,0 +1,14 @@
+<svg viewBox="0 0 320 320" width="320" height="320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Resonance Crest — Destiny / Water -->
+  <circle cx="160" cy="160" r="130" stroke="black" stroke-width="2"/>
+  <path d="M 36 120 Q 160 310 284 120" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M 90 120 Q 160 270 230 120" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M 120 120 Q 160 230 200 120" stroke="black" stroke-width="2" fill="none"/>
+  <line x1="36" y1="120" x2="284" y2="120" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="120" x2="160" y2="260" stroke="black" stroke-width="2"/>
+  <circle cx="36" cy="120" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="284" cy="120" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="260" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="120" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="190" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+</svg>
