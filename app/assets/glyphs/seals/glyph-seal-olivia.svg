@@ -1,0 +1,27 @@
+<svg viewBox="0 0 320 320" width="320" height="320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Elemental Seal — Olivia / Earth -->
+  <circle cx="160" cy="160" r="130" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="30" x2="160" y2="290" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="180" x2="79" y2="261" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="180" x2="241" y2="261" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="210" x2="106" y2="278" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="210" x2="214" y2="278" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="140" x2="79" y2="59" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="140" x2="241" y2="59" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="110" x2="106" y2="42" stroke="black" stroke-width="2"/>
+  <line x1="160" y1="110" x2="214" y2="42" stroke="black" stroke-width="2"/>
+  <circle cx="160" cy="30" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="290" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="180" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="210" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="140" r="4" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="160" cy="110" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="79" cy="261" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="241" cy="261" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="106" cy="278" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="214" cy="278" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="79" cy="59" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="241" cy="59" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="106" cy="42" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="214" cy="42" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+</svg>
