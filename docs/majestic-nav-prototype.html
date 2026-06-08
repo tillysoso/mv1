@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Majestic — Navigation Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #9500FF;
+    --bg-deep: #0D0D14;
+    --bg-navy: #1A1A2E;
+    --bg-mid: #16213E;
+    --bg-blue: #0F3460;
+    --bone: #F0EDE8;
+    --mist: #A8A8B8;
+    --casper: #C94B2C;
+    --eli: #A8B4C8;
+    --olivia: #5C6B3A;
+    --destiny: #2A7B8C;
+    --accent: var(--destiny);
+  }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* PHONE SHELL */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg-deep);
+    border-radius: 48px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.8), 0 0 60px rgba(149,0,255,0.15);
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+  }
+  .status-time { font-size: 15px; font-weight: 600; color: var(--bone); }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .status-icons span { width: 16px; height: 10px; background: var(--bone); border-radius: 2px; opacity: 0.8; }
+
+  /* ENVIRONMENT LAYER — full bleed background */
+  .environment {
+    position: absolute;
+    inset: 0;
+    transition: background 0.8s ease, opacity 0.4s ease;
+    z-index: 0;
+  }
+
+  /* GROUND STATE */
+  .env-ground {
+    background:
+      radial-gradient(ellipse at 50% 110%, rgba(149,0,255,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(42,123,140,0.12) 0%, transparent 50%),
+      linear-gradient(180deg, #0D0D14 0%, #1A1A2E 60%, #0F3460 100%);
+  }
+
+  /* City grid lines */
+  .env-ground::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(149,0,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(149,0,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+  }
+
+  /* City skyline */
+  .env-ground::after {
+    content: '';
+    position: absolute;
+    bottom: 80px; left: 0; right: 0;
+    height: 200px;
+    background-image:
+      /* Buildings using gradients */
+      linear-gradient(to top, rgba(10,15,40,0.9) 0%, transparent 100%);
+    background-size: 100% 100%;
+  }
+
+  /* OUTER REALM STATE */
+  .env-outer {
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(149,0,255,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% 70%, rgba(42,123,140,0.2) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,75,44,0.1) 0%, transparent 40%),
+      linear-gradient(180deg, #0a0010 0%, #0D0D14 100%);
+  }
+
+  .env-outer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(1px 1px at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.8) 0%, transparent 100%);
+    background-size: 3px 3px;
+    opacity: 0.3;
+  }
+
+  /* SELF STATE */
+  .env-self {
+    background:
+      radial-gradient(ellipse at 50% 90%, rgba(42,123,140,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 10% 50%, rgba(149,0,255,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #0D0D14 0%, #1a1a2e 40%, #0a1520 100%);
+  }
+
+  /* TRANSITION OVERLAY */
+  .transition-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .transition-overlay.active { opacity: 1; pointer-events: all; }
+
+  /* PORTAL RING ANIMATION */
+  .portal-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 2px solid var(--purple);
+    box-shadow: 0 0 40px var(--purple), inset 0 0 40px rgba(149,0,255,0.3);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+    opacity: 0;
+  }
+  .portal-ring.ring-2 {
+    width: 200px; height: 200px;
+    border-color: rgba(149,0,255,0.6);
+    transition-delay: 0.05s;
+  }
+  .portal-ring.ring-3 {
+    width: 100px; height: 100px;
+    border-color: rgba(149,0,255,0.4);
+    transition-delay: 0.1s;
+  }
+
+  .transition-overlay.active .portal-ring {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .portal-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(149,0,255,0.6) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .transition-overlay.active .portal-flash { opacity: 1; }
+
+  .portal-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, calc(-50% + 170px));
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(240,237,232,0.7);
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.3s;
+  }
+  .transition-overlay.active .portal-label { opacity: 1; }
+
+  /* SCREEN CONTENT AREAS */
+  .screen {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+  }
+
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ---- HOME SCREEN ---- */
+  #screen-home .content-area {
+    flex: 1;
+    padding: 60px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .greeting {
+    margin-top: 20px;
+  }
+  .greeting-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .greeting-main {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    color: var(--bone);
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  /* Daily card */
+  .daily-card-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .card-thumb {
+    width: 60px;
+    height: 96px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(149,0,255,0.4), rgba(42,123,140,0.4));
+    border: 1px solid rgba(149,0,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 24px;
+  }
+  .card-info { flex: 1; }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    color: var(--bone);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .card-excerpt {
+    font-size: 12px;
+    color: var(--mist);
+    line-height: 1.5;
+  }
+
+  /* Avatar bar */
+  .avatar-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .avatar-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 8px;
+    border-radius: 40px;
+    border: 1px solid rgba(42,123,140,0.4);
+    background: rgba(42,123,140,0.08);
+    cursor: pointer;
+  }
+  .avatar-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--destiny), rgba(42,123,140,0.5));
+    border: 1.5px solid var(--destiny);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .avatar-name {
+    font-size: 12px;
+    color: var(--bone);
+    font-weight: 500;
+  }
+  .avatar-more {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mist);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* Moon phase */
+  .moon-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .moon-icon { font-size: 20px; }
+  .moon-text { font-size: 11px; color: var(--mist); letter-spacing: 0.5px; }
+  .moon-text strong { color: var(--bone); }
+
+  /* ---- CODEX SCREEN ---- */
+  #screen-codex .content-area {
+    flex: 1;
+    padding: 60px 28px 20px;
+    overflow-y: auto;
+  }
+
+  .codex-header {
+    margin-top: 20px;
+    margin-bottom: 24px;
+  }
+  .codex-header .greeting-sub { color: var(--eli); }
+
+  .codex-search {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--mist);
+    font-size: 13px;
+  }
+
+  .codex-section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .codex-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .codex-card {
+    aspect-ratio: 2/3;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(168,180,200,0.15), rgba(168,180,200,0.05));
+    border: 1px solid rgba(168,180,200,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .codex-card:hover { border-color: rgba(168,180,200,0.4); }
+  .codex-card-emoji {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    font-size: 22px;
+    opacity: 0.7;
+  }
+  .codex-card-name {
+    font-size: 8px;
+    color: var(--mist);
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lore-banner {
+    background: linear-gradient(135deg, rgba(149,0,255,0.15), rgba(42,123,140,0.1));
+    border: 1px solid rgba(149,0,255,0.25);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .lore-icon { font-size: 24px; }
+  .lore-text { flex: 1; }
+  .lore-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .lore-desc { font-size: 12px; color: var(--mist); }
+  .lore-lock { font-size: 16px; opacity: 0.5; }
+
+  /* ---- READING SCREEN ---- */
+  #screen-reading .content-area {
+    flex: 1;
+    padding: 60px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .reading-header { margin-top: 20px; }
+  .reading-header .greeting-sub { color: var(--casper); }
+
+  .altar-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .altar-cloth {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(201,75,44,0.08), rgba(149,0,255,0.05));
+    border: 1px solid rgba(201,75,44,0.15);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .altar-cloth::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center bottom, rgba(201,75,44,0.12) 0%, transparent 70%);
+  }
+
+  .altar-card {
+    width: 64px;
+    height: 100px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(201,75,44,0.3), rgba(149,0,255,0.2));
+    border: 1px solid rgba(201,75,44,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .altar-card:hover { transform: translateY(-4px); }
+  .altar-card.center {
+    width: 80px;
+    height: 120px;
+    font-size: 30px;
+    border-color: rgba(201,75,44,0.6);
+    box-shadow: 0 0 20px rgba(201,75,44,0.2);
+  }
+
+  /* Desk environment strip */
+  .desk-strip {
+    height: 90px;
+    background: linear-gradient(180deg, transparent 0%, rgba(10,15,30,0.8) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: flex-end;
+    padding: 12px 20px;
+    gap: 14px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .desk-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .desk-item:hover { transform: translateY(-2px); }
+  .desk-item-icon { font-size: 22px; }
+  .desk-item-label { font-size: 9px; color: var(--mist); letter-spacing: 0.5px; }
+
+  .drink-animation {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    font-size: 28px;
+    animation: pourSteam 3s ease-in-out infinite;
+  }
+  @keyframes pourSteam {
+    0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.8; }
+    50% { transform: translateY(-3px) rotate(5deg); opacity: 1; }
+  }
+
+  /* ---- JOURNAL SCREEN ---- */
+  #screen-journal .content-area {
+    flex: 1;
+    padding: 60px 28px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .journal-header { margin-top: 20px; margin-bottom: 20px; }
+  .journal-header .greeting-sub { color: var(--olivia); }
+
+  .book-cover {
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(135deg, rgba(92,107,58,0.2), rgba(92,107,58,0.05));
+    border: 1px solid rgba(92,107,58,0.3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .book-cover::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, rgba(92,107,58,0.8), rgba(92,107,58,0.3));
+    border-radius: 16px 0 0 16px;
+  }
+  .book-cover:hover { border-color: rgba(92,107,58,0.5); }
+  .book-icon { font-size: 36px; }
+  .book-info { flex: 1; }
+  .book-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    color: var(--bone);
+    margin-bottom: 4px;
+  }
+  .book-sub { font-size: 11px; color: var(--mist); }
+
+  .journal-entries { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+
+  .journal-entry {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .journal-entry:hover { background: rgba(255,255,255,0.04); }
+  .entry-date {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .entry-card-ref {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .entry-card-badge {
+    background: rgba(92,107,58,0.15);
+    border: 1px solid rgba(92,107,58,0.3);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: rgba(92,107,58,0.9);
+  }
+  .entry-text { font-size: 12px; color: var(--mist); line-height: 1.5; }
+
+  /* ---- BOTTOM NAV ---- */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 90px;
+    background: rgba(13,13,20,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 12px;
+    z-index: 90;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+
+  .nav-icon {
+    width: 40px; height: 40px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    position: relative;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--mist);
+    transition: color 0.3s ease;
+    text-align: center;
+  }
+
+  /* Active states per nav item */
+  .nav-item.active[data-screen="home"] .nav-icon {
+    background: rgba(42,123,140,0.15);
+    box-shadow: 0 0 16px rgba(42,123,140,0.3);
+    transform: translateY(-2px);
+  }
+  .nav-item.active[data-screen="home"] .nav-label { color: var(--destiny); }
+  .nav-item.active[data-screen="home"] .nav-icon::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--destiny);
+    box-shadow: 0 0 6px var(--destiny);
+  }
+
+  .nav-item.active[data-screen="codex"] .nav-icon {
+    background: rgba(168,180,200,0.15);
+    box-shadow: 0 0 16px rgba(168,180,200,0.3);
+    transform: translateY(-2px);
+  }
+  .nav-item.active[data-screen="codex"] .nav-label { color: var(--eli); }
+  .nav-item.active[data-screen="codex"] .nav-icon::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--eli);
+    box-shadow: 0 0 6px var(--eli);
+  }
+
+  .nav-item.active[data-screen="reading"] .nav-icon {
+    background: rgba(201,75,44,0.15);
+    box-shadow: 0 0 16px rgba(201,75,44,0.3);
+    transform: translateY(-2px);
+  }
+  .nav-item.active[data-screen="reading"] .nav-label { color: var(--casper); }
+  .nav-item.active[data-screen="reading"] .nav-icon::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--casper);
+    box-shadow: 0 0 6px var(--casper);
+  }
+
+  .nav-item.active[data-screen="journal"] .nav-icon {
+    background: rgba(92,107,58,0.15);
+    box-shadow: 0 0 16px rgba(92,107,58,0.3);
+    transform: translateY(-2px);
+  }
+  .nav-item.active[data-screen="journal"] .nav-label { color: var(--olivia); }
+  .nav-item.active[data-screen="journal"] .nav-icon::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--olivia);
+    box-shadow: 0 0 6px var(--olivia);
+  }
+
+  /* STARS floating in outer realm */
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .stars.visible { opacity: 1; }
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    animation-delay: var(--del, 0s);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  /* CITY GLOW LINES */
+  .city-lines {
+    position: absolute;
+    bottom: 80px; left: 0; right: 0;
+    height: 150px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .city-lines.visible { opacity: 1; }
+  .city-line {
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to top, rgba(149,0,255,0.6), transparent);
+    animation: cityPulse var(--dur, 4s) ease-in-out infinite;
+    animation-delay: var(--del, 0s);
+  }
+  @keyframes cityPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  /* DESK SCENE overlay for self state */
+  .desk-scene {
+    position: absolute;
+    bottom: 90px; left: 0; right: 0;
+    height: 160px;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    display: flex;
+    align-items: flex-end;
+  }
+  .desk-scene.visible { opacity: 1; }
+  .desk-surface {
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(180deg, transparent 0%, rgba(8,20,35,0.9) 100%);
+    border-top: 1px solid rgba(42,123,140,0.15);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 32px 12px;
+    gap: 20px;
+  }
+  .desk-obj { font-size: 18px; opacity: 0.6; }
+
+  /* PORTAL DIRECTION HINT */
+  .portal-hint {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .portal-hint.visible { opacity: 1; }
+  .portal-hint.up { top: 55px; left: 50%; transform: translateX(-50%); }
+  .portal-hint.down { bottom: 100px; left: 50%; transform: translateX(-50%); }
+  .portal-hint-arrow { font-size: 14px; color: rgba(255,255,255,0.25); animation: hintBob 2s ease-in-out infinite; }
+  .portal-hint.down .portal-hint-arrow { animation-direction: alternate-reverse; }
+  @keyframes hintBob {
+    0%, 100% { transform: translateY(0); opacity: 0.2; }
+    50% { transform: translateY(-4px); opacity: 0.5; }
+  }
+  .portal-hint-text { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+
+  /* SCREEN TRANSITION ANIMATIONS */
+  .screen-enter-up {
+    animation: enterFromDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  .screen-enter-down {
+    animation: enterFromUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  .screen-enter-fade {
+    animation: enterFade 0.5s ease forwards;
+  }
+  @keyframes enterFromDown {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes enterFromUp {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes enterFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* TOOLTIP */
+  .prototype-label {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <span style="width:12px;height:8px;clip-path:polygon(0 100%,25% 60%,50% 40%,75% 20%,100% 0,100% 100%);background:var(--bone);opacity:0.7"></span>
+      <span style="width:14px;height:8px;border-radius:2px;background:var(--bone);opacity:0.7"></span>
+    </div>
+  </div>
+
+  <!-- ENVIRONMENT LAYER -->
+  <div class="environment env-ground" id="env"></div>
+
+  <!-- STARS (outer realm) -->
+  <div class="stars" id="stars"></div>
+
+  <!-- CITY LINES (ground) -->
+  <div class="city-lines visible" id="cityLines"></div>
+
+  <!-- DESK (self state) -->
+  <div class="desk-scene" id="deskScene">
+    <div class="desk-surface">
+      <span class="desk-obj">🕯️</span>
+      <span class="desk-obj">📖</span>
+      <span class="desk-obj">🌿</span>
+      <span class="desk-obj">☕</span>
+    </div>
+  </div>
+
+  <!-- PORTAL HINTS -->
+  <div class="portal-hint up visible" id="hintUp">
+    <div class="portal-hint-arrow">↑</div>
+    <div class="portal-hint-text">Outer Realm</div>
+  </div>
+  <div class="portal-hint down visible" id="hintDown">
+    <div class="portal-hint-arrow">↓</div>
+    <div class="portal-hint-text">Self</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="content-area">
+      <div class="greeting">
+        <div class="greeting-sub">Monday · Waning Crescent</div>
+        <div class="greeting-main">Good morning,<br>Oso.</div>
+      </div>
+
+      <div class="avatar-row">
+        <div class="avatar-pill">
+          <div class="avatar-dot">🌊</div>
+          <span class="avatar-name">Destiny</span>
+        </div>
+        <div class="avatar-more">+3</div>
+      </div>
+
+      <div class="daily-card-block">
+        <div class="card-thumb">🌙</div>
+        <div class="card-info">
+          <div class="card-label">Today's Draw</div>
+          <div class="card-name">The High Priestess</div>
+          <div class="card-excerpt">Trust what you already know. The answer isn't out there — it's in the pause.</div>
+        </div>
+      </div>
+
+      <div class="moon-strip">
+        <div class="moon-icon">🌘</div>
+        <div class="moon-text"><strong>Waning Crescent</strong> · Release &amp; rest. Not the day to push.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODEX SCREEN -->
+  <div class="screen" id="screen-codex">
+    <div class="content-area">
+      <div class="codex-header greeting">
+        <div class="greeting-sub" style="color:var(--eli)">The Codex</div>
+        <div class="greeting-main">78 Cards.<br>One World.</div>
+      </div>
+
+      <div class="codex-search">
+        <span>🔍</span>
+        <span>Search cards, symbols, arcana…</span>
+      </div>
+
+      <div class="codex-section-label">Major Arcana</div>
+      <div class="codex-grid">
+        <div class="codex-card"><div class="codex-card-emoji">🌙</div><div class="codex-card-name">High Priestess</div></div>
+        <div class="codex-card"><div class="codex-card-emoji">☀️</div><div class="codex-card-name">The Sun</div></div>
+        <div class="codex-card"><div class="codex-card-emoji">⚡</div><div class="codex-card-name">The Tower</div></div>
+        <div class="codex-card"><div class="codex-card-emoji">⚖️</div><div class="codex-card-name">Justice</div></div>
+        <div class="codex-card"><div class="codex-card-emoji">🌟</div><div class="codex-card-name">The Star</div></div>
+        <div class="codex-card"><div class="codex-card-emoji">🌊</div><div class="codex-card-name">The Moon</div></div>
+      </div>
+
+      <div class="lore-banner">
+        <div class="lore-icon">🔮</div>
+        <div class="lore-text">
+          <div class="lore-label">Avatar Lore — Locked</div>
+          <div class="lore-desc">Destiny's world unlocks at level 7</div>
+        </div>
+        <div class="lore-lock">🔒</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- READING SCREEN -->
+  <div class="screen" id="screen-reading">
+    <div class="content-area">
+      <div class="reading-header greeting">
+        <div class="greeting-sub" style="color:var(--casper)">The Altar</div>
+        <div class="greeting-main">Begin your<br>reading.</div>
+      </div>
+
+      <div class="altar-stage">
+        <div class="altar-cloth">
+          <div class="altar-card">🂠</div>
+          <div class="altar-card center">🌙</div>
+          <div class="altar-card">🂠</div>
+          <div class="drink-animation">☕</div>
+        </div>
+      </div>
+
+      <div class="desk-strip">
+        <div class="desk-item">
+          <div class="desk-item-icon">🕯️</div>
+          <div class="desk-item-label">Ritual</div>
+        </div>
+        <div class="desk-item">
+          <div class="desk-item-icon">📿</div>
+          <div class="desk-item-label">Intention</div>
+        </div>
+        <div class="desk-item">
+          <div class="desk-item-icon">🌿</div>
+          <div class="desk-item-label">Ground</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNAL SCREEN -->
+  <div class="screen" id="screen-journal">
+    <div class="content-area">
+      <div class="journal-header greeting">
+        <div class="greeting-sub" style="color:var(--olivia)">Your Journal</div>
+        <div class="greeting-main">What did<br>you notice?</div>
+      </div>
+
+      <div class="book-cover">
+        <div class="book-icon">📖</div>
+        <div class="book-info">
+          <div class="book-title">June 2026</div>
+          <div class="book-sub">12 entries this month</div>
+        </div>
+      </div>
+
+      <div class="journal-entries">
+        <div class="journal-entry">
+          <div class="entry-date">Mon 8 June</div>
+          <div class="entry-card-ref">
+            <div class="entry-card-badge">High Priestess</div>
+          </div>
+          <div class="entry-text">I kept second-guessing the meeting outcome but my gut had already told me…</div>
+        </div>
+        <div class="journal-entry">
+          <div class="entry-date">Sat 6 June</div>
+          <div class="entry-card-ref">
+            <div class="entry-card-badge">Three of Cups</div>
+          </div>
+          <div class="entry-text">Felt more social than I expected today. Reached out to two people I'd been avoiding…</div>
+        </div>
+        <div class="journal-entry">
+          <div class="entry-date">Thu 4 June</div>
+          <div class="entry-card-ref">
+            <div class="entry-card-badge">The Tower</div>
+          </div>
+          <div class="entry-text">The news about the project restructure hit harder than I let on to the team…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTAL TRANSITION OVERLAY -->
+  <div class="transition-overlay" id="portalOverlay">
+    <div class="portal-flash"></div>
+    <div class="portal-ring"></div>
+    <div class="portal-ring ring-2"></div>
+    <div class="portal-ring ring-3"></div>
+    <div class="portal-label" id="portalLabel">Entering the Outer Realm</div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-screen="home" onclick="navigate('home')">
+      <div class="nav-icon">⌂</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" data-screen="codex" onclick="navigate('codex')">
+      <div class="nav-icon">✦</div>
+      <div class="nav-label">Codex</div>
+    </div>
+    <div class="nav-item" data-screen="reading" onclick="navigate('reading')">
+      <div class="nav-icon">◈</div>
+      <div class="nav-label">Reading</div>
+    </div>
+    <div class="nav-item" data-screen="journal" onclick="navigate('journal')">
+      <div class="nav-icon">◻</div>
+      <div class="nav-label">Journal</div>
+    </div>
+  </nav>
+
+</div>
+
+<div class="prototype-label">Navigation Prototype · Tap the nav to explore</div>
+
+<script>
+  const screens = ['home', 'codex', 'reading', 'journal'];
+  let current = 'home';
+  let transitioning = false;
+
+  // Environment states per screen
+  const envConfig = {
+    home: {
+      env: 'env-ground',
+      stars: false,
+      city: true,
+      desk: false,
+      hintUp: true,
+      hintDown: false,
+      portalLabel: null
+    },
+    codex: {
+      env: 'env-outer',
+      stars: true,
+      city: false,
+      desk: false,
+      hintUp: false,
+      hintDown: false,
+      portalLabel: 'Entering the Outer Realm'
+    },
+    reading: {
+      env: 'env-self',
+      stars: false,
+      city: false,
+      desk: true,
+      hintUp: false,
+      hintDown: false,
+      portalLabel: 'Descending into Self'
+    },
+    journal: {
+      env: 'env-self',
+      stars: false,
+      city: false,
+      desk: true,
+      hintUp: false,
+      hintDown: false,
+      portalLabel: 'Descending into Self'
+    }
+  };
+
+  // Determine transition direction
+  function getDirection(from, to) {
+    const order = { home: 1, codex: 3, reading: 2, journal: 2 };
+    const f = order[from], t = order[to];
+    if (t > f) return 'up';
+    if (t < f) return 'down';
+    return 'lateral';
+  }
+
+  // Generate stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--del:${Math.random()*4}s;opacity:${0.2+Math.random()*0.8};width:${1+Math.random()*2}px;height:${1+Math.random()*2}px`;
+    starsEl.appendChild(s);
+  }
+
+  // Generate city lines
+  const cityEl = document.getElementById('cityLines');
+  for (let i = 0; i < 18; i++) {
+    const l = document.createElement('div');
+    l.className = 'city-line';
+    l.style.cssText = `left:${5+i*5.5}%;height:${30+Math.random()*120}px;--dur:${2+Math.random()*4}s;--del:${Math.random()*3}s;opacity:0.4`;
+    cityEl.appendChild(l);
+  }
+
+  function navigate(target) {
+    if (target === current || transitioning) return;
+    transitioning = true;
+
+    const config = envConfig[target];
+    const dir = getDirection(current, target);
+    const needsPortal = (target === 'codex') || 
+                        (target === 'reading' && current === 'home') ||
+                        (target === 'journal' && current === 'home') ||
+                        (current === 'codex' && target === 'home') ||
+                        (current !== 'home' && target === 'home');
+
+    const overlay = document.getElementById('portalOverlay');
+    const portalLabelEl = document.getElementById('portalLabel');
+    const env = document.getElementById('env');
+    const stars = document.getElementById('stars');
+    const city = document.getElementById('cityLines');
+    const desk = document.getElementById('deskScene');
+    const hintUp = document.getElementById('hintUp');
+    const hintDown = document.getElementById('hintDown');
+
+    // Update nav immediately
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.screen === target);
+    });
+
+    if (needsPortal && config.portalLabel) {
+      // PORTAL TRANSITION
+      portalLabelEl.textContent = config.portalLabel;
+      overlay.classList.add('active');
+
+      setTimeout(() => {
+        // Swap screen
+        document.getElementById(`screen-${current}`).classList.remove('active');
+        const nextScreen = document.getElementById(`screen-${target}`);
+        nextScreen.classList.add('active');
+
+        // Animate content in
+        const animClass = dir === 'up' ? 'screen-enter-up' : 
+                          dir === 'down' ? 'screen-enter-down' : 'screen-enter-fade';
+        nextScreen.style.animation = 'none';
+        nextScreen.offsetHeight;
+        nextScreen.style.animation = '';
+        nextScreen.classList.add(animClass);
+        setTimeout(() => nextScreen.classList.remove(animClass), 600);
+
+        // Update environment
+        env.className = `environment ${config.env}`;
+        stars.classList.toggle('visible', config.stars);
+        city.classList.toggle('visible', config.city);
+        desk.classList.toggle('visible', config.desk);
+        hintUp.classList.toggle('visible', config.hintUp);
+        hintDown.classList.toggle('visible', config.hintDown);
+
+        current = target;
+      }, 500);
+
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        transitioning = false;
+      }, 1000);
+
+    } else {
+      // DIRECT transition (e.g. reading ↔ journal — same state)
+      document.getElementById(`screen-${current}`).classList.remove('active');
+      const nextScreen = document.getElementById(`screen-${target}`);
+      nextScreen.classList.add('active');
+      nextScreen.classList.add('screen-enter-fade');
+      setTimeout(() => nextScreen.classList.remove('screen-enter-fade'), 500);
+
+      env.className = `environment ${config.env}`;
+      stars.classList.toggle('visible', config.stars);
+      city.classList.toggle('visible', config.city);
+      desk.classList.toggle('visible', config.desk);
+      hintUp.classList.toggle('visible', config.hintUp);
+      hintDown.classList.toggle('visible', config.hintDown);
+
+      current = target;
+      transitioning = false;
+    }
+  }
+</script>
+</body>
+</html>
