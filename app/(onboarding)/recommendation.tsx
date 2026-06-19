@@ -26,7 +26,6 @@ const AVATAR_LABELS: Record<AvatarId, string> = {
   destiny: 'Destiny',
 };
 
-
 // Avatar portrait images (neutral state)
 const AVATAR_IMAGES: Record<AvatarId, any> = {
   casper:  require('../../assets/avatars/casper/casper-neutral.png'),
@@ -60,9 +59,8 @@ export default function RecommendationScreen() {
 
   function handleConfirm() {
     setAvatar(selected);
+    trackNavigationClick('choose_avatar_cta', ROUTE.ONBOARDING_CONFIRM);
     router.push(ROUTE.ONBOARDING_CONFIRM);
-    trackNavigationClick('choose_avatar_cta', '/confirm');
-    router.push('/(onboarding)/confirm');
   }
 
   return (
@@ -83,54 +81,6 @@ export default function RecommendationScreen() {
           <Text style={styles.caveat}>
             This is a suggestion. The choice is always yours.
           </Text>
-        </Pressable>
-      }
-    >
-      <View style={styles.content}>
-        <Text style={styles.eyebrow}>Right now —</Text>
-        <Text style={styles.headline}>
-          {AVATAR_LABELS[recommended]} tends to find people like you.
-        </Text>
-
-        <Text style={styles.caveat}>
-          This is a suggestion. The choice is always yours.
-        </Text>
-
-        <View style={styles.grid}>
-          {AVATAR_ORDER.map((id) => {
-            const accent = avatarAccents[id];
-            const isSelected = selected === id;
-            const isRecommended = id === recommended;
-
-            return (
-              <Pressable
-                key={id}
-                style={[
-                  styles.avatarCard,
-                  isSelected && { borderColor: accent.primary },
-                ]}
-                onPress={() => {
-                  trackSelectContent('avatar', id);
-                  setSelected(id);
-                }}
-              >
-                <Image
-                  source={AVATAR_IMAGES[id]}
-                  style={styles.avatarImage}
-                  resizeMode="cover"
-                />
-                <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
-                  {AVATAR_LABELS[id]}
-                </Text>
-                <Text style={styles.avatarDesc} numberOfLines={2} ellipsizeMode="tail">{AVATAR_DESCRIPTIONS[id]}</Text>
-                {isRecommended && (
-                  <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
-                    <Text style={styles.recommendedText}>Suggested</Text>
-                  </View>
-                )}
-              </Pressable>
-            );
-          })}
 
           <View style={styles.grid}>
             {AVATAR_ORDER.map((id) => {
@@ -145,7 +95,10 @@ export default function RecommendationScreen() {
                     styles.avatarCard,
                     isSelected && { borderColor: accent.primary },
                   ]}
-                  onPress={() => setSelected(id)}
+                  onPress={() => {
+                    trackSelectContent('avatar', id);
+                    setSelected(id);
+                  }}
                 >
                   <Image
                     source={AVATAR_IMAGES[id]}
@@ -155,7 +108,9 @@ export default function RecommendationScreen() {
                   <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
                     {AVATAR_LABELS[id]}
                   </Text>
-                  <Text style={styles.avatarDesc}>{AVATAR_DESCRIPTIONS[id]}</Text>
+                  <Text style={styles.avatarDesc} numberOfLines={2} ellipsizeMode="tail">
+                    {AVATAR_DESCRIPTIONS[id]}
+                  </Text>
                   {isRecommended && (
                     <View style={[styles.recommendedBadge, { backgroundColor: accent.primary }]}>
                       <Text style={styles.recommendedText}>Suggested</Text>
@@ -192,7 +147,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   caveat: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.mist,
@@ -219,7 +173,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   avatarName: {
-    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,
@@ -245,19 +198,5 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: colors.bone,
     letterSpacing: 0.5,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    alignSelf: 'stretch',
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });
