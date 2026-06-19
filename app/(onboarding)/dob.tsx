@@ -1,16 +1,19 @@
-import { useState, useRef } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { useRef, useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackFormSubmit } from '../../src/lib/analytics';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
+import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
+
+const CALC_LINES = ['Calculating.', '...', 'The signal is reading your pattern.'];
+const CALC_LINE_DELAY_MS = 500;
+const HOLD_BEFORE_NAV_MS = 700;
 
 function isValidDate(day: number, month: number, year: number): boolean {
   if (year < 1900 || year > new Date().getFullYear()) return false;
@@ -21,7 +24,7 @@ function isValidDate(day: number, month: number, year: number): boolean {
 
 export default function DobScreen() {
   const router = useRouter();
-  const { name, setDateOfBirth } = useProfileStore();
+  const { name, setDateOfBirth, setBirthCards } = useProfileStore();
   const activeAvatar = useAvatarStore((s) => s.activeAvatar);
   const cursorColor = avatarAccents[activeAvatar].primary;
 
@@ -29,8 +32,8 @@ export default function DobScreen() {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [error, setError] = useState('');
-  const [dateError, setDateError] = useState('');
+  const [calculating, setCalculating] = useState(false);
+  const [calcLinesShown, setCalcLinesShown] = useState(0);
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
@@ -38,14 +41,11 @@ export default function DobScreen() {
   function clearError() {
     if (errorMsg) setErrorMsg('');
   }
-  const isReady = day.length === 2 && month.length === 2 && year.length === 4;
 
   function handleDayChange(text: string) {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
     clearError();
-    setError('');
-    setDateError('');
     if (digits.length === 2) monthRef.current?.focus();
   }
 
@@ -53,8 +53,6 @@ export default function DobScreen() {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
     clearError();
-    setError('');
-    setDateError('');
     if (digits.length === 2) yearRef.current?.focus();
   }
 
@@ -62,8 +60,6 @@ export default function DobScreen() {
     const digits = text.replace(/\D/g, '').slice(0, 4);
     setYear(digits);
     clearError();
-    setError('');
-    setDateError('');
   }
 
   function handleSubmit() {
@@ -72,141 +68,120 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
-      setErrorMsg('// that date doesn\'t resolve — try again');
-      setError("— that date doesn't exist.");
-      setDateError('> That date does not compute. Try again.');
+      setErrorMsg("// that date doesn't resolve — try again");
       return;
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
-    router.push(ROUTE.ONBOARDING_CALCULATING);
     trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
-    router.push('/(onboarding)/calculating');
+
+    // Birth card calc runs now, during this screen's hold beat, so the
+    // result is ready before Screen 04 ever renders — no loading state there.
+    const cards = birthCardCalculator(d, m, y);
+    setBirthCards(cards);
+
+    setCalculating(true);
+    CALC_LINES.forEach((_, i) => {
+      setTimeout(() => setCalcLinesShown((n) => Math.max(n, i + 1)), i * CALC_LINE_DELAY_MS);
+    });
+    setTimeout(
+      () => router.push(ROUTE.ONBOARDING_CALCULATING),
+      CALC_LINES.length * CALC_LINE_DELAY_MS + HOLD_BEFORE_NAV_MS,
+    );
   }
 
   const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
 
   return (
-    <OnboardingScreen>
-      <Pressable style={styles.backLink} onPress={() => router.back()}>
-        <Text style={styles.backText}>‹ back</Text>
-      </Pressable>
-
     <OnboardingScreen
-      bottomContent={
-        canSubmit ? (
-          <Pressable
-            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-            onPress={handleSubmit}
-          >
-            <Text style={styles.ctaText}>Continue</Text>
-          </Pressable>
-        ) : null
-        <CTAButton label="Continue" onPress={handleSubmit} disabled={!isReady} />
-      }
+      bottomContent={!calculating && canSubmit ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined}
     >
-      <View style={styles.terminalHeader}>
-        <Text style={styles.systemLine}>
-          {name ? `${name}.` : ''}
-        </Text>
-        <Text style={styles.systemLine}>Good. The signal has you now.</Text>
-        <Text style={styles.systemLine}>&nbsp;</Text>
-        <Text style={styles.systemLine}>One more thing.</Text>
-      </View>
-
-      <Text style={styles.prompt}>When did you arrive?</Text>
-
-      <View style={styles.fieldsRow}>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>DD</Text>
-          <View style={styles.inputRow}>
-            <Text style={styles.caret}>&gt; </Text>
-            <TextInput
-              value={day}
-              onChangeText={handleDayChange}
-              placeholder="—"
-              placeholderTextColor={colors.text.tertiary}
-              keyboardType="number-pad"
-              maxLength={2}
-              returnKeyType="next"
-              onSubmitEditing={() => monthRef.current?.focus()}
-              autoFocus
-              selectionColor={cursorColor}
-              style={styles.input}
-            />
+      {!calculating ? (
+        <>
+          <View style={styles.terminalHeader}>
+            <Text style={styles.systemLine}>One more thing{name ? `, ${name}` : ''}.</Text>
           </View>
-        </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>MM</Text>
-          <View style={styles.inputRow}>
-            <Text style={styles.caret}>&gt; </Text>
-            <TextInput
-              ref={monthRef}
-              value={month}
-              onChangeText={handleMonthChange}
-              placeholder="—"
-              placeholderTextColor={colors.text.tertiary}
-              keyboardType="number-pad"
-              maxLength={2}
-              returnKeyType="next"
-              onSubmitEditing={() => yearRef.current?.focus()}
-              selectionColor={cursorColor}
-              style={styles.input}
-            />
+          <Text style={styles.prompt}>When did you arrive?</Text>
+
+          <View style={styles.fieldsRow}>
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>DD</Text>
+              <View style={styles.inputRow}>
+                <Text style={styles.caret}>&gt; </Text>
+                <TextInput
+                  value={day}
+                  onChangeText={handleDayChange}
+                  placeholder="—"
+                  placeholderTextColor={colors.text.tertiary}
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  returnKeyType="next"
+                  onSubmitEditing={() => monthRef.current?.focus()}
+                  autoFocus
+                  selectionColor={cursorColor}
+                  style={styles.input}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>MM</Text>
+              <View style={styles.inputRow}>
+                <Text style={styles.caret}>&gt; </Text>
+                <TextInput
+                  ref={monthRef}
+                  value={month}
+                  onChangeText={handleMonthChange}
+                  placeholder="—"
+                  placeholderTextColor={colors.text.tertiary}
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  returnKeyType="next"
+                  onSubmitEditing={() => yearRef.current?.focus()}
+                  selectionColor={cursorColor}
+                  style={styles.input}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>YYYY</Text>
+              <View style={styles.inputRow}>
+                <Text style={styles.caret}>&gt; </Text>
+                <TextInput
+                  ref={yearRef}
+                  value={year}
+                  onChangeText={handleYearChange}
+                  placeholder="——"
+                  placeholderTextColor={colors.text.tertiary}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit}
+                  selectionColor={cursorColor}
+                  style={styles.input}
+                />
+              </View>
+            </View>
           </View>
+
+          {errorMsg ? <Text style={styles.errorLine}>{errorMsg}</Text> : null}
+        </>
+      ) : (
+        <View style={styles.terminalHeader}>
+          {CALC_LINES.slice(0, calcLinesShown).map((line, i) => (
+            <Text key={i} style={styles.systemLine}>
+              {line}
+            </Text>
+          ))}
         </View>
-
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>YYYY</Text>
-          <View style={styles.inputRow}>
-            <Text style={styles.caret}>&gt; </Text>
-            <TextInput
-              ref={yearRef}
-              value={year}
-              onChangeText={handleYearChange}
-              placeholder="——"
-              placeholderTextColor={colors.text.tertiary}
-              keyboardType="number-pad"
-              maxLength={4}
-              returnKeyType="done"
-              onSubmitEditing={handleSubmit}
-              selectionColor={cursorColor}
-              style={styles.input}
-            />
-          </View>
-        </View>
-      </View>
-
-      {errorMsg ? (
-        <Text style={styles.errorLine}>{errorMsg}</Text>
-      ) : null}
-      {error ? <Text style={styles.errorLine}>{error}</Text> : null}
-      {dateError ? (
-        <Text style={styles.errorLine}>{dateError}</Text>
-      ) : null}
-
-      <Pressable
-        style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-        onPress={handleSubmit}
-      >
-        <Text style={styles.ctaText}>Continue</Text>
-      </Pressable>
+      )}
     </OnboardingScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  backLink: {
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-  },
-  backText: {
-    fontFamily: fonts.terminal,
-    fontSize: 13,
-    color: colors.text.tertiary,
-    letterSpacing: 0.5,
-  },
   terminalHeader: {
     marginBottom: 32,
     marginTop: 4,
@@ -258,38 +233,9 @@ const styles = StyleSheet.create({
   errorLine: {
     fontFamily: fonts.terminal,
     fontSize: 13,
-    color: colors.text.tertiary,
+    color: colors.mist,
     letterSpacing: 0.5,
     marginTop: 20,
     opacity: 0.8,
-  cta: {
-    paddingVertical: 16,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
-  errorLine: {
-    fontFamily: fonts.terminal,
-    fontSize: 13,
-    color: '#C94B2C',
-    letterSpacing: 0.5,
-    marginTop: 20,
-    color: colors.mist,
-    letterSpacing: 0.5,
-    marginTop: 24,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-    marginTop: 32,
-  },
-  ctaText: {
-    fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

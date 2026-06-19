@@ -1,9 +1,5 @@
 import React, { memo } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
-import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native';
 import { colors } from '../../theme/tokens';
 
 interface OnboardingScreenProps {
@@ -33,10 +29,10 @@ export default function OnboardingScreen({
     <View style={styles.root}>
       <AtmosphereLayer />
       <SafeAreaView style={[styles.safe, style]}>
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>{children}</ScrollView>
-        {bottomContent && (
-          <View style={styles.bottom}>{bottomContent}</View>
-        )}
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          {children}
+        </ScrollView>
+        {bottomContent && <View style={styles.bottom}>{bottomContent}</View>}
       </SafeAreaView>
     </View>
   );

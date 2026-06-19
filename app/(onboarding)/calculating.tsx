@@ -1,130 +1,115 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  useSharedValue,
+  Easing,
+  runOnJS,
   useAnimatedStyle,
-  withRepeat,
-  withSequence,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
-import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
-import type { BirthCards } from '../../src/types';
+import { cardElement } from '../../src/features/birth-card/cardElement';
 import { ROUTE } from '../../src/constants';
 import { useProfileStore } from '../../src/stores/profileStore';
-import { colors } from '../../src/theme/tokens';
+import { colors, elementAccents } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 
-const MIN_DURATION_MS = 2000;
-const SLOW_THRESHOLD_MS = 5000;
-
-export default function CalculatingScreen() {
+// By the time this screen renders, birthCards was already calculated during
+// the dob screen's hold beat — no loading state here, only the reveal.
+export default function ThresholdScreen() {
   const router = useRouter();
-  const pulseOpacity = useSharedValue(0.4);
-  const [showSlowMsg, setShowSlowMsg] = useState(false);
+  const birthCards = useProfileStore((s) => s.birthCards);
+
+  const element = birthCards ? cardElement(birthCards.personalityCard.number) : 'air';
+  const tint = elementAccents[element].primary;
+
+  const textOpacity = useSharedValue(0);
+  const cardOpacity = useSharedValue(0);
+  const cardTranslateY = useSharedValue(24);
+  const tintOpacity = useSharedValue(0);
+  const exitOpacity = useSharedValue(1);
 
   useEffect(() => {
-    // Slow atmospheric pulse — runs until component unmounts on navigation
-    pulseOpacity.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 1200 }),
-        withTiming(0.4, { duration: 1200 }),
-      ),
-      -1,
-      false,
-    );
+    textOpacity.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.ease) });
+    tintOpacity.value = withTiming(0.3, { duration: 1600 });
+    cardOpacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.ease) });
+    cardTranslateY.value = withTiming(0, { duration: 1000, easing: Easing.out(Easing.ease) });
   }, []);
 
-  useEffect(() => {
-    let mounted = true;
+  function handleTap() {
+    // The user will tap fast here — that's intended, don't fight it with delay.
+    exitOpacity.value = withTiming(0, { duration: 250 }, () => {
+      runOnJS(router.push)(ROUTE.ONBOARDING_PERSONALITY);
+    });
+  }
 
-    const slowTimer = setTimeout(() => {
-      if (mounted) setShowSlowMsg(true);
-    }, SLOW_THRESHOLD_MS);
-
-    async function run() {
-      const start = Date.now();
-
-      let cards: BirthCards | undefined;
-      if (dateOfBirth) {
-        cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
-      }
-
-      // Wait for the minimum display duration measured against actual completion
-      const elapsed = Date.now() - start;
-      const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
-      await new Promise<void>((resolve) => setTimeout(resolve, remaining));
-    const { dateOfBirth, setBirthCards } = useProfileStore.getState();
-    const cards = dateOfBirth
-      ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
-      : undefined;
-
-      if (!mounted) return;
-      clearTimeout(slowTimer);
-      if (cards) setBirthCards(cards);
-      router.push(ROUTE.ONBOARDING_PERSONALITY);
-    }, remaining);
-      router.push('/(onboarding)/personality');
-    }
-
-    run();
-    }, MIN_DURATION_MS);
-
-    return () => {
-      mounted = false;
-      clearTimeout(slowTimer);
-    };
-  }, []);
-
-  const pulseStyle = useAnimatedStyle(() => ({
-    opacity: pulseOpacity.value,
+  const worldStyle = useAnimatedStyle(() => ({ opacity: exitOpacity.value }));
+  const textStyle = useAnimatedStyle(() => ({ opacity: textOpacity.value }));
+  const tintStyle = useAnimatedStyle(() => ({ opacity: tintOpacity.value, backgroundColor: tint }));
+  const cardStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    transform: [{ translateY: cardTranslateY.value }],
   }));
 
   return (
-    <OnboardingScreen>
-      <View style={styles.content}>
-        <Animated.Text style={[styles.headline, pulseStyle]}>
-          The pattern is forming.
-        </Animated.Text>
-        <Text style={styles.subline}>
-          Your birth cards are next.
-          Your numbers are unusual.
-        </Text>
-        {showSlowMsg && (
-          <Text style={styles.slowLine}>
-            // This is taking a moment. Still working.
-          </Text>
-        )}
-      </View>
-    </OnboardingScreen>
+    <Pressable style={styles.root} onPress={handleTap}>
+      <Animated.View style={[styles.world, worldStyle]}>
+        {/* World shifts barely perceptibly toward the calculated element */}
+        <Animated.View style={[StyleSheet.absoluteFill, styles.tint, tintStyle]} pointerEvents="none" />
+
+        <Animated.View style={[styles.textBlock, textStyle]}>
+          <Text style={styles.headline}>The pattern is older than you think.</Text>
+          <Text style={styles.headlineSecondary}>And more specific than you expected.</Text>
+        </Animated.View>
+
+        {/* TODO: real card-back artwork not yet delivered (assets/cards/major-arcana/
+            not populated) — placeholder rectangle stands in for the card back */}
+        <Animated.View style={[styles.cardBack, cardStyle]} />
+      </Animated.View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
+  root: {
     flex: 1,
+    backgroundColor: colors.obsidian,
+  },
+  world: {
+    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
+  tint: {
+    borderRadius: 0,
+  },
+  textBlock: {
+    paddingHorizontal: 40,
+    alignItems: 'center',
+    marginBottom: 56,
+  },
   headline: {
-    fontFamily: fonts.display,
-    fontSize: typeScale.displayM.fontSize,
-    color: colors.mist,
-    letterSpacing: 2,
-    marginBottom: 16,
+    fontFamily: fonts.displaySemiBold,
+    fontSize: typeScale.displayS.fontSize,
+    color: colors.bone,
+    letterSpacing: 1,
+    lineHeight: 28,
+    textAlign: 'center',
   },
-  subline: {
-    fontFamily: fonts.terminal,
-    fontSize: typeScale.bodyS.fontSize,
-    color: colors.text.tertiary,
-    letterSpacing: 0.5,
+  headlineSecondary: {
+    fontFamily: fonts.body,
+    fontSize: typeScale.bodyM.fontSize,
+    color: colors.text.secondary,
+    lineHeight: typeScale.bodyM.lineHeight,
+    textAlign: 'center',
+    marginTop: 12,
   },
-  slowLine: {
-    fontFamily: fonts.terminal,
-    fontSize: typeScale.bodyS.fontSize,
-    color: colors.text.tertiary,
-    letterSpacing: 0.5,
-    marginTop: 20,
-    opacity: 0.7,
+  cardBack: {
+    width: 96,
+    height: 152,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.ash,
+    backgroundColor: colors.charcoal,
   },
 });

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { TextInput, StyleSheet } from 'react-native';
 import { useAvatarStore } from '../../stores/avatarStore';
-import { avatarAccents, colors } from '../../theme/tokens';
+import { avatarAccents } from '../../theme/tokens';
 import { fonts } from '../../theme/typography';
 
 interface TerminalInputProps {
@@ -42,7 +42,6 @@ export default function TerminalInput({
       onSubmitEditing={onSubmit}
       placeholder={placeholder}
       placeholderTextColor="#3A3A4A"
-      placeholderTextColor={colors.ash}
       autoFocus={autoFocus}
       maxLength={maxLength}
       keyboardType={keyboardType}
@@ -60,7 +59,7 @@ const styles = StyleSheet.create({
   input: {
     fontFamily: fonts.terminal,
     fontSize: 20,
-    color: colors.bone,
+    color: '#F0EDE8',
     backgroundColor: 'transparent',
     padding: 0,
     minWidth: 40,

@@ -59,3 +59,12 @@ export const avatarAccents = {
     particleEnd: '#C49A4A',
   },
 } as const;
+
+// Elemental tint, reusing avatar accent palettes: fire=casper (warmth),
+// water=destiny (cool light), air=eli (silver), earth=olivia (moss/amber)
+export const elementAccents = {
+  fire: avatarAccents.casper,
+  water: avatarAccents.destiny,
+  air: avatarAccents.eli,
+  earth: avatarAccents.olivia,
+} as const;
