@@ -5,7 +5,6 @@ import { supabase } from '../../lib/supabase/client';
 import { handleSupabaseError } from '../../utils/handleError';
 import { saveReading } from '../../lib/supabase/v2/readings';
 import { MAJOR_ARCANA_CARDS } from './cardData';
-import type { TarotCard } from '../../types';
 import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
 
 function todayString(): string {
@@ -36,10 +35,8 @@ export function useDailyDraw() {
       if (user?.id) {
         try {
           const today = todayString();
-          const { data } = await supabase
-            .from(TABLE.STREAKS)
           const { data, error } = await supabase
-            .from('streaks')
+            .from(TABLE.STREAKS)
             .select('last_draw_date, last_card_id')
             .eq('user_id', user.id)
             .single();
@@ -49,7 +46,6 @@ export function useDailyDraw() {
           }
 
           if (data?.last_draw_date === today && data?.last_card_id) {
-          if (data && data.last_draw_date === today && data.last_card_id) {
             const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
             if (found) {
               setTodaysCard(found);
@@ -74,7 +70,6 @@ export function useDailyDraw() {
         selected.number === birthCards.personalityCard.number ||
         selected.number === birthCards.soulCard.number;
       if (isProfileCard) return { ...selected, auraContext: AURA_CONTEXT.RECOGNITION };
-      if (isProfileCard) return { ...selected, auraContext: 'recognition' as const };
     }
     return selected;
   }
@@ -86,29 +81,8 @@ export function useDailyDraw() {
     if (user?.id) {
       const today = todayString();
       try {
-        await supabase.from(TABLE.READINGS).insert({
-          user_id: user.id,
-          spread_type: SPREAD_TYPE.SINGLE,
-          avatar_id: null,
-          cards: [selected],
-          reflection_note: null,
-        });
+        await saveReading(user.id, { spreadType: SPREAD_TYPE.SINGLE, avatarId: null, cards: [selected] });
         await supabase.from(TABLE.STREAKS).upsert(
-        await Promise.all([
-          supabase.from('readings').insert({
-            user_id: user.id,
-            spread_type: 'single',
-            avatar_id: null,
-            cards: [selected],
-            reflection_note: null,
-          }),
-          supabase.from('streaks').upsert(
-            { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
-            { onConflict: 'user_id' },
-          ),
-        ]);
-        await saveReading(user.id, { spreadType: 'single', avatarId: null, cards: [selected] });
-        await supabase.from('streaks').upsert(
           { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
           { onConflict: 'user_id' },
         );

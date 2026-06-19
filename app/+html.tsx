@@ -14,6 +14,8 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <title>Majestic</title>
+
         {/* Resets ScrollView default styles that conflict with the root web layout */}
         <ScrollViewStyleReset />
 
@@ -34,11 +36,7 @@ export default function Root({ children }: PropsWithChildren) {
             `,
           }}
         />
-      </head>
-      <body>{children}</body>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title>Majestic</title>
-        <ScrollViewStyleReset />
+
         <style dangerouslySetInnerHTML={{
           __html: `
             html, body, #root { height: 100%; margin: 0; padding: 0; background: #1A1A2E; }
