@@ -2,9 +2,10 @@ import { useEffect, useMemo } from 'react';
 import { View, Platform } from 'react-native';
 import Animated, {
   withRepeat, withSequence, withTiming, withDelay, Easing,
-  useSharedValue,
+  useSharedValue, useDerivedValue,
 } from 'react-native-reanimated';
 import { avatarAccents } from '../../theme/tokens';
+import { accentIntensity } from '../../lib/avatarTransition';
 import type { AvatarId, AuraContext, PortalShape } from '../../types';
 import { AURA_CONTEXT, PORTAL_SHAPE } from '../../constants';
 
@@ -102,6 +103,11 @@ export default function AvatarAura({
     }
   }, [auraContext]);
 
+  // Drained to world-neutral during the 0-700ms window of an avatar switch,
+  // then blooms back in — multiplies whatever the aura-context animation set.
+  const finalStrokeOpacity = useDerivedValue(() => strokeOpacity.value * accentIntensity.value);
+  const finalGlowOpacity = useDerivedValue(() => glowOpacity.value * accentIntensity.value);
+
   // Web fallback: animated border circle/arc — no Skia WASM needed
   if (Platform.OS === 'web') {
     const r = size * 0.44;
@@ -116,7 +122,7 @@ export default function AvatarAura({
           borderRadius: isCircle ? r : size * 0.38,
           borderWidth: 8,
           borderColor: accent.primary,
-          opacity: glowOpacity,
+          opacity: finalGlowOpacity,
           // @ts-ignore — web-only shadow for glow effect
           boxShadow: `0 0 12px 4px ${accent.primary}`,
         }} />
@@ -128,7 +134,7 @@ export default function AvatarAura({
           borderRadius: isCircle ? r : size * 0.38,
           borderWidth: 2,
           borderColor: accent.primary,
-          opacity: strokeOpacity,
+          opacity: finalStrokeOpacity,
         }} />
       </View>
     );
@@ -148,14 +154,14 @@ export default function AvatarAura({
 
   return (
     <View style={{ width: size, height: size }}>
-      <Animated.View style={[{ position: 'absolute', width: size, height: size }, { opacity: glowOpacity }]}>
+      <Animated.View style={[{ position: 'absolute', width: size, height: size }, { opacity: finalGlowOpacity }]}>
         <Canvas style={{ width: size, height: size }}>
           <Path path={path} color={accent.primary} style="stroke" strokeWidth={8}>
             <BlurMask blur={10} style="normal" />
           </Path>
         </Canvas>
       </Animated.View>
-      <Animated.View style={[{ position: 'absolute', width: size, height: size }, { opacity: strokeOpacity }]}>
+      <Animated.View style={[{ position: 'absolute', width: size, height: size }, { opacity: finalStrokeOpacity }]}>
         <Canvas style={{ width: size, height: size }}>
           <Path path={path} color={accent.primary} style="stroke" strokeWidth={2.5} />
         </Canvas>

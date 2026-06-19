@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
 import { View, Pressable, Image, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
+import { accentIntensity } from '../../src/lib/avatarTransition';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { AVATAR_IMAGES } from '../../src/constants/avatarContent';
 
@@ -26,14 +28,21 @@ function AvatarEmblemButton() {
   const openAvatarModal = useAvatarStore((s) => s.openAvatarModal);
   const accentColor = avatarAccents[activeAvatar].primary;
 
+  // Dims to world-neutral during the 0-700ms window of an avatar switch, then blooms back in.
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: accentColor,
+    opacity: 0.4 + accentIntensity.value * 0.6,
+  }));
+
   return (
     <Pressable
       onLongPress={openAvatarModal}
       onPress={() => {}}
-      style={[styles.emblem, { borderColor: accentColor }]}
+      style={styles.emblem}
       accessibilityLabel="Switch companion (long press)"
     >
       <Image source={AVATAR_IMAGES[activeAvatar]} style={styles.emblemImage} resizeMode="cover" />
+      <Animated.View style={[styles.emblemBorder, borderStyle]} />
     </Pressable>
   );
 }
@@ -103,11 +112,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 2,
     overflow: 'hidden',
   },
   emblemImage: {
     width: '100%',
     height: '100%',
+  },
+  emblemBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 18,
+    borderWidth: 2,
   },
 });

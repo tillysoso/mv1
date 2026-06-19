@@ -1,6 +1,8 @@
 import { View, Image, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import AvatarAura from './AvatarAura';
 import { colors } from '../../theme/tokens';
+import { portalArrivalOpacity } from '../../lib/avatarTransition';
 import type { AvatarId, AvatarPresenceLevel, PortalShape, AuraContext } from '../../types';
 import { PORTAL_SHAPE, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../constants';
 
@@ -75,6 +77,9 @@ export default function AvatarPortrait({
   const shape = PORTAL_SHAPE_MAP[presenceLevel];
   const showPortrait = portraitSize > 0;
 
+  // New avatar's portrait fades in during Phase 4 of a switch (fires 1200ms, completes 1500ms).
+  const arrivalStyle = useAnimatedStyle(() => ({ opacity: portalArrivalOpacity.value }));
+
   if (presenceLevel === PRESENCE_LEVEL.NONE) return null;
 
   return (
@@ -91,13 +96,13 @@ export default function AvatarPortrait({
 
       {/* Portrait image centred within aura */}
       {showPortrait && (
-        <View style={styles.portraitContainer}>
+        <Animated.View style={[styles.portraitContainer, arrivalStyle]}>
           <Image
             source={IMAGES[avatarId][imageState]}
             style={{ width: portraitSize, height: portraitSize, borderRadius: portraitSize / 2 }}
             resizeMode="cover"
           />
-        </View>
+        </Animated.View>
       )}
 
       {/* mark: emblem placeholder — TODO: replace with Lottie emblem when assets land */}
