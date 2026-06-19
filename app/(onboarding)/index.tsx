@@ -14,7 +14,6 @@ import { trackNavigationClick } from '../../src/lib/analytics';
 import CTAButton from '../../src/components/onboarding/CTAButton';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import { ROUTE } from '../../src/constants';
 
 export default function EntryScreen() {
   const router = useRouter();
@@ -48,17 +47,10 @@ export default function EntryScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
-          onPress={() => router.push(ROUTE.ONBOARDING_NAME)}
-          onPress={() => {
-            trackNavigationClick('begin_cta', '/name');
-            router.push('/(onboarding)/name');
-          }}
-        >
-          <Text style={styles.ctaText}>Begin</Text>
-        </Pressable>
-        <CTAButton label="Begin" onPress={() => router.push('/(onboarding)/name')} />
+        <CTAButton label="Begin" onPress={() => {
+          trackNavigationClick('begin_cta', '/name');
+          router.push('/(onboarding)/name');
+        }} />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
@@ -98,6 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.wordmark,
     fontSize: 48,
     color: colors.bone,
+  },
   emblemPlaceholder: {
     width: 64,
     height: 64,
@@ -106,7 +99,6 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   headline: {
-    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
     color: colors.bone,
@@ -133,22 +125,5 @@ const styles = StyleSheet.create({
     color: colors.bone,
     letterSpacing: 2,
     marginBottom: 60,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignSelf: 'stretch',
-  },
-  ctaPressed: {
-    borderColor: colors.mist,
-    opacity: 0.8,
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
@@ -10,10 +8,8 @@ import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
-import { ROUTE } from '../../src/constants';
 
 const PROMPT = 'What do you go by?';
-const REVEAL_DELAY_MS = 30;
 const REVEAL_DELAY_MS = 30; // per character
 
 export default function NameScreen() {
@@ -44,35 +40,22 @@ export default function NameScreen() {
       return;
     }
     setName(trimmed);
-    router.push(ROUTE.ONBOARDING_DOB);
     trackFormSubmit('name_entry', 'onboarding_name');
     router.push('/(onboarding)/dob');
   }
 
   const isReady = value.trim().length > 0;
-  const canSubmit = value.trim().length > 0;
 
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={
+        isReady ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
+      }
+    >
       <Pressable style={styles.backLink} onPress={() => router.back()}>
         <Text style={styles.backText}>‹ back</Text>
       </Pressable>
 
-    <OnboardingScreen
-      bottomContent={
-        isReady ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
-        <Pressable
-          style={({ pressed }) => [
-            styles.cta,
-            !canSubmit && styles.ctaDisabled,
-            pressed && canSubmit && { opacity: 0.7 },
-          ]}
-          onPress={handleSubmit}
-        >
-          <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
-        </Pressable>
-      }
-    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
         <Text style={styles.systemLine}>INITIALISING.</Text>
@@ -147,24 +130,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 16,
     opacity: 0.8,
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-  },
-  ctaDisabled: {
-    borderColor: colors.bg.tertiary,
-    opacity: 0.4,
-  },
-  ctaText: {
-    fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
-    color: colors.bone,
-    letterSpacing: 2,
-  },
-  ctaTextDisabled: {
-    color: colors.text.tertiary,
   },
 });

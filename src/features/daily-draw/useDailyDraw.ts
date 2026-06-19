@@ -36,10 +36,8 @@ export function useDailyDraw() {
       if (user?.id) {
         try {
           const today = todayString();
-          const { data } = await supabase
-            .from(TABLE.STREAKS)
           const { data, error } = await supabase
-            .from('streaks')
+            .from(TABLE.STREAKS)
             .select('last_draw_date, last_card_id')
             .eq('user_id', user.id)
             .single();
@@ -49,7 +47,6 @@ export function useDailyDraw() {
           }
 
           if (data?.last_draw_date === today && data?.last_card_id) {
-          if (data && data.last_draw_date === today && data.last_card_id) {
             const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
             if (found) {
               setTodaysCard(found);
@@ -74,7 +71,6 @@ export function useDailyDraw() {
         selected.number === birthCards.personalityCard.number ||
         selected.number === birthCards.soulCard.number;
       if (isProfileCard) return { ...selected, auraContext: AURA_CONTEXT.RECOGNITION };
-      if (isProfileCard) return { ...selected, auraContext: 'recognition' as const };
     }
     return selected;
   }
@@ -94,21 +90,6 @@ export function useDailyDraw() {
           reflection_note: null,
         });
         await supabase.from(TABLE.STREAKS).upsert(
-        await Promise.all([
-          supabase.from('readings').insert({
-            user_id: user.id,
-            spread_type: 'single',
-            avatar_id: null,
-            cards: [selected],
-            reflection_note: null,
-          }),
-          supabase.from('streaks').upsert(
-            { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
-            { onConflict: 'user_id' },
-          ),
-        ]);
-        await saveReading(user.id, { spreadType: 'single', avatarId: null, cards: [selected] });
-        await supabase.from('streaks').upsert(
           { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
           { onConflict: 'user_id' },
         );

@@ -46,6 +46,7 @@ export default function CalculatingScreen() {
     async function run() {
       const start = Date.now();
 
+      const { dateOfBirth, setBirthCards } = useProfileStore.getState();
       let cards: BirthCards | undefined;
       if (dateOfBirth) {
         cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
@@ -55,21 +56,14 @@ export default function CalculatingScreen() {
       const elapsed = Date.now() - start;
       const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
       await new Promise<void>((resolve) => setTimeout(resolve, remaining));
-    const { dateOfBirth, setBirthCards } = useProfileStore.getState();
-    const cards = dateOfBirth
-      ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
-      : undefined;
 
       if (!mounted) return;
       clearTimeout(slowTimer);
       if (cards) setBirthCards(cards);
       router.push(ROUTE.ONBOARDING_PERSONALITY);
-    }, remaining);
-      router.push('/(onboarding)/personality');
     }
 
     run();
-    }, MIN_DURATION_MS);
 
     return () => {
       mounted = false;

@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -84,51 +82,26 @@ export default function ConfirmScreen() {
     if (confirming) return;
     setConfirming(true);
     confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
+    trackNavigationClick('lets_begin_cta', '/first-draw');
     setTimeout(() => {
       router.push('/(onboarding)/first-draw');
     }, 600);
   }
 
   return (
-    <OnboardingScreen
-      bottomContent={
-        <View>
-          {confirming && (
-            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
-              // confirmed.
-            </Animated.Text>
-          )}
-          <Pressable
-            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-            onPress={handleBegin}
-          >
-            <Text style={styles.ctaText}>Let's Begin</Text>
-          </Pressable>
-        </View>
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push(ROUTE.ONBOARDING_FIRST_DRAW)}
-          onPress={() => {
-            trackNavigationClick('lets_begin_cta', '/first-draw');
-            router.push('/(onboarding)/first-draw');
-          }}
-        >
-          <Text style={styles.ctaText}>Let's Begin</Text>
-        </Pressable>
-      }
-    >
-      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
-
-      <Animated.View style={[styles.content, contentStyle]}>
-        <Text style={styles.presenceLine}>
-          {AVATAR_NAMES[activeAvatar]} is with you.
-        </Text>
     <>
       {/* Prevent back-swipe — avatar choice is committed */}
       <Stack.Screen options={{ gestureEnabled: false }} />
       <OnboardingScreen
         bottomContent={
-          <CTAButton label="Let's Begin" onPress={() => router.push('/(onboarding)/first-draw')} />
+          <View>
+            {confirming && (
+              <Animated.Text style={[styles.confirmLine, confirmStyle]}>
+                // confirmed.
+              </Animated.Text>
+            )}
+            <CTAButton label="Let's Begin" onPress={handleBegin} disabled={confirming} />
+          </View>
         }
       >
         {/* Elemental accent bloom overlay */}
@@ -139,15 +112,12 @@ export default function ConfirmScreen() {
             {AVATAR_NAMES[activeAvatar]} is with you.
           </Text>
 
-        <Image
-          source={AVATAR_IMAGES[activeAvatar]}
-          style={styles.portrait}
-          resizeMode="cover"
-        />
+          <Image
+            source={AVATAR_IMAGES[activeAvatar]}
+            style={styles.portrait}
+            resizeMode="cover"
+          />
 
-        <Text style={[styles.avatarName, { color: accent.primary }]}>
-          {AVATAR_NAMES[activeAvatar]}
-        </Text>
           <Text style={[styles.avatarName, { color: accent.primary }]}>
             {AVATAR_NAMES[activeAvatar]}
           </Text>
@@ -167,7 +137,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -198,19 +167,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 8,
     opacity: 0,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    alignSelf: 'stretch',
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });
