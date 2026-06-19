@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackNavigationClick } from '../../src/lib/analytics';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { saveProfile } from '../../src/lib/supabase/v2/profile';
@@ -24,7 +23,7 @@ export default function FirstDrawScreen() {
     if (drawing) return;
     setDrawing(true);
     setOnboardingComplete(true);
-    trackNavigationClick('draw_cta', '/(tabs)');
+    trackNavigationClick('draw_cta', ROUTE.TABS);
 
     if (user?.id && dateOfBirth && birthCards) {
       saveProfile(user.id, dateOfBirth, birthCards).catch(() => {
@@ -40,6 +39,13 @@ export default function FirstDrawScreen() {
   return (
     <OnboardingScreen
       bottomContent={
+o        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
+          onPress={handleDraw}
+          disabled={drawing}
+        >
+          <Text style={styles.ctaText}>Enter</Text>
+        </Pressable>
         <CTAButton label="Draw" onPress={handleDraw} disabled={drawing} align="center" />
       }
     >

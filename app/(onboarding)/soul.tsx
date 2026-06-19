@@ -1,11 +1,14 @@
-import { Text, View, StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
+import CardReveal from '../../src/components/cards/CardReveal';
+import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
+import { getCardOneliner } from '../../src/features/onboarding/cardOneliners';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
@@ -13,14 +16,45 @@ import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPla
 import { toRoman } from '../../src/utils/roman';
 import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
 
+// 'expansive' tone timings — softer and slower than the personality reveal.
+const LIFT_MS = 700;
+const FLIP_MS = 900;
+const SETTLE_MS = LIFT_MS + FLIP_MS + 150;
+const LINE_STAGGER_MS = 700;
+const CTA_BEAT_MS = 1800;
+
 export default function SoulScreen() {
   const router = useRouter();
   const { birthCards, name } = useProfileStore();
   useScrollDepth('/soul');
   const animatedStyle = useEntranceAnimation();
+  const { width } = useWindowDimensions();
+  const useRow = width >= 360;
 
   const isSameCard = birthCards?.sameCard ?? false;
+  const personalityCard = birthCards?.personalityCard;
   const soulCard = birthCards?.soulCard;
+  const oneliner = soulCard ? getCardOneliner(soulCard.number) : undefined;
+
+  const [linesShown, setLinesShown] = useState(0);
+  const [ctaReady, setCtaReady] = useState(false);
+
+  useEffect(() => {
+    if (!birthCards) return;
+    if (isSameCard) {
+      const timers = [
+        setTimeout(() => setLinesShown(2), 400),
+        setTimeout(() => setCtaReady(true), 400 + CTA_BEAT_MS),
+      ];
+      return () => timers.forEach(clearTimeout);
+    }
+    const timers = [
+      setTimeout(() => setLinesShown(1), SETTLE_MS),
+      setTimeout(() => setLinesShown(2), SETTLE_MS + LINE_STAGGER_MS),
+      setTimeout(() => setCtaReady(true), SETTLE_MS + LINE_STAGGER_MS + CTA_BEAT_MS),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [birthCards, isSameCard]);
 
   function handleContinue() {
     trackNavigationClick('continue_cta', '/profile');
@@ -29,45 +63,75 @@ export default function SoulScreen() {
 
   return (
     <OnboardingScreen
-      bottomContent={<CTAButton label="Continue" onPress={handleContinue} />}
+      bottomContent={
+        <CTAButton
+          label="Continue"
+          onPress={() => {
+            trackNavigationClick('continue_cta', '/profile');
+            router.push(ROUTE.ONBOARDING_PROFILE);
+          }}
+        />
+        ctaReady ? (
+          <CTAButton
+            label="Continue"
+            onPress={() => {
+              trackNavigationClick('continue_cta', '/profile');
+              router.push(ROUTE.ONBOARDING_PROFILE);
+            }}
+          />
+        ) : null
+      }
     >
-      <Animated.View style={[styles.content, animatedStyle]}>
+      <View style={styles.content}>
         {isSameCard ? (
           <>
-            <Text style={styles.label}>Both cards are the same{name ? `, ${name}` : ''}.</Text>
-            <View style={styles.sameCardCallout}>
-              <Text style={styles.sameCardText}>
-                You carry your nature.
-              </Text>
-            </View>
-            <Text style={styles.sameCardSubtext}>
-              You carry your purpose as your nature. Some people spend a
-              lifetime finding what you were born knowing. The work is
-              learning to trust it.
+            <Text style={styles.label}>
+              Both cards are the same{name ? `, ${name}` : ''}.
             </Text>
+            {personalityCard && (
+              <View style={styles.sameCardWrap}>
+                <NumberCardPlaceholder number={personalityCard.number} />
+                <Text style={styles.cardName}>{personalityCard.name}</Text>
+              </View>
+            )}
+            {linesShown >= 2 && (
+              <Text style={styles.sameCardSubtext}>
+                You carry your purpose as your nature. Some people spend a
+                lifetime finding what you were born knowing. The work is
+                learning to trust it.
+              </Text>
+            )}
           </>
         ) : (
           <>
-            <Text style={styles.label}>Your Soul Card</Text>
+            <Text style={styles.label}>And this is your soul card.</Text>
             <Text style={styles.sublabel}>
               Not who you are. Who you are here to become.
             </Text>
 
-            {soulCard && <NumberCardPlaceholder number={soulCard.number} />}
+            <View style={[styles.cardsRow, useRow && styles.cardsRowHorizontal]}>
+              {personalityCard && (
+                <View style={styles.settledCard}>
+                  <NumberCardPlaceholder number={personalityCard.number} />
+                  <Text style={styles.settledCardName}>{personalityCard.name}</Text>
+                </View>
+              )}
+              {soulCard && (
+                <View style={styles.revealingCard}>
+                  <CardReveal number={soulCard.number} tone="expansive" />
+                </View>
+              )}
+            </View>
 
-            {soulCard && (
-              <>
-                <Text style={styles.cardNumber}>{toRoman(soulCard.number)}</Text>
+            {soulCard && oneliner && linesShown >= 1 && (
+              <View style={styles.lines}>
                 <Text style={styles.cardName}>{soulCard.name}</Text>
-                <Text style={styles.essence}>
-                  Your purpose. The direction of your growth.{'\n'}
-                  The becoming.
-                </Text>
-              </>
+                {linesShown >= 2 && <Text style={styles.essence}>{oneliner.soul}</Text>}
+              </View>
             )}
           </>
         )}
-      </Animated.View>
+      </View>
     </OnboardingScreen>
   );
 }
@@ -76,6 +140,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 20,
+    alignItems: 'center',
   },
   label: {
     fontFamily: fonts.bodySemiBold,
@@ -84,6 +149,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: 8,
     textTransform: 'uppercase',
+    alignSelf: 'flex-start',
   },
   sublabel: {
     fontFamily: fonts.bodyLight,
@@ -91,44 +157,62 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     lineHeight: typeScale.bodyS.lineHeight,
     marginBottom: 32,
+    alignSelf: 'flex-start',
   },
   cardNumber: {
+  cardsRow: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 16,
+  },
+  cardsRowHorizontal: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 24,
+  },
+  settledCard: {
+    alignItems: 'center',
+  },
+  settledCardName: {
     fontFamily: fonts.display,
-    fontSize: typeScale.bodyM.fontSize,
-    color: colors.mist,
-    letterSpacing: 2,
-    marginBottom: 8,
+    fontSize: typeScale.bodyS.fontSize,
+    color: colors.text.tertiary,
+    marginTop: -16,
+  },
+  revealingCard: {
+    alignItems: 'center',
+  },
+  lines: {
+    alignItems: 'center',
+    marginTop: 20,
   },
   cardName: {
     fontFamily: fonts.displayBold,
     fontSize: typeScale.displayL.fontSize,
     color: colors.bone,
     letterSpacing: 1,
-    marginBottom: 20,
+    textAlign: 'center',
+    marginBottom: 14,
   },
   essence: {
     fontFamily: fonts.body,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
+    textAlign: 'center',
+    maxWidth: 320,
   },
-  sameCardCallout: {
-    borderLeftWidth: 2,
-    borderLeftColor: colors.bg.dusk,
-    paddingLeft: 20,
+  sameCardWrap: {
+    alignItems: 'center',
+    marginTop: 24,
     marginBottom: 24,
-    marginTop: 32,
-  },
-  sameCardText: {
-    fontFamily: fonts.display,
-    fontSize: typeScale.displayM.fontSize,
-    color: colors.bone,
-    letterSpacing: 1,
   },
   sameCardSubtext: {
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
+    textAlign: 'center',
+    maxWidth: 320,
   },
 });

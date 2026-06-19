@@ -4,16 +4,16 @@
 // alias rather than combining fontFamily + fontWeight across platforms.
 export const fonts = {
   // Display — Cinzel (@expo-google-fonts/cinzel)
-  display: 'Cinzel_400Regular',
+  display:         'Cinzel_400Regular',
   displaySemiBold: 'Cinzel_600SemiBold',
-  displayBold: 'Cinzel_700Bold',
+  displayBold:     'Cinzel_700Bold',
 
   // Body — Montserrat (@expo-google-fonts/montserrat)
-  bodyLight: 'Montserrat_300Light',
-  body: 'Montserrat_400Regular',
-  bodyMedium: 'Montserrat_500Medium',
+  bodyLight:    'Montserrat_300Light',
+  body:         'Montserrat_400Regular',
+  bodyMedium:   'Montserrat_500Medium',
   bodySemiBold: 'Montserrat_600SemiBold',
-  bodyBold: 'Montserrat_700Bold',
+  bodyBold:     'Montserrat_700Bold',
 
   // Terminal — Space Mono (@expo-google-fonts/space-mono)
   terminal: 'SpaceMono_400Regular',

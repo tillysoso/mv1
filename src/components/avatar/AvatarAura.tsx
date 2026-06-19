@@ -1,8 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { View, Platform } from 'react-native';
 import Animated, {
-  withRepeat, withSequence, withTiming, withDelay, Easing,
   useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+  withDelay,
+  Easing,
 } from 'react-native-reanimated';
 import { avatarAccents } from '../../theme/tokens';
 import type { AvatarId, AuraContext, PortalShape } from '../../types';
@@ -31,6 +35,15 @@ const INTENSITY: Record<string, number> = {
   [AURA_CONTEXT.BREAKTHROUGH]: 0.8,
   [AURA_CONTEXT.SHADOW]:       0.3,
   [AURA_CONTEXT.RECOGNITION]:  0.6,
+};
+
+// Breathing amplitude per spec 03.3 — breakthrough breathes outward (largest
+// swing), shadow contracts inward (smaller swing), neutral is barely perceptible.
+const BREATH_DELTA: Record<string, number> = {
+  [AURA_CONTEXT.BREAKTHROUGH]: 0.15,
+  [AURA_CONTEXT.SHADOW]:       0.08,
+  [AURA_CONTEXT.NEUTRAL]:      0.04,
+  [AURA_CONTEXT.GATHERING]:    0.1,
 };
 
 function buildLivingCirclePath(cx: number, cy: number, r: number) {
@@ -67,39 +80,45 @@ export default function AvatarAura({
 
   useEffect(() => {
     const b = INTENSITY[auraContext] ?? 0.4;
-    if (auraContext === AURA_CONTEXT.NEUTRAL || auraContext === AURA_CONTEXT.GATHERING) {
-      strokeOpacity.value = withRepeat(
-        withSequence(
-          withTiming(b + 0.15, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-          withTiming(b - 0.05, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        ),
-        -1,
-        false,
-      );
-      glowOpacity.value = withRepeat(
-        withSequence(
-          withTiming((b + 0.15) * 0.3, { duration: 1500 }),
-          withTiming((b - 0.05) * 0.3, { duration: 1500 }),
-        ),
-        -1,
-        false,
-      );
-    } else if (auraContext === AURA_CONTEXT.BREAKTHROUGH) {
-      strokeOpacity.value = withSequence(withTiming(0.95, { duration: 300 }), withTiming(b, { duration: 700 }));
-      glowOpacity.value = withSequence(withTiming(0.4, { duration: 300 }), withTiming(b * 0.3, { duration: 700 }));
-    } else if (auraContext === AURA_CONTEXT.SHADOW) {
-      strokeOpacity.value = withTiming(b, { duration: 800 });
-      glowOpacity.value = withTiming(b * 0.3, { duration: 800 });
-    } else if (auraContext === AURA_CONTEXT.RECOGNITION) {
+
+    if (auraContext === AURA_CONTEXT.RECOGNITION) {
+      // One-shot rise, then settle into the recognition hold level — no repeat.
       strokeOpacity.value = withSequence(
-        withDelay(500, withTiming(0.9, { duration: 400 })),
-        withTiming(b, { duration: 600 }),
+        withDelay(500, withTiming(0.9, { duration: 400, easing: Easing.out(Easing.ease) })),
+        withTiming(b, { duration: 600, easing: Easing.inOut(Easing.ease) }),
       );
       glowOpacity.value = withSequence(
-        withDelay(500, withTiming(0.4, { duration: 400 })),
-        withTiming(b * 0.3, { duration: 600 }),
+        withDelay(500, withTiming(0.4, { duration: 400, easing: Easing.out(Easing.ease) })),
+        withTiming(b * 0.3, { duration: 600, easing: Easing.inOut(Easing.ease) }),
       );
+      return;
     }
+
+    // Build to the resting level first (ease-out), then breathe around it
+    // at the 4s period shared with the card's own breathing pulse (03.3).
+    const delta = BREATH_DELTA[auraContext] ?? 0.04;
+    strokeOpacity.value = withSequence(
+      withTiming(b, { duration: 600, easing: Easing.out(Easing.ease) }),
+      withRepeat(
+        withSequence(
+          withTiming(b + delta, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+          withTiming(b - delta * 0.3, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        ),
+        -1,
+        false,
+      ),
+    );
+    glowOpacity.value = withSequence(
+      withTiming(b * 0.3, { duration: 600, easing: Easing.out(Easing.ease) }),
+      withRepeat(
+        withSequence(
+          withTiming((b + delta) * 0.3, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+          withTiming((b - delta * 0.3) * 0.3, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        ),
+        -1,
+        false,
+      ),
+    );
   }, [auraContext]);
 
   // Web fallback: animated border circle/arc — no Skia WASM needed
@@ -108,7 +127,6 @@ export default function AvatarAura({
     const isCircle = shape === PORTAL_SHAPE.LIVING_CIRCLE;
     return (
       <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-        {/* Glow ring */}
         <Animated.View style={{
           position: 'absolute',
           width: isCircle ? r * 2 : size * 0.76,
@@ -120,7 +138,6 @@ export default function AvatarAura({
           // @ts-ignore — web-only shadow for glow effect
           boxShadow: `0 0 12px 4px ${accent.primary}`,
         }} />
-        {/* Main arc border */}
         <Animated.View style={{
           position: 'absolute',
           width: isCircle ? r * 2 : size * 0.76,

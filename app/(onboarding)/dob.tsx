@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useState, useRef } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackFormSubmit } from '../../src/lib/analytics';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
@@ -32,8 +33,6 @@ export default function DobScreen() {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [calculating, setCalculating] = useState(false);
-  const [calcLinesShown, setCalcLinesShown] = useState(0);
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
@@ -68,29 +67,15 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
+      setErrorMsg('// that date doesn\'t resolve — try again');
       setErrorMsg("// that date doesn't resolve — try again");
       return;
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
     trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
-
-    // Birth card calc runs now, during this screen's hold beat, so the
-    // result is ready before Screen 04 ever renders — no loading state there.
-    const cards = birthCardCalculator(d, m, y);
-    setBirthCards(cards);
-
-    setCalculating(true);
-    CALC_LINES.forEach((_, i) => {
-      setTimeout(() => setCalcLinesShown((n) => Math.max(n, i + 1)), i * CALC_LINE_DELAY_MS);
-    });
-    setTimeout(
-      () => router.push(ROUTE.ONBOARDING_CALCULATING),
-      CALC_LINES.length * CALC_LINE_DELAY_MS + HOLD_BEFORE_NAV_MS,
-    );
+    router.push(ROUTE.ONBOARDING_CALCULATING);
   }
-
-  const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
 
   return (
     <OnboardingScreen
@@ -100,70 +85,74 @@ export default function DobScreen() {
         <>
           <View style={styles.terminalHeader}>
             <Text style={styles.systemLine}>One more thing{name ? `, ${name}` : ''}.</Text>
+      bottomContent={
+        <Pressable
+          style={({ pressed }) => [
+            styles.cta,
+            !canSubmit && styles.ctaDisabled,
+            pressed && canSubmit && { opacity: 0.7 },
+          ]}
+          onPress={handleSubmit}
+        >
+          <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
+        </Pressable>
+      }
+      bottomContent={<CTAButton label="Continue" disabled={!isReady} onPress={handleSubmit} />}
+    >
+      <Pressable style={styles.backLink} onPress={() => router.back()}>
+        <Text style={styles.backText}>‹ back</Text>
+      </Pressable>
+
+      <View style={styles.terminalHeader}>
+        <Text style={styles.systemLine}>
+          {name ? `${name}.` : ''}
+        </Text>
+        <Text style={styles.systemLine}>Good. The signal has you now.</Text>
+        <Text style={styles.systemLine}>&nbsp;</Text>
+        <Text style={styles.systemLine}>One more thing.</Text>
+      </View>
+
+      <Text style={styles.prompt}>When did you arrive?</Text>
+
+      <View style={styles.fieldsRow}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>DD</Text>
+          <View style={styles.inputRow}>
+            <Text style={styles.caret}>&gt; </Text>
+            <TextInput
+              value={day}
+              onChangeText={handleDayChange}
+              placeholder="—"
+              placeholderTextColor={colors.text.tertiary}
+              keyboardType="number-pad"
+              maxLength={2}
+              returnKeyType="next"
+              onSubmitEditing={() => monthRef.current?.focus()}
+              autoFocus
+              selectionColor={cursorColor}
+              cursorColor={cursorColor}
+              style={styles.input}
+            />
           </View>
 
-          <Text style={styles.prompt}>When did you arrive?</Text>
-
-          <View style={styles.fieldsRow}>
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>DD</Text>
-              <View style={styles.inputRow}>
-                <Text style={styles.caret}>&gt; </Text>
-                <TextInput
-                  value={day}
-                  onChangeText={handleDayChange}
-                  placeholder="—"
-                  placeholderTextColor={colors.text.tertiary}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                  returnKeyType="next"
-                  onSubmitEditing={() => monthRef.current?.focus()}
-                  autoFocus
-                  selectionColor={cursorColor}
-                  style={styles.input}
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>MM</Text>
-              <View style={styles.inputRow}>
-                <Text style={styles.caret}>&gt; </Text>
-                <TextInput
-                  ref={monthRef}
-                  value={month}
-                  onChangeText={handleMonthChange}
-                  placeholder="—"
-                  placeholderTextColor={colors.text.tertiary}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                  returnKeyType="next"
-                  onSubmitEditing={() => yearRef.current?.focus()}
-                  selectionColor={cursorColor}
-                  style={styles.input}
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>YYYY</Text>
-              <View style={styles.inputRow}>
-                <Text style={styles.caret}>&gt; </Text>
-                <TextInput
-                  ref={yearRef}
-                  value={year}
-                  onChangeText={handleYearChange}
-                  placeholder="——"
-                  placeholderTextColor={colors.text.tertiary}
-                  keyboardType="number-pad"
-                  maxLength={4}
-                  returnKeyType="done"
-                  onSubmitEditing={handleSubmit}
-                  selectionColor={cursorColor}
-                  style={styles.input}
-                />
-              </View>
-            </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>MM</Text>
+          <View style={styles.inputRow}>
+            <Text style={styles.caret}>&gt; </Text>
+            <TextInput
+              ref={monthRef}
+              value={month}
+              onChangeText={handleMonthChange}
+              placeholder="—"
+              placeholderTextColor={colors.text.tertiary}
+              keyboardType="number-pad"
+              maxLength={2}
+              returnKeyType="next"
+              onSubmitEditing={() => yearRef.current?.focus()}
+              selectionColor={cursorColor}
+              cursorColor={cursorColor}
+              style={styles.input}
+            />
           </View>
 
           {errorMsg ? <Text style={styles.errorLine}>{errorMsg}</Text> : null}
@@ -177,6 +166,31 @@ export default function DobScreen() {
           ))}
         </View>
       )}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>YYYY</Text>
+          <View style={styles.inputRow}>
+            <Text style={styles.caret}>&gt; </Text>
+            <TextInput
+              ref={yearRef}
+              value={year}
+              onChangeText={handleYearChange}
+              placeholder="——"
+              placeholderTextColor={colors.text.tertiary}
+              keyboardType="number-pad"
+              maxLength={4}
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              selectionColor={cursorColor}
+              cursorColor={cursorColor}
+              style={styles.input}
+            />
+          </View>
+        </View>
+      </View>
+
+      {errorMsg ? (
+        <Text style={styles.errorLine}>{errorMsg}</Text>
+      ) : null}
     </OnboardingScreen>
   );
 }
@@ -237,5 +251,29 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 20,
     opacity: 0.8,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+  },
+  ctaDisabled: {
+    borderColor: colors.bg.tertiary,
+    opacity: 0.4,
+  },
+  ctaText: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
+    color: colors.mist,
+    letterSpacing: 0.5,
+    marginTop: 24,
+    opacity: 0.8,
+  },
+  ctaTextDisabled: {
+    color: colors.text.tertiary,
   },
 });

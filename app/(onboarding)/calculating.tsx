@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import { cardElement } from '../../src/features/birth-card/cardElement';
+import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
 import { ROUTE } from '../../src/constants';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors, elementAccents } from '../../src/theme/tokens';
@@ -18,22 +19,54 @@ import { fonts, typeScale } from '../../src/theme/typography';
 // the dob screen's hold beat — no loading state here, only the reveal.
 export default function ThresholdScreen() {
   const router = useRouter();
-  const birthCards = useProfileStore((s) => s.birthCards);
-
-  const element = birthCards ? cardElement(birthCards.personalityCard.number) : 'air';
-  const tint = elementAccents[element].primary;
-
-  const textOpacity = useSharedValue(0);
-  const cardOpacity = useSharedValue(0);
-  const cardTranslateY = useSharedValue(24);
-  const tintOpacity = useSharedValue(0);
-  const exitOpacity = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.4);
+  const [showSlowMsg, setShowSlowMsg] = useState(false);
 
   useEffect(() => {
-    textOpacity.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.ease) });
-    tintOpacity.value = withTiming(0.3, { duration: 1600 });
-    cardOpacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.ease) });
-    cardTranslateY.value = withTiming(0, { duration: 1000, easing: Easing.out(Easing.ease) });
+    // Slow atmospheric pulse — runs until component unmounts on navigation
+    pulseOpacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1200 }),
+        withTiming(0.4, { duration: 1200 }),
+      ),
+      -1,
+      false,
+    );
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const slowTimer = setTimeout(() => {
+      if (mounted) setShowSlowMsg(true);
+    }, SLOW_THRESHOLD_MS);
+
+    async function run() {
+      const start = Date.now();
+      const { dateOfBirth, setBirthCards } = useProfileStore.getState();
+
+      const { dateOfBirth, setBirthCards } = useProfileStore.getState();
+      const cards = dateOfBirth
+        ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
+        : undefined;
+
+      // Wait for the minimum display duration measured against actual completion
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
+      await new Promise<void>((resolve) => setTimeout(resolve, remaining));
+
+      if (!mounted) return;
+      clearTimeout(slowTimer);
+      if (cards) setBirthCards(cards);
+      router.push(ROUTE.ONBOARDING_PERSONALITY);
+    }
+
+    run();
+
+    return () => {
+      mounted = false;
+      clearTimeout(slowTimer);
+    };
   }, []);
 
   function handleTap() {
@@ -52,21 +85,21 @@ export default function ThresholdScreen() {
   }));
 
   return (
-    <Pressable style={styles.root} onPress={handleTap}>
-      <Animated.View style={[styles.world, worldStyle]}>
-        {/* World shifts barely perceptibly toward the calculated element */}
-        <Animated.View style={[StyleSheet.absoluteFill, styles.tint, tintStyle]} pointerEvents="none" />
-
-        <Animated.View style={[styles.textBlock, textStyle]}>
-          <Text style={styles.headline}>The pattern is older than you think.</Text>
-          <Text style={styles.headlineSecondary}>And more specific than you expected.</Text>
-        </Animated.View>
-
-        {/* TODO: real card-back artwork not yet delivered (assets/cards/major-arcana/
-            not populated) — placeholder rectangle stands in for the card back */}
-        <Animated.View style={[styles.cardBack, cardStyle]} />
-      </Animated.View>
-    </Pressable>
+    <OnboardingScreen>
+      <View style={styles.content}>
+        <Animated.Text style={[styles.headline, pulseStyle]}>
+          The pattern is forming.
+        </Animated.Text>
+        <Text style={styles.subline}>
+          Your birth cards are next.
+        </Text>
+        {showSlowMsg && (
+          <Text style={styles.slowLine}>
+            This is taking a moment. Still working.
+          </Text>
+        )}
+      </View>
+    </OnboardingScreen>
   );
 }
 

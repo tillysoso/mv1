@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -69,7 +70,14 @@ export default function ConfirmScreen() {
 
   function handleBegin() {
     trackNavigationClick('lets_begin_cta', '/first-draw');
-    router.push('/(onboarding)/first-draw');
+    router.push(ROUTE.ONBOARDING_FIRST_DRAW);
+    if (confirming) return;
+    setConfirming(true);
+    confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
+    trackNavigationClick('lets_begin_cta', '/first-draw');
+    setTimeout(() => {
+      router.push(ROUTE.ONBOARDING_FIRST_DRAW);
+    }, 600);
   }
 
   return (
@@ -77,6 +85,9 @@ export default function ConfirmScreen() {
       {/* Prevent back-swipe — avatar choice is committed */}
       <Stack.Screen options={{ gestureEnabled: false }} />
       <OnboardingScreen
+        bottomContent={
+          <CTAButton label="Let's Begin" onPress={handleBegin} />
+        }
         bottomContent={<CTAButton label="Let's Begin" onPress={handleBegin} />}
       >
         {/* Elemental accent bloom overlay */}
@@ -100,6 +111,12 @@ export default function ConfirmScreen() {
           <Text style={styles.firstWords}>
             "{FIRST_WORDS[activeAvatar]}"
           </Text>
+
+          {confirming && (
+            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
+              // confirmed.
+            </Animated.Text>
+          )}
         </Animated.View>
       </OnboardingScreen>
     </>
@@ -134,5 +151,26 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
+  },
+  confirmLine: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
+    marginTop: 16,
+    opacity: 0,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'stretch',
+  },
+  ctaText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: typeScale.label.fontSize,
+    color: colors.bone,
+    letterSpacing: 2,
   },
 });

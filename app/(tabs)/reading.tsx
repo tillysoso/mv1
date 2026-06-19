@@ -1,23 +1,51 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  withDelay,
+  Easing,
+} from 'react-native-reanimated';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useProfileStore } from '../../src/stores/profileStore';
 import AvatarPortrait from '../../src/components/avatar/AvatarPortrait';
 import CardFace from '../../src/components/cards/CardFace';
-import CardBack from '../../src/components/cards/CardBack';
 import { interpretationPlaceholder } from '../../src/features/reading/interpretationPlaceholder';
 import { MAJOR_ARCANA_CARDS } from '../../src/features/daily-draw/cardData';
-import { colors } from '../../src/theme/tokens';
-import { typeScale } from '../../src/theme/typography';
+import { avatarAccents, colors } from '../../src/theme/tokens';
+import { fonts, typeScale } from '../../src/theme/typography';
 import type { TarotCard, AuraContext, AvatarPresenceLevel } from '../../src/types';
+import type { AvatarId } from '../../src/types/avatar';
 import { SPREAD_TYPE, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../src/constants';
 
-type SpreadType = 'single' | 'three_card';
+type SpreadType = (typeof SPREAD_TYPE)[keyof typeof SPREAD_TYPE];
 type ReadingPhase = 'select' | 'shuffle';
 
 const POSITIONS: Record<SpreadType, string[]> = {
   [SPREAD_TYPE.SINGLE]:     ['What needs attention'],
   [SPREAD_TYPE.THREE_CARD]: ['Past', 'Present', 'Future'],
+};
+
+const AVATAR_NAMES: Record<AvatarId, string> = {
+  casper: 'Casper', eli: 'Eli', olivia: 'Olivia', destiny: 'Destiny',
+};
+
+const ROMAN: Record<number, string> = {
+  0: '0', 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
+  8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII', 13: 'XIII',
+  14: 'XIV', 15: 'XV', 16: 'XVI', 17: 'XVII', 18: 'XVIII', 19: 'XIX',
+  20: 'XX', 21: 'XXI',
 };
 
 function pickCards(count: number, profileNumbers: number[]): TarotCard[] {
@@ -33,6 +61,46 @@ function pickCards(count: number, profileNumbers: number[]): TarotCard[] {
 export default function ReadingScreen() {
   const { activeAvatar } = useAvatarStore();
   const { birthCards } = useProfileStore();
+// Animated face-down card the user taps to reveal — salvaged from the older
+// implementation for its press-in/press-out micro-interaction.
+function FaceDownCard({
+  onReveal,
+  accent,
+}: {
+  onReveal: () => void;
+  accent: { primary: string };
+}) {
+  const scale = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <Pressable
+      onPressIn={() => {
+        scale.value = withTiming(0.96, { duration: 150 });
+      }}
+      onPressOut={() => {
+        scale.value = withSequence(
+          withTiming(1.02, { duration: 100 }),
+          withTiming(1, { duration: 150 }),
+        );
+      }}
+      onPress={onReveal}
+    >
+      <Animated.View style={[styles.cardBack, animStyle]}>
+        <View style={[styles.cardBackInner, { borderColor: accent.primary + '40' }]} />
+        <Text style={styles.cardBackHint}>Tap to reveal</Text>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+export default function ReadingScreen() {
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
+  const { birthCards } = useProfileStore();
+  const accent = avatarAccents[activeAvatar];
   const profileNumbers = birthCards
     ? [birthCards.personalityCard.number, birthCards.soulCard.number]
     : [];
@@ -140,14 +208,13 @@ export default function ReadingScreen() {
               {revealed[index] ? (
                 <View style={styles.revealedSlot}>
                   <CardFace card={card} avatarId={activeAvatar} size="full" />
-                  <Text style={styles.interpretation}>
+                  <Text style={styles.interpretationText}>
                     {interpretationPlaceholder[activeAvatar](card.name)}
                   </Text>
                 </View>
               ) : (
                 <View style={styles.faceDownSlot}>
-                  <CardBack size="daily" onPress={() => revealCard(index)} />
-                  <Text style={styles.tapHint}>tap to reveal</Text>
+                  <FaceDownCard onReveal={() => revealCard(index)} accent={accent} />
                 </View>
               )}
             </View>
@@ -212,6 +279,7 @@ const styles = StyleSheet.create({
     borderColor: colors.ash,
     paddingVertical: 16,
     paddingHorizontal: 20,
+    borderRadius: 2,
     marginBottom: 16,
   },
   spreadTitle: {
@@ -253,17 +321,36 @@ const styles = StyleSheet.create({
   faceDownSlot: {
     alignItems: 'center',
   },
-  tapHint: {
+  cardBack: {
+    width: 200,
+    height: 300,
+    backgroundColor: colors.bg.secondary,
+    borderWidth: 1,
+    borderColor: colors.bg.dusk,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  cardBackInner: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    right: 6,
+    bottom: 6,
+    borderWidth: 1,
+    borderRadius: 4,
+  },
+  cardBackHint: {
+    fontFamily: fonts.terminal,
     fontSize: 10,
-    letterSpacing: 2,
     color: colors.text.tertiary,
-    textTransform: 'uppercase',
-    marginTop: 12,
+    letterSpacing: 0.5,
   },
   revealedSlot: {
     alignItems: 'center',
   },
-  interpretation: {
+  interpretationText: {
     fontSize: typeScale.bodyM.fontSize,
     lineHeight: typeScale.bodyM.lineHeight,
     color: colors.text.secondary,

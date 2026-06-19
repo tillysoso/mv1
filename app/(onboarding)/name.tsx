@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackFormSubmit } from '../../src/lib/analytics';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -18,9 +17,7 @@ const SYSTEM_LINES = [
   'Before we go further —',
 ];
 const PROMPT = 'What do you go by?';
-const CHAR_DELAY_MS = 40;
-const LINE_PAUSE_MS = 350;
-const ECHO_PAUSE_MS = 900;
+const REVEAL_DELAY_MS = 30; // per character
 
 export default function NameScreen() {
   const router = useRouter();
@@ -59,32 +56,46 @@ export default function NameScreen() {
       setShowError(true);
       return;
     }
+    trackFormSubmit('name_entry', 'onboarding_name');
     setName(trimmed);
     trackFormSubmit('name_entry', 'onboarding_name');
-    setConfirmedName(trimmed);
-    setConfirmed(true);
-
-    // Echo-back is the first proof the app is "paying attention" — give it
-    // an intentional pause rather than resolving instantly.
-    setTimeout(() => setShowAcknowledged(true), ECHO_PAUSE_MS);
-    setTimeout(() => router.push(ROUTE.ONBOARDING_DOB), ECHO_PAUSE_MS + 1400);
+    router.push(ROUTE.ONBOARDING_DOB);
   }
 
-  const promptRevealed = linesShown >= SYSTEM_LINES.length;
   const canSubmit = value.trim().length > 0;
 
   return (
     <OnboardingScreen
       bottomContent={
-        !confirmed && canSubmit ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
+        <Pressable
+          style={({ pressed }) => [
+            styles.cta,
+            !canSubmit && styles.ctaDisabled,
+            pressed && canSubmit && { opacity: 0.7 },
+          ]}
+          onPress={handleSubmit}
+        >
+          <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
+        </Pressable>
       }
+    router.push(ROUTE.ONBOARDING_DOB);
+  }
+
+  const isReady = value.trim().length > 0;
+
+  return (
+    <OnboardingScreen
+      bottomContent={isReady && <CTAButton label="Continue" onPress={handleSubmit} />}
     >
+      <Pressable style={styles.backLink} onPress={() => router.back()}>
+        <Text style={styles.backText}>‹ back</Text>
+      </Pressable>
+
       <View style={styles.terminalHeader}>
-        {SYSTEM_LINES.slice(0, linesShown).map((line, i) => (
-          <Text key={i} style={styles.systemLine}>
-            {line}
-          </Text>
-        ))}
+        <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
+        <Text style={styles.systemLine}>INITIALISING.</Text>
+        <Text style={styles.systemLine}>...</Text>
+        <Text style={styles.systemLine}>Before we go further —</Text>
       </View>
 
       {promptRevealed && !confirmed && (
@@ -145,5 +156,25 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 16,
     opacity: 0.8,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'flex-start',
+  },
+  ctaDisabled: {
+    borderColor: colors.bg.tertiary,
+    opacity: 0.4,
+  },
+  ctaText: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    color: colors.bone,
+    letterSpacing: 2,
+  },
+  ctaTextDisabled: {
+    color: colors.text.tertiary,
   },
 });

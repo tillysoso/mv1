@@ -1,10 +1,10 @@
+import { useState, useEffect, useRef } from 'react';
 import { useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withSequence,
   runOnJS,
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
@@ -74,31 +74,60 @@ export default function QuizScreen() {
     eli: 0,
     olivia: 0,
   });
+  // Track per-question answers so back can undo scores
+  const [answers, setAnswers] = useState<AvatarId[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const opacity = useSharedValue(1);
+  const isTransitioning = useRef(false);
+
+  // Reset scores on mount so back-navigation from recommendation can't corrupt results
+  useEffect(() => {
+    setScores({ casper: 0, destiny: 0, eli: 0, olivia: 0 });
+  }, []);
+
+  function handleBack() {
+    if (currentQ === 0) {
+      router.back();
+      return;
+    }
+    // Undo the previous answer's score
+    const prev = answers[currentQ - 1];
+    setScores((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1) }));
+    setAnswers((a) => a.slice(0, -1));
+    setCurrentQ((q) => q - 1);
+  }
 
   const opacity = useSharedValue(1);
   const isTransitioning = useRef(false);
 
   function advanceTo(newQ: number) {
-    opacity.value = withSequence(
-      withTiming(0, { duration: 180 }),
-      withTiming(0, { duration: 20 }, () => {
-        runOnJS(setCurrentQ)(newQ);
-        opacity.value = withTiming(1, { duration: 280 });
-        runOnJS(() => {
-          isTransitioning.current = false;
-        })();
-      }),
-    );
+    opacity.value = withTiming(0, { duration: 180 }, () => {
+      runOnJS(setCurrentQ)(newQ);
+      opacity.value = withTiming(1, { duration: 280 });
+      runOnJS(() => { isTransitioning.current = false; })();
+    });
   }
 
+  function handleSelect(avatar: AvatarId, index: number, answerText: string) {
+    if (isTransitioning.current || selectedIndex !== null) return;
   function handleSelect(avatar: AvatarId, answerText: string) {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
+    setSelectedIndex(index);
+
+    trackQuizAnswer(currentQ, answerText, avatar);
+
+    trackQuizAnswer(currentQ, answerText, avatar);
 
     trackQuizAnswer(currentQ, answerText, avatar);
 
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
+    setAnswers((a) => [...a, avatar]);
+    setSelectedIndex(null);
+
+    if (currentQ === QUESTIONS.length - 1) {
+      // Q4 tiebreaker: last answer determines tiebreak avatar
 
     if (currentQ === QUESTIONS.length - 1) {
       setQuizScores(newScores, avatar);
@@ -116,6 +145,10 @@ export default function QuizScreen() {
   return (
     <OnboardingScreen>
       <View style={styles.content}>
+        <Pressable style={styles.backLink} onPress={handleBack}>
+          <Text style={styles.backText}>‹ back</Text>
+        </Pressable>
+
         <View style={styles.progressRow}>
           {QUESTIONS.map((_, i) => (
             <View
@@ -139,6 +172,12 @@ export default function QuizScreen() {
             {question.options.map((opt, i) => (
               <Pressable
                 key={i}
+                style={({ pressed }) => [
+                  styles.option,
+                  (pressed || selectedIndex === i) && styles.optionPressed,
+                ]}
+                onPress={() => handleSelect(opt.avatar, i, opt.text)}
+                disabled={selectedIndex !== null}
                 style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
                 onPress={() => handleSelect(opt.avatar, opt.text)}
               >
@@ -156,6 +195,16 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 4,
+  },
+  backLink: {
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  backText: {
+    fontFamily: fonts.terminal,
+    fontSize: 13,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
   },
   progressRow: {
     flexDirection: 'row',

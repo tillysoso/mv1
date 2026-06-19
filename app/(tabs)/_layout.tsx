@@ -23,22 +23,22 @@ function TabDot({ focused, color }: { focused: boolean; color: string }) {
 
 export default function TabsLayout() {
   const activeAvatar = useAvatarStore((s) => s.activeAvatar);
-  const accent = avatarAccents[activeAvatar];
+  const accentColor = avatarAccents[activeAvatar].primary;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: accentColor,
+        tabBarInactiveTintColor: colors.mist,
         tabBarStyle: {
-          backgroundColor: colors.obsidian,
-          borderTopWidth: 1,
-          borderTopColor: colors.charcoal,
+          backgroundColor: colors.bg.secondary,
+          borderTopColor: colors.ash,
+          borderTopWidth: 0.5,
           height: 56,
           paddingBottom: 8,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: accent.primary,
-        tabBarInactiveTintColor: colors.mist,
         tabBarLabelStyle: {
           fontFamily: fonts.bodySemiBold,
           fontSize: 9,
@@ -58,6 +58,7 @@ export default function TabsLayout() {
         options={{
           title: 'Today',
           tabBarLabel: 'Draw',
+          tabBarLabel: 'Today',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />

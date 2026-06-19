@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -88,15 +88,36 @@ export default function EntryScreen() {
   const cueStyle = useAnimatedStyle(() => ({ opacity: cueOpacity.value }));
 
   return (
-    <Pressable style={styles.root} onPress={handleTap}>
-      {/* TODO: world background asset (rain on glass / canal reflection / rooftop
-          mist) not yet delivered — full-bleed environment image/Skia canvas
-          should replace this flat obsidian fill once an asset exists. */}
-      <Animated.View style={[styles.world, worldStyle]}>
-        {/* TODO: emblem-majestic.svg exists in assets/emblems/ but react-native-svg
-            is not installed, so the real emblem can't be rendered yet — this is a
-            placeholder glyph standing in for "a single unidentifiable emblem." */}
-        <Animated.View style={[styles.emblem, emblemStyle]} />
+    <OnboardingScreen
+      bottomContent={
+        <Pressable
+          style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
+          onPress={() => {
+            trackNavigationClick('begin_cta', ROUTE.ONBOARDING_NAME);
+            router.push(ROUTE.ONBOARDING_NAME);
+          }}
+        >
+          <Text style={styles.ctaText}>Begin</Text>
+        </Pressable>
+        <CTAButton
+          label="Begin"
+          onPress={() => {
+            trackNavigationClick('begin_cta', '/name');
+            router.push(ROUTE.ONBOARDING_NAME);
+          }}
+        />
+      }
+    >
+      <Animated.View style={[styles.content, animatedStyle]}>
+        <View style={styles.topSpacer} />
+
+        <Text style={styles.wordmark}>Majestic</Text>
+        {/* TODO: Replace with Majestic emblem asset from assets/emblems/ once delivered */}
+        <Animated.View style={[styles.emblemPlaceholder, emblemStyle]} />
+
+        <Text style={styles.headline}>
+          Something in this city reads patterns.
+        </Text>
 
         <View style={styles.textBlock}>
           <Animated.Text style={[styles.headline, line1Style]}>{LINE_1}</Animated.Text>
@@ -129,6 +150,16 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
+  wordmark: {
+    fontFamily: fonts.wordmark,
+    fontSize: 48,
+    color: colors.bone,
+    marginBottom: 24,
+  },
+  emblemPlaceholder: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: colors.bg.dusk,
     marginBottom: 64,
   },
@@ -150,16 +181,5 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     lineHeight: typeScale.bodyM.lineHeight,
     marginTop: 12,
-  },
-  cue: {
-    position: 'absolute',
-    bottom: 80,
-    alignItems: 'center',
-  },
-  cueDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.mist,
   },
 });
