@@ -9,7 +9,6 @@ import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
 import { toRoman } from '../../src/utils/roman';
-import { toRoman } from '../../src/utils/romanNumerals';
 
 // TODO: Replace card placeholders with actual card art once assets are delivered.
 
@@ -37,17 +36,13 @@ export default function ProfileScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push(ROUTE.ONBOARDING_QUIZ)}
+        <CTAButton
+          label="Enter the World"
           onPress={() => {
             trackNavigationClick('enter_the_world_cta', '/quiz');
-            router.push('/(onboarding)/quiz');
+            router.push(ROUTE.ONBOARDING_QUIZ);
           }}
-        >
-          <Text style={styles.ctaText}>Enter the World</Text>
-        </Pressable>
-        <CTAButton label="Enter the World" onPress={() => router.push('/(onboarding)/quiz')} />
+        />
       }
     >
       <View style={styles.content}>
@@ -96,7 +91,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   heading: {
-    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
     color: colors.bone,
@@ -105,7 +99,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   subheading: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -170,25 +163,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   resonanceNote: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     fontStyle: 'italic',
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    alignSelf: 'stretch',
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

@@ -1,13 +1,6 @@
 import { Tabs } from 'expo-router';
-import { trackNavigationClick } from '../../src/lib/analytics';
-import { useAvatarStore } from '../../src/stores/avatarStore';
-import { avatarAccents, colors } from '../../src/theme/tokens';
-import { fonts } from '../../src/theme/typography';
-
-export default function TabsLayout() {
-  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
-  const accent = avatarAccents[activeAvatar];
 import { View } from 'react-native';
+import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 
@@ -26,27 +19,13 @@ function TabDot({ focused, color }: { focused: boolean; color: string }) {
 }
 
 export default function TabsLayout() {
-  const { activeAvatar } = useAvatarStore();
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
   const accentColor = avatarAccents[activeAvatar].primary;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.obsidian,
-          borderTopWidth: 1,
-          borderTopColor: colors.charcoal,
-          height: 56,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarActiveTintColor: accent.primary,
-        tabBarInactiveTintColor: colors.mist,
-        tabBarLabelStyle: {
-          fontFamily: fonts.bodySemiBold,
-          fontSize: 10,
-          letterSpacing: 0.5,
         tabBarActiveTintColor: accentColor,
         tabBarInactiveTintColor: colors.mist,
         tabBarStyle: {
@@ -67,14 +46,12 @@ export default function TabsLayout() {
           trackNavigationClick('tab_bar', e.target ?? 'unknown_tab');
         },
       }}
-    />
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Draw',
-          tabBarLabel: 'Draw',
           title: 'Today',
+          tabBarLabel: 'Draw',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />

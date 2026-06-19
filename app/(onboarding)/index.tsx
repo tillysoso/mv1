@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,7 +11,6 @@ import Animated, {
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackNavigationClick } from '../../src/lib/analytics';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
@@ -50,15 +49,13 @@ export default function EntryScreen() {
       bottomContent={
         <Pressable
           style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
-          onPress={() => router.push(ROUTE.ONBOARDING_NAME)}
           onPress={() => {
-            trackNavigationClick('begin_cta', '/name');
-            router.push('/(onboarding)/name');
+            trackNavigationClick('begin_cta', ROUTE.ONBOARDING_NAME);
+            router.push(ROUTE.ONBOARDING_NAME);
           }}
         >
           <Text style={styles.ctaText}>Begin</Text>
         </Pressable>
-        <CTAButton label="Begin" onPress={() => router.push('/(onboarding)/name')} />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
@@ -98,6 +95,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.wordmark,
     fontSize: 48,
     color: colors.bone,
+    marginBottom: 24,
+  },
   emblemPlaceholder: {
     width: 64,
     height: 64,
@@ -106,7 +105,6 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   headline: {
-    fontFamily: fonts.displayBold,
     fontFamily: fonts.displaySemiBold,
     fontSize: typeScale.displayM.fontSize,
     color: colors.bone,
