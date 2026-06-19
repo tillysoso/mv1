@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { View, Pressable, Image, StyleSheet } from 'react-native';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
+import { AVATAR_IMAGES } from '../../src/constants/avatarContent';
 
 // Minimal dot icon — avoids @expo/vector-icons dependency
 function TabDot({ focused, color }: { focused: boolean; color: string }) {
@@ -18,11 +19,31 @@ function TabDot({ focused, color }: { focused: boolean; color: string }) {
   );
 }
 
+// Long press opens the avatar selection modal — short press intentionally
+// does nothing, to prevent accidental switches while reaching for a tab.
+function AvatarEmblemButton() {
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
+  const openAvatarModal = useAvatarStore((s) => s.openAvatarModal);
+  const accentColor = avatarAccents[activeAvatar].primary;
+
+  return (
+    <Pressable
+      onLongPress={openAvatarModal}
+      onPress={() => {}}
+      style={[styles.emblem, { borderColor: accentColor }]}
+      accessibilityLabel="Switch companion (long press)"
+    >
+      <Image source={AVATAR_IMAGES[activeAvatar]} style={styles.emblemImage} resizeMode="cover" />
+    </Pressable>
+  );
+}
+
 export default function TabsLayout() {
   const { activeAvatar } = useAvatarStore();
   const accentColor = avatarAccents[activeAvatar].primary;
 
   return (
+    <View style={{ flex: 1 }}>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -69,5 +90,24 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    <AvatarEmblemButton />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  emblem: {
+    position: 'absolute',
+    right: 16,
+    bottom: 64,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    overflow: 'hidden',
+  },
+  emblemImage: {
+    width: '100%',
+    height: '100%',
+  },
+});

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, Image, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useProfileStore } from '../../src/stores/profileStore';
 import AvatarPortrait from '../../src/components/avatar/AvatarPortrait';
@@ -7,25 +7,11 @@ import CardPlaceholder from '../../src/components/cards/CardPlaceholder';
 import { MAJOR_ARCANA_CARDS } from '../../src/features/daily-draw/cardData';
 import { colors, avatarAccents } from '../../src/theme/tokens';
 import { typeScale } from '../../src/theme/typography';
-import type { AvatarId } from '../../src/types';
 import { AVATAR_IDS, PRESENCE_LEVEL, AURA_CONTEXT, AVATAR_STATE } from '../../src/constants';
-
-const AVATAR_NAMES: Record<AvatarId, string> = {
-  casper: 'Casper',
-  eli: 'Eli',
-  olivia: 'Olivia',
-  destiny: 'Destiny',
-};
-
-const AVATAR_IMAGES: Record<AvatarId, any> = {
-  casper: require('../../assets/avatars/casper/casper-neutral.png'),
-  eli: require('../../assets/avatars/eli/eli-neutral.png'),
-  olivia: require('../../assets/avatars/olivia/olivia-active.png'),
-  destiny: require('../../assets/avatars/destiny/destiny-active.png'),
-};
+import { AVATAR_NAMES, AVATAR_IMAGES } from '../../src/constants/avatarContent';
 
 export default function ProfileScreen() {
-  const { activeAvatar, setAvatar } = useAvatarStore();
+  const { activeAvatar, openAvatarModal } = useAvatarStore();
   const { birthCards } = useProfileStore();
 
   const personalityCard = useMemo(
@@ -66,11 +52,9 @@ export default function ProfileScreen() {
               const accent = avatarAccents[id];
               const isActive = id === activeAvatar;
               return (
-                <TouchableOpacity
+                <View
                   key={id}
                   style={[styles.avatarChip, { borderColor: isActive ? accent.primary : colors.ash }]}
-                  onPress={() => setAvatar(id)}
-                  activeOpacity={0.75}
                 >
                   <Image
                     source={AVATAR_IMAGES[id]}
@@ -80,10 +64,15 @@ export default function ProfileScreen() {
                   <Text style={[styles.avatarChipName, { color: isActive ? accent.primary : colors.text.secondary }]}>
                     {AVATAR_NAMES[id]}
                   </Text>
-                </TouchableOpacity>
+                </View>
               );
             })}
           </View>
+          <Pressable onPress={openAvatarModal} style={({ pressed }) => [styles.switchLink, pressed && { opacity: 0.7 }]}>
+            <Text style={[styles.switchLinkText, { color: avatarAccents[activeAvatar].primary }]}>
+              Switch companion
+            </Text>
+          </Pressable>
 
           {/* Birth cards */}
           {birthCards ? (
@@ -193,6 +182,15 @@ const styles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
+  },
+  switchLink: {
+    marginBottom: 32,
+  },
+  switchLinkText: {
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    textDecorationLine: 'underline',
   },
   birthCardRow: {
     flexDirection: 'row',

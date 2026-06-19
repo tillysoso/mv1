@@ -25,6 +25,7 @@ import { localFontAssets } from '../src/theme/typography';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
+import AvatarSelectionModal from '../src/components/avatar/AvatarSelectionModal';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -133,7 +134,12 @@ function AppContent() {
 
   // In prototype mode skip the loading gate entirely
   if (!isSupabaseConfigured) {
-    return <Stack screenOptions={{ headerShown: false }} />;
+    return (
+      <>
+        <Stack screenOptions={{ headerShown: false }} />
+        <AvatarSelectionModal />
+      </>
+    );
   }
 
   if (!initialised) {
@@ -145,7 +151,10 @@ function AppContent() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <AvatarSelectionModal />
+    </>
   );
 }
 
