@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -74,15 +73,16 @@ export default function QuizScreen() {
   const [scores, setScores] = useState<Record<AvatarId, number>>({
     casper: 0, destiny: 0, eli: 0, olivia: 0,
   });
-  // Tiebreaker: last answer for Q4 (index 3)
-  const [lastAnswer, setLastAnswer] = useState<AvatarId | null>(null);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-
-  async function handleSelect(avatar: AvatarId, index: number) {
-    if (selectedOption !== null) return;
-    setSelectedOption(index);
   // Track per-question answers so back can undo scores
   const [answers, setAnswers] = useState<AvatarId[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const opacity = useSharedValue(1);
+  const isTransitioning = useRef(false);
+
+  // Reset scores on mount so back-navigation from recommendation can't corrupt results
+  useEffect(() => {
+    setScores({ casper: 0, destiny: 0, eli: 0, olivia: 0 });
+  }, []);
 
   function handleBack() {
     if (currentQ === 0) {
@@ -95,36 +95,6 @@ export default function QuizScreen() {
     setAnswers((a) => a.slice(0, -1));
     setCurrentQ((q) => q - 1);
   }
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  // Reset scores on mount so back-navigation from recommendation can't corrupt results
-  useEffect(() => {
-    setQuizScores({});
-  }, []);
-
-  function handleSelect(avatar: AvatarId, index: number) {
-    if (selectedIndex !== null) return; // prevent double-tap during confirmation delay
-
-    setSelectedIndex(index);
-
-    setTimeout(() => {
-      const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
-      setScores(newScores);
-      setSelectedIndex(null);
-
-      if (currentQ === QUESTIONS.length - 1) {
-        const finalScores: Record<string, number> = {
-          ...newScores,
-          _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
-        };
-        setQuizScores(finalScores);
-        router.push('/(onboarding)/recommendation');
-      } else {
-        setCurrentQ((q) => q + 1);
-      }
-    }, 320);
-  const opacity = useSharedValue(1);
-  const isTransitioning = useRef(false);
 
   function advanceTo(newQ: number) {
     opacity.value = withSequence(
@@ -137,34 +107,23 @@ export default function QuizScreen() {
     );
   }
 
-  function handleSelect(avatar: AvatarId, answerText: string) {
-    trackQuizAnswer(currentQ, answerText, avatar);
-  function handleSelect(avatar: AvatarId) {
-    if (isTransitioning.current) return;
+  function handleSelect(avatar: AvatarId, index: number, answerText: string) {
+    if (isTransitioning.current || selectedIndex !== null) return;
     isTransitioning.current = true;
+    setSelectedIndex(index);
+
+    trackQuizAnswer(currentQ, answerText, avatar);
 
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
     setAnswers((a) => [...a, avatar]);
-
-    await new Promise(r => setTimeout(r, 180));
-    setSelectedOption(null);
+    setSelectedIndex(null);
 
     if (currentQ === QUESTIONS.length - 1) {
-      // Q4 tiebreaker
-      const finalScores: Record<string, number> = { ...newScores, _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3 };
+      // Q4 tiebreaker: last answer determines tiebreak avatar
       setQuizScores(newScores, avatar);
-      // Q4 tiebreaker: encode last answer as index for deterministic resolution
-      const finalScores: Record<string, number> = {
-        ...newScores,
-        _tiebreaker: avatar === 'casper' ? 0 : avatar === 'destiny' ? 1 : avatar === 'eli' ? 2 : 3,
-      };
-      setQuizScores(finalScores);
-      router.push(ROUTE.ONBOARDING_RECOMMEND);
-      router.push('/(onboarding)/recommendation');
       opacity.value = withTiming(0, { duration: 200 }, () => {
-        runOnJS(setQuizScores)(finalScores);
-        runOnJS(router.push)('/(onboarding)/recommendation');
+        runOnJS(router.push)(ROUTE.ONBOARDING_RECOMMEND);
       });
     } else {
       advanceTo(currentQ + 1);
@@ -180,46 +139,7 @@ export default function QuizScreen() {
         <Pressable style={styles.backLink} onPress={handleBack}>
           <Text style={styles.backText}>‹ back</Text>
         </Pressable>
-        {/* Step indicator */}
-        <View style={styles.stepRow}>
-          {QUESTIONS.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.stepDot,
-                i < currentQ && styles.stepDotDone,
-                i === currentQ && styles.stepDotActive,
-              ]}
-            />
-          ))}
-        </View>
 
-        {currentQ === 0 && (
-          <View style={styles.intro}>
-            <Text style={styles.introHeadline}>The world has patterns too.</Text>
-            <Text style={styles.introSub}>Four questions. No wrong answers. Just how you move.</Text>
-          </View>
-        )}
-
-        <Text style={styles.prompt}>{question.prompt}</Text>
-
-        <View style={styles.options}>
-          {question.options.map((opt, i) => (
-            <Pressable
-              key={i}
-              style={({ pressed }) => [styles.option, (pressed || selectedOption === i) && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar, i)}
-              disabled={selectedOption !== null}
-              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-              onPress={() => handleSelect(opt.avatar, opt.text)}
-              style={[
-                styles.option,
-                selectedIndex === i && styles.optionSelected,
-              ]}
-              onPress={() => handleSelect(opt.avatar, i)}
-            >
-              <Text style={styles.optionText}>{opt.text}</Text>
-            </Pressable>
         <View style={styles.progressRow}>
           {QUESTIONS.map((_, i) => (
             <View
@@ -243,8 +163,12 @@ export default function QuizScreen() {
             {question.options.map((opt, i) => (
               <Pressable
                 key={i}
-                style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-                onPress={() => handleSelect(opt.avatar)}
+                style={({ pressed }) => [
+                  styles.option,
+                  (pressed || selectedIndex === i) && styles.optionPressed,
+                ]}
+                onPress={() => handleSelect(opt.avatar, i, opt.text)}
+                disabled={selectedIndex !== null}
               >
                 <Text style={styles.optionText}>{opt.text}</Text>
               </Pressable>
@@ -271,24 +195,6 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     letterSpacing: 0.5,
   },
-  stepRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 32,
-  },
-  stepDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.ash,
-  },
-  stepDotDone: {
-    backgroundColor: colors.mist,
-  },
-  stepDotActive: {
-    backgroundColor: colors.bone,
-    width: 18,
-    borderRadius: 3,
   progressRow: {
     flexDirection: 'row',
     gap: 6,
@@ -338,11 +244,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  optionSelected: {
+  optionPressed: {
     borderColor: colors.mist,
-    // 8% white overlay for press feedback — no dedicated token
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    backgroundColor: '#ffffff10',
   },
   optionText: {
     fontFamily: fonts.body,

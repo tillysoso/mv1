@@ -10,7 +10,6 @@ import Animated, {
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { birthCardCalculator } from '../../src/features/birth-card/birthCardCalculator';
-import type { BirthCards } from '../../src/types';
 import { ROUTE } from '../../src/constants';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -46,30 +45,23 @@ export default function CalculatingScreen() {
     async function run() {
       const start = Date.now();
 
-      let cards: BirthCards | undefined;
-      if (dateOfBirth) {
-        cards = birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year);
-      }
+      const { dateOfBirth, setBirthCards } = useProfileStore.getState();
+      const cards = dateOfBirth
+        ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
+        : undefined;
 
       // Wait for the minimum display duration measured against actual completion
       const elapsed = Date.now() - start;
       const remaining = Math.max(0, MIN_DURATION_MS - elapsed);
       await new Promise<void>((resolve) => setTimeout(resolve, remaining));
-    const { dateOfBirth, setBirthCards } = useProfileStore.getState();
-    const cards = dateOfBirth
-      ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
-      : undefined;
 
       if (!mounted) return;
       clearTimeout(slowTimer);
       if (cards) setBirthCards(cards);
       router.push(ROUTE.ONBOARDING_PERSONALITY);
-    }, remaining);
-      router.push('/(onboarding)/personality');
     }
 
     run();
-    }, MIN_DURATION_MS);
 
     return () => {
       mounted = false;
@@ -89,11 +81,10 @@ export default function CalculatingScreen() {
         </Animated.Text>
         <Text style={styles.subline}>
           Your birth cards are next.
-          Your numbers are unusual.
         </Text>
         {showSlowMsg && (
           <Text style={styles.slowLine}>
-            // This is taking a moment. Still working.
+            This is taking a moment. Still working.
           </Text>
         )}
       </View>

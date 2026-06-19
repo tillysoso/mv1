@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackFormSubmit } from '../../src/lib/analytics';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import TerminalInput from '../../src/components/onboarding/TerminalInput';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { colors } from '../../src/theme/tokens';
@@ -13,7 +10,6 @@ import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
 
 const PROMPT = 'What do you go by?';
-const REVEAL_DELAY_MS = 30;
 const REVEAL_DELAY_MS = 30; // per character
 
 export default function NameScreen() {
@@ -44,23 +40,15 @@ export default function NameScreen() {
       return;
     }
     setName(trimmed);
-    router.push(ROUTE.ONBOARDING_DOB);
     trackFormSubmit('name_entry', 'onboarding_name');
-    router.push('/(onboarding)/dob');
+    router.push(ROUTE.ONBOARDING_DOB);
   }
 
-  const isReady = value.trim().length > 0;
   const canSubmit = value.trim().length > 0;
 
   return (
-    <OnboardingScreen>
-      <Pressable style={styles.backLink} onPress={() => router.back()}>
-        <Text style={styles.backText}>‹ back</Text>
-      </Pressable>
-
     <OnboardingScreen
       bottomContent={
-        isReady ? <CTAButton label="Continue" onPress={handleSubmit} /> : undefined
         <Pressable
           style={({ pressed }) => [
             styles.cta,
@@ -73,11 +61,14 @@ export default function NameScreen() {
         </Pressable>
       }
     >
+      <Pressable style={styles.backLink} onPress={() => router.back()}>
+        <Text style={styles.backText}>‹ back</Text>
+      </Pressable>
+
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>MAJESTIC SIGNAL DETECTED.</Text>
         <Text style={styles.systemLine}>INITIALISING.</Text>
         <Text style={styles.systemLine}>...</Text>
-        <Text style={styles.systemLine}>&nbsp;</Text>
         <Text style={styles.systemLine}>Before we go further —</Text>
       </View>
 
@@ -147,6 +138,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 16,
     opacity: 0.8,
+  },
   cta: {
     borderWidth: 1,
     borderColor: colors.ash,

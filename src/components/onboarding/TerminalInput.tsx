@@ -41,7 +41,6 @@ export default function TerminalInput({
       onChangeText={onChangeText}
       onSubmitEditing={onSubmit}
       placeholder={placeholder}
-      placeholderTextColor="#3A3A4A"
       placeholderTextColor={colors.ash}
       autoFocus={autoFocus}
       maxLength={maxLength}
