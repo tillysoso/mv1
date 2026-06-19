@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -18,9 +16,6 @@ import { updateAvatar } from '../../src/lib/supabase/v2/profile';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import type { AvatarId } from '../../src/types';
-import { ROUTE } from '../../src/constants';
-
-// TODO: fontFamily strings require expo-font preloading.
 
 const AVATAR_IMAGES: Record<AvatarId, any> = {
   casper:  require('../../assets/avatars/casper/casper-neutral.png'),
@@ -49,12 +44,8 @@ export default function ConfirmScreen() {
   const { user } = useAuthStore();
   const accent = avatarAccents[activeAvatar];
 
-  const [confirming, setConfirming] = useState(false);
-
-  // Background accent bloom
   const overlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
-  const confirmOpacity = useSharedValue(0);
 
   useEffect(() => {
     overlayOpacity.value = withTiming(0.15, { duration: 1400, easing: Easing.out(Easing.ease) });
@@ -76,60 +67,17 @@ export default function ConfirmScreen() {
     opacity: contentOpacity.value,
   }));
 
-  const confirmStyle = useAnimatedStyle(() => ({
-    opacity: confirmOpacity.value,
-  }));
-
   function handleBegin() {
-    if (confirming) return;
-    setConfirming(true);
-    confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
-    setTimeout(() => {
-      router.push('/(onboarding)/first-draw');
-    }, 600);
+    trackNavigationClick('lets_begin_cta', '/first-draw');
+    router.push('/(onboarding)/first-draw');
   }
 
   return (
-    <OnboardingScreen
-      bottomContent={
-        <View>
-          {confirming && (
-            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
-              // confirmed.
-            </Animated.Text>
-          )}
-          <Pressable
-            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-            onPress={handleBegin}
-          >
-            <Text style={styles.ctaText}>Let's Begin</Text>
-          </Pressable>
-        </View>
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={() => router.push(ROUTE.ONBOARDING_FIRST_DRAW)}
-          onPress={() => {
-            trackNavigationClick('lets_begin_cta', '/first-draw');
-            router.push('/(onboarding)/first-draw');
-          }}
-        >
-          <Text style={styles.ctaText}>Let's Begin</Text>
-        </Pressable>
-      }
-    >
-      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
-
-      <Animated.View style={[styles.content, contentStyle]}>
-        <Text style={styles.presenceLine}>
-          {AVATAR_NAMES[activeAvatar]} is with you.
-        </Text>
     <>
       {/* Prevent back-swipe — avatar choice is committed */}
       <Stack.Screen options={{ gestureEnabled: false }} />
       <OnboardingScreen
-        bottomContent={
-          <CTAButton label="Let's Begin" onPress={() => router.push('/(onboarding)/first-draw')} />
-        }
+        bottomContent={<CTAButton label="Let's Begin" onPress={handleBegin} />}
       >
         {/* Elemental accent bloom overlay */}
         <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
@@ -139,15 +87,12 @@ export default function ConfirmScreen() {
             {AVATAR_NAMES[activeAvatar]} is with you.
           </Text>
 
-        <Image
-          source={AVATAR_IMAGES[activeAvatar]}
-          style={styles.portrait}
-          resizeMode="cover"
-        />
+          <Image
+            source={AVATAR_IMAGES[activeAvatar]}
+            style={styles.portrait}
+            resizeMode="cover"
+          />
 
-        <Text style={[styles.avatarName, { color: accent.primary }]}>
-          {AVATAR_NAMES[activeAvatar]}
-        </Text>
           <Text style={[styles.avatarName, { color: accent.primary }]}>
             {AVATAR_NAMES[activeAvatar]}
           </Text>
@@ -167,7 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presenceLine: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -190,27 +134,5 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyL.fontSize,
     color: colors.bone,
     lineHeight: typeScale.bodyL.lineHeight,
-  },
-  confirmLine: {
-    fontFamily: fonts.terminal,
-    fontSize: 13,
-    color: colors.text.tertiary,
-    letterSpacing: 0.5,
-    marginBottom: 8,
-    opacity: 0,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    alignSelf: 'stretch',
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

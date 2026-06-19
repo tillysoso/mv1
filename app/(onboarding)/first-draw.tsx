@@ -32,22 +32,15 @@ export default function FirstDrawScreen() {
       });
     }
 
-    router.replace(ROUTE.TABS);
     // Placeholder pause for the ritual moment — replace with card flip animation in Step 5
     await new Promise((r) => setTimeout(r, 800));
-    router.replace('/(tabs)');
+    router.replace(ROUTE.TABS);
   }
 
   return (
     <OnboardingScreen
       bottomContent={
         <CTAButton label="Draw" onPress={handleDraw} disabled={drawing} align="center" />
-        <Pressable
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-          onPress={handleDraw}
-        >
-          <Text style={styles.ctaText}>Enter</Text>
-        </Pressable>
       }
     >
       <View style={styles.content}>
@@ -87,7 +80,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   subtext: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyM.fontSize,
     color: colors.text.secondary,
@@ -108,25 +100,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   note: {
-    fontFamily: fonts.body,
     fontFamily: fonts.bodyLight,
     fontSize: typeScale.bodyS.fontSize,
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     textAlign: 'center',
     fontStyle: 'italic',
-  },
-  cta: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderWidth: 1,
-    borderColor: colors.ash,
-    alignSelf: 'stretch',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

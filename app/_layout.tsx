@@ -1,27 +1,9 @@
 import '../global.css';
 
-import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
-import { useAuthStore, initAuthListener } from '../src/stores/authStore';
-import { useProfileStore } from '../src/stores/profileStore';
-import { trackPageView } from '../src/lib/analytics';
-
-function usePageTracking() {
-  const pathname = usePathname();
-  useEffect(() => {
-    trackPageView(pathname);
-  }, [pathname]);
 import { Component, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
-import {
-  Cinzel_400Regular,
-  Cinzel_700Bold,
-} from '@expo-google-fonts/cinzel';
-import {
-import * as SplashScreen from 'expo-splash-screen';
 import {
   Cinzel_400Regular,
   Cinzel_600SemiBold,
@@ -38,18 +20,20 @@ import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
-import { fontAssets } from '../src/theme/typography';
-
-SplashScreen.preventAutoHideAsync();
-import { useAuthStore, initAuthListener } from '../src/stores/authStore';
-import { useProfileStore } from '../src/stores/profileStore';
 import { localFontAssets } from '../src/theme/typography';
-import { colors } from '../src/theme/tokens';
-
-SplashScreen.preventAutoHideAsync();
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
+import { trackPageView } from '../src/lib/analytics';
+
+SplashScreen.preventAutoHideAsync();
+
+function usePageTracking() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
+}
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -116,9 +100,6 @@ function useAuthRouting() {
 function AppContent() {
   const { initialised } = useAuthStore();
 
-  const [fontsLoaded] = useFonts({
-    Cinzel_400Regular,
-    Cinzel_700Bold,
   const [fontsLoaded, fontError] = useFonts({
     Cinzel_400Regular,
     Cinzel_600SemiBold,
@@ -129,7 +110,6 @@ function AppContent() {
     Montserrat_600SemiBold,
     Montserrat_700Bold,
     SpaceMono_400Regular,
-    ...fontAssets,
     ...localFontAssets,
   });
 
@@ -147,15 +127,10 @@ function AppContent() {
   useAuthRouting();
   usePageTracking();
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!initialised || !fontsLoaded) {
   if (!fontsLoaded && !fontError) {
     return null;
+  }
+
   // In prototype mode skip the loading gate entirely
   if (!isSupabaseConfigured) {
     return <Stack screenOptions={{ headerShown: false }} />;

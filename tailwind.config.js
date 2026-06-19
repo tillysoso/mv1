@@ -53,39 +53,20 @@ module.exports = {
           'info-bg':      'var(--color-status-info-subtle)',
           'info-text':    'var(--color-status-info-text)',
         },
-      },
-      borderRadius: {
-        xs:   'var(--radius-xs)',
-        sm:   'var(--radius-sm)',
-        md:   'var(--radius-md)',
-        lg:   'var(--radius-lg)',
-        xl:   'var(--radius-xl)',
-        '2xl': 'var(--radius-2xl)',
-      },
-      boxShadow: {
-        'theme-sm': 'var(--shadow-sm)',
-        'theme-md': 'var(--shadow-md)',
-        'theme-lg': 'var(--shadow-lg)',
-      },
-      transitionDuration: {
-        fast: 'var(--duration-fast)',
-        base: 'var(--duration-base)',
-        slow: 'var(--duration-slow)',
-      /**
-       * Semantic color utilities backed by CSS custom properties.
-       *
-       * These resolve correctly on web (CSS variables) and are available as
-       * Tailwind utilities: bg-canvas, text-fg-base, border-border-default, etc.
-       *
-       * For React Native (non-web), use src/theme/tokens.ts directly, as CSS
-       * variables are web-only. NativeWind v4 bridges these for web builds.
-       *
-       * The mapping mirrors src/theme/theme.css exactly — update both together.
-       */
-      colors: {
+
+        /*
+         * Semantic color utilities backed by CSS custom properties.
+         *
+         * These resolve correctly on web (CSS variables) and are available as
+         * Tailwind utilities: bg-canvas, text-fg-base, border-border-default, etc.
+         *
+         * For React Native (non-web), use src/theme/tokens.ts directly, as CSS
+         * variables are web-only. NativeWind v4 bridges these for web builds.
+         *
+         * The mapping mirrors src/theme/theme.css exactly — update both together.
+         */
         // Backgrounds
         canvas:          'var(--color-bg-canvas)',
-        surface:         'var(--color-bg-surface)',
         elevated:        'var(--color-bg-elevated)',
         inset:           'var(--color-bg-inset)',
         overlay:         'var(--color-bg-overlay)',
@@ -117,6 +98,24 @@ module.exports = {
         'feedback-warning': 'var(--color-feedback-warning)',
         'feedback-error':   'var(--color-feedback-error)',
         'feedback-info':    'var(--color-feedback-info)',
+      },
+      borderRadius: {
+        xs:   'var(--radius-xs)',
+        sm:   'var(--radius-sm)',
+        md:   'var(--radius-md)',
+        lg:   'var(--radius-lg)',
+        xl:   'var(--radius-xl)',
+        '2xl': 'var(--radius-2xl)',
+      },
+      boxShadow: {
+        'theme-sm': 'var(--shadow-sm)',
+        'theme-md': 'var(--shadow-md)',
+        'theme-lg': 'var(--shadow-lg)',
+      },
+      transitionDuration: {
+        fast: 'var(--duration-fast)',
+        base: 'var(--duration-base)',
+        slow: 'var(--duration-slow)',
       },
     },
   },

@@ -1,33 +1,29 @@
 import { Tabs } from 'expo-router';
+import { View } from 'react-native';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts } from '../../src/theme/typography';
 
-export default function TabsLayout() {
-  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
-  const accent = avatarAccents[activeAvatar];
-import { View } from 'react-native';
-import { useAvatarStore } from '../../src/stores/avatarStore';
-import { avatarAccents, colors } from '../../src/theme/tokens';
-
 // Minimal dot icon — avoids @expo/vector-icons dependency
 function TabDot({ focused, color }: { focused: boolean; color: string }) {
   return (
-    <View style={{
-      width: 5,
-      height: 5,
-      borderRadius: 3,
-      backgroundColor: focused ? color : 'transparent',
-      borderWidth: 1,
-      borderColor: color,
-    }} />
+    <View
+      style={{
+        width: 5,
+        height: 5,
+        borderRadius: 3,
+        backgroundColor: focused ? color : 'transparent',
+        borderWidth: 1,
+        borderColor: color,
+      }}
+    />
   );
 }
 
 export default function TabsLayout() {
-  const { activeAvatar } = useAvatarStore();
-  const accentColor = avatarAccents[activeAvatar].primary;
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
+  const accent = avatarAccents[activeAvatar];
 
   return (
     <Tabs
@@ -45,17 +41,6 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.mist,
         tabBarLabelStyle: {
           fontFamily: fonts.bodySemiBold,
-          fontSize: 10,
-          letterSpacing: 0.5,
-        tabBarActiveTintColor: accentColor,
-        tabBarInactiveTintColor: colors.mist,
-        tabBarStyle: {
-          backgroundColor: colors.bg.secondary,
-          borderTopColor: colors.ash,
-          borderTopWidth: 0.5,
-          height: 56,
-        },
-        tabBarLabelStyle: {
           fontSize: 9,
           letterSpacing: 2,
           marginTop: -2,
@@ -67,14 +52,12 @@ export default function TabsLayout() {
           trackNavigationClick('tab_bar', e.target ?? 'unknown_tab');
         },
       }}
-    />
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Draw',
-          tabBarLabel: 'Draw',
           title: 'Today',
+          tabBarLabel: 'Draw',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />
