@@ -1,50 +1,24 @@
-import { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-  withSequence,
-  Easing,
-} from 'react-native-reanimated';
+import { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useDailyDraw } from '../../src/features/daily-draw/useDailyDraw';
+import AvatarPortrait from '../../src/components/avatar/AvatarPortrait';
 import CardFace from '../../src/components/cards/CardFace';
 import AvatarPortrait from '../../src/components/avatar/AvatarPortrait';
 import { interpretationPlaceholder } from '../../src/features/reading/interpretationPlaceholder';
 import { avatarAccents, colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
+import type { AuraContext } from '../../src/types';
 import type { AvatarId } from '../../src/types/avatar';
 import { AURA_CONTEXT, PRESENCE_LEVEL } from '../../src/constants';
+import { AURA_CONTEXT } from '../../src/constants';
 
 const AVATAR_NAMES: Record<AvatarId, string> = {
   casper: 'Casper',
   eli: 'Eli',
   olivia: 'Olivia',
   destiny: 'Destiny',
-};
-
-const DRAW_PROMPTS: Record<AvatarId, string> = {
-  casper: 'The signal is ready. Pull when you are.',
-  eli: 'Something is waiting to be seen. Draw.',
-  olivia: 'Ground yourself. The card is here when you are.',
-  destiny: 'The world has something for you today.',
-};
-
-const DRAWN_INTROS: Record<AvatarId, string> = {
-  casper: 'Here is what the signal brought.',
-  eli: 'There is a pattern worth looking at.',
-  olivia: 'This is what is present today.',
-  destiny: 'This is what I see for you.',
 };
 
 export default function HomeScreen() {
@@ -96,6 +70,9 @@ export default function HomeScreen() {
   const greeting = name ? `Good to see you, ${name}.` : 'Good to see you.';
 
   const auraContext = drawing
+  const [drawing, setDrawing] = useState(false);
+
+  const auraContext: AuraContext | 'gathering' = drawing
     ? AURA_CONTEXT.GATHERING
     : card?.auraContext ?? AURA_CONTEXT.NEUTRAL;
 
@@ -110,6 +87,8 @@ export default function HomeScreen() {
       setAuraState(card.auraContext);
     }
   }
+
+  const greeting = name ? `Good to see you, ${name}.` : 'Good to see you.';
 
   return (
     <View style={styles.root}>
@@ -127,16 +106,15 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View style={[styles.content, contentStyle]}>
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.greeting}>{greeting}</Text>
-              <View style={[styles.avatarChip, { borderColor: accent.primary }]}>
-                <Text style={[styles.avatarChipText, { color: accent.primary }]}>
-                  {AVATAR_NAMES[activeAvatar]}
-                </Text>
-              </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.greeting}>{greeting}</Text>
+            <View style={[styles.avatarChip, { borderColor: accent.primary }]}>
+              <Text style={[styles.avatarChipText, { color: accent.primary }]}>
+                {AVATAR_NAMES[activeAvatar]}
+              </Text>
             </View>
+          </View>
 
             {/* Avatar voice */}
             <Text style={styles.avatarVoice}>
@@ -214,20 +192,45 @@ export default function HomeScreen() {
               </Pressable>
             )}
           </Animated.View>
+          <Text style={styles.worldLabel}>Threshold City</Text>
+
+          <View style={styles.avatarSection}>
+            <AvatarPortrait
+              avatarId={activeAvatar}
+              presenceLevel="presence"
+              auraContext={auraContext}
+              imageState={hasDrawnToday ? 'reflective' : 'neutral'}
+            />
+          </View>
+
+          {!hasDrawnToday && !isLoading && (
+            <View style={styles.idleSection}>
+              <Text style={styles.prompt}>What needs your attention today?</Text>
+              <TouchableOpacity
+                style={styles.drawButton}
+                onPress={handleDraw}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.drawButtonText}>Draw your card</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {hasDrawnToday && card && (
+            <View style={styles.cardSection}>
+              <Text style={styles.positionLabel}>What needs attention</Text>
+              <CardFace card={card} avatarId={activeAvatar} size="daily" />
+              <View style={styles.interpretationWrap}>
+                <Text style={styles.interpretationText}>
+                  {interpretationPlaceholder[activeAvatar](card.name)}
+                </Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </View>
   );
-}
-
-function toRoman(n: number): string {
-  const map: Record<number, string> = {
-    0: '0', 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII',
-    8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII', 13: 'XIII',
-    14: 'XIV', 15: 'XV', 16: 'XVI', 17: 'XVII', 18: 'XVIII', 19: 'XIX',
-    20: 'XX', 21: 'XXI',
-  };
-  return map[n] ?? String(n);
 }
 
 const styles = StyleSheet.create({
@@ -235,34 +238,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.obsidian,
   },
-  bg: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.bg.primary,
-  },
-  accentAtmosphere: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 280,
-    opacity: 0.06,
-  },
   safe: {
     flex: 1,
   },
   scroll: {
     flexGrow: 1,
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 32,
-    paddingTop: 48,
+    alignItems: 'center',
+    paddingTop: 24,
+    paddingBottom: 48,
+    paddingHorizontal: 24,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
     marginBottom: 12,
   },
   greeting: {
@@ -387,5 +377,59 @@ const styles = StyleSheet.create({
     fontSize: typeScale.label.fontSize,
     color: colors.bone,
     letterSpacing: 2,
+  worldLabel: {
+    fontSize: 10,
+    letterSpacing: 4,
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  avatarSection: {
+    marginBottom: 40,
+  },
+  idleSection: {
+    alignItems: 'center',
+  },
+  prompt: {
+    fontSize: typeScale.bodyM.fontSize,
+    lineHeight: typeScale.bodyM.lineHeight,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  drawButton: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingHorizontal: 36,
+    paddingVertical: 16,
+    borderRadius: 2,
+  },
+  drawButtonText: {
+    fontSize: 12,
+    letterSpacing: 3,
+    color: colors.bone,
+    textTransform: 'uppercase',
+  },
+  cardSection: {
+    alignItems: 'center',
+  },
+  positionLabel: {
+    fontSize: 10,
+    letterSpacing: 3,
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    marginBottom: 16,
+  },
+  interpretationWrap: {
+    paddingHorizontal: 8,
+    marginTop: 20,
+  },
+  interpretationText: {
+    fontSize: typeScale.bodyM.fontSize,
+    lineHeight: typeScale.bodyM.lineHeight,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });

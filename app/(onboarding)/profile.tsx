@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
+import CTAButton from '../../src/components/onboarding/CTAButton';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useScrollDepth } from '../../src/lib/analytics/useScrollDepth';
-import CTAButton from '../../src/components/onboarding/CTAButton';
 import { useProfileStore } from '../../src/stores/profileStore';
+import { getCardOneliner } from '../../src/features/onboarding/cardOneliners';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
@@ -12,7 +15,7 @@ import { toRoman } from '../../src/utils/roman';
 
 // TODO: Replace card placeholders with actual card art once assets are delivered.
 
-function MiniCard({ number, name, role }: { number: number; name: string; role: string }) {
+function MiniCard({ number, name, role, essence }: { number: number; name: string; role: string; essence: string }) {
   return (
     <View style={styles.miniCard}>
       <View style={styles.miniCardImage}>
@@ -20,7 +23,30 @@ function MiniCard({ number, name, role }: { number: number; name: string; role: 
       </View>
       <Text style={styles.miniCardRole}>{role}</Text>
       <Text style={styles.miniCardName}>{name}</Text>
+      <Text style={styles.miniCardEssence}>{essence}</Text>
     </View>
+  );
+}
+
+// Codex emblem — a quiet, momentary appearance marking the first entry in the
+// user's personal continuity. Not gamified: no unlock animation, no confetti,
+// just a soft fade in and back out.
+function CodexEmblem() {
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    opacity.value = withDelay(
+      600,
+      withTiming(1, { duration: 900 }, () => {
+        opacity.value = withDelay(1400, withTiming(0.3, { duration: 1200 }));
+      })
+    );
+  }, []);
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View style={[styles.emblem, animatedStyle]}>
+      <View style={styles.emblemRing} />
+      <View style={styles.emblemDot} />
+    </Animated.View>
   );
 }
 
@@ -32,6 +58,8 @@ export default function ProfileScreen() {
   const useRow = width >= 360;
 
   const isSameCard = birthCards?.sameCard ?? false;
+  const personalityOneliner = birthCards ? getCardOneliner(birthCards.personalityCard.number) : undefined;
+  const soulOneliner = birthCards ? getCardOneliner(birthCards.soulCard.number) : undefined;
 
   return (
     <OnboardingScreen
@@ -47,7 +75,7 @@ export default function ProfileScreen() {
     >
       <View style={styles.content}>
         <Text style={styles.heading}>
-          Your Majestic Profile{name ? `, ${name}` : ''}.
+          This is your Majestic Profile{name ? `, ${name}` : ''}.
         </Text>
         <Text style={styles.subheading}>
           Your foundation. Your first entry in your codex.
@@ -60,12 +88,14 @@ export default function ProfileScreen() {
               number={birthCards.personalityCard.number}
               name={birthCards.personalityCard.name}
               role="Personality"
+              essence={personalityOneliner?.personality ?? ''}
             />
             {!isSameCard && (
               <MiniCard
                 number={birthCards.soulCard.number}
                 name={birthCards.soulCard.name}
                 role="Soul"
+                essence={soulOneliner?.soul ?? ''}
               />
             )}
             {isSameCard && (
@@ -80,6 +110,8 @@ export default function ProfileScreen() {
           These cards tend to appear in your readings.
           When they do, Majestic will recognise them.
         </Text>
+
+        <CodexEmblem />
       </View>
     </OnboardingScreen>
   );
@@ -148,6 +180,13 @@ const styles = StyleSheet.create({
     fontSize: typeScale.bodyS.fontSize,
     color: colors.bone,
     letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  miniCardEssence: {
+    fontFamily: fonts.bodyLight,
+    fontSize: typeScale.micro.fontSize,
+    color: colors.text.secondary,
+    lineHeight: 16,
   },
   sameCardNote: {
     flex: 1,
@@ -168,5 +207,27 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     lineHeight: typeScale.bodyS.lineHeight,
     fontStyle: 'italic',
+    marginBottom: 24,
+  },
+  emblem: {
+    alignSelf: 'center',
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emblemRing: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.brass,
+  },
+  emblemDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.brass,
   },
 });

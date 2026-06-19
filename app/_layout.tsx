@@ -20,11 +20,21 @@ import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
+import { trackPageView } from '../src/lib/analytics';
 import { localFontAssets } from '../src/theme/typography';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
 import { trackPageView } from '../src/lib/analytics';
+
+SplashScreen.preventAutoHideAsync();
+
+function usePageTracking() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -134,6 +144,10 @@ function AppContent() {
   // In prototype mode skip the loading gate entirely
   if (!isSupabaseConfigured) {
     return <Stack screenOptions={{ headerShown: false }} />;
+  }
+
+  if (!fontsLoaded && !fontError) {
+    return null;
   }
 
   if (!initialised) {

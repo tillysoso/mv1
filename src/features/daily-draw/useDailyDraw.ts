@@ -5,7 +5,6 @@ import { supabase } from '../../lib/supabase/client';
 import { handleSupabaseError } from '../../utils/handleError';
 import { saveReading } from '../../lib/supabase/v2/readings';
 import { MAJOR_ARCANA_CARDS } from './cardData';
-import type { TarotCard } from '../../types';
 import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
 
 function todayString(): string {
@@ -89,6 +88,11 @@ export function useDailyDraw() {
             { onConflict: 'user_id' },
           ),
         ]);
+        await saveReading(user.id, { spreadType: SPREAD_TYPE.SINGLE, avatarId: null, cards: [selected] });
+        await supabase.from(TABLE.STREAKS).upsert(
+          { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
+          { onConflict: 'user_id' },
+        );
       } catch (e) {
         console.error('[DailyDraw] failed to persist reading/streak:', e);
       }

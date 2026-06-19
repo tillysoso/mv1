@@ -1,7 +1,7 @@
 // Placeholder avatar interpretations — replace with real content
 // Source: _discovery/brand/majestic-brand-voice.md
 
-import type { AvatarId } from '../types';
+import type { AvatarId } from '../../types';
 
 export const interpretationPlaceholder: Record<AvatarId, (cardName: string) => string> = {
   casper: (cardName: string) =>

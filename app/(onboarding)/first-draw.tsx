@@ -46,6 +46,7 @@ export default function FirstDrawScreen() {
         >
           <Text style={styles.ctaText}>Enter</Text>
         </Pressable>
+        <CTAButton label="Draw" onPress={handleDraw} disabled={drawing} align="center" />
       }
     >
       <View style={styles.content}>
@@ -111,18 +112,5 @@ const styles = StyleSheet.create({
     lineHeight: typeScale.bodyS.lineHeight,
     textAlign: 'center',
     fontStyle: 'italic',
-  },
-  cta: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderWidth: 1,
-    borderColor: colors.ash,
-    alignSelf: 'stretch',
-  },
-  ctaText: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: typeScale.label.fontSize,
-    color: colors.bone,
-    letterSpacing: 2,
   },
 });

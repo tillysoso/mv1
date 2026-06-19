@@ -39,6 +39,7 @@ export default function NameScreen() {
       setShowError(true);
       return;
     }
+    trackFormSubmit('name_entry', 'onboarding_name');
     setName(trimmed);
     trackFormSubmit('name_entry', 'onboarding_name');
     router.push(ROUTE.ONBOARDING_DOB);
@@ -60,6 +61,14 @@ export default function NameScreen() {
           <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
         </Pressable>
       }
+    router.push(ROUTE.ONBOARDING_DOB);
+  }
+
+  const isReady = value.trim().length > 0;
+
+  return (
+    <OnboardingScreen
+      bottomContent={isReady && <CTAButton label="Continue" onPress={handleSubmit} />}
     >
       <Pressable style={styles.backLink} onPress={() => router.back()}>
         <Text style={styles.backText}>‹ back</Text>

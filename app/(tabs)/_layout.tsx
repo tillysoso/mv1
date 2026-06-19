@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { trackNavigationClick } from '../../src/lib/analytics';
 import { useAvatarStore } from '../../src/stores/avatarStore';
 import { avatarAccents, colors } from '../../src/theme/tokens';
+import { fonts } from '../../src/theme/typography';
 
 // Minimal dot icon — avoids @expo/vector-icons dependency
 function TabDot({ focused, color }: { focused: boolean; color: string }) {
@@ -33,8 +34,11 @@ export default function TabsLayout() {
           borderTopColor: colors.ash,
           borderTopWidth: 0.5,
           height: 56,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
+          fontFamily: fonts.bodySemiBold,
           fontSize: 9,
           letterSpacing: 2,
           marginTop: -2,
@@ -52,6 +56,7 @@ export default function TabsLayout() {
         options={{
           title: 'Today',
           tabBarLabel: 'Draw',
+          tabBarLabel: 'Today',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />
