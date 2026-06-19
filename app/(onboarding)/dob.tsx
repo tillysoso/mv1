@@ -1,6 +1,4 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
@@ -29,8 +27,6 @@ export default function DobScreen() {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [error, setError] = useState('');
-  const [dateError, setDateError] = useState('');
 
   const monthRef = useRef<TextInput>(null);
   const yearRef = useRef<TextInput>(null);
@@ -44,8 +40,6 @@ export default function DobScreen() {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setDay(digits);
     clearError();
-    setError('');
-    setDateError('');
     if (digits.length === 2) monthRef.current?.focus();
   }
 
@@ -53,8 +47,6 @@ export default function DobScreen() {
     const digits = text.replace(/\D/g, '').slice(0, 2);
     setMonth(digits);
     clearError();
-    setError('');
-    setDateError('');
     if (digits.length === 2) yearRef.current?.focus();
   }
 
@@ -62,8 +54,6 @@ export default function DobScreen() {
     const digits = text.replace(/\D/g, '').slice(0, 4);
     setYear(digits);
     clearError();
-    setError('');
-    setDateError('');
   }
 
   function handleSubmit() {
@@ -72,39 +62,23 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
-      setErrorMsg('// that date doesn\'t resolve — try again');
-      setError("— that date doesn't exist.");
-      setDateError('> That date does not compute. Try again.');
+      setErrorMsg("// that date doesn't resolve — try again");
       return;
     }
 
     setDateOfBirth({ day: d, month: m, year: y });
-    router.push(ROUTE.ONBOARDING_CALCULATING);
     trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
-    router.push('/(onboarding)/calculating');
+    router.push(ROUTE.ONBOARDING_CALCULATING);
   }
 
-  const canSubmit = day.length === 2 && month.length === 2 && year.length === 4;
-
   return (
-    <OnboardingScreen>
+    <OnboardingScreen
+      bottomContent={<CTAButton label="Continue" disabled={!isReady} onPress={handleSubmit} />}
+    >
       <Pressable style={styles.backLink} onPress={() => router.back()}>
         <Text style={styles.backText}>‹ back</Text>
       </Pressable>
 
-    <OnboardingScreen
-      bottomContent={
-        canSubmit ? (
-          <Pressable
-            style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-            onPress={handleSubmit}
-          >
-            <Text style={styles.ctaText}>Continue</Text>
-          </Pressable>
-        ) : null
-        <CTAButton label="Continue" onPress={handleSubmit} disabled={!isReady} />
-      }
-    >
       <View style={styles.terminalHeader}>
         <Text style={styles.systemLine}>
           {name ? `${name}.` : ''}
@@ -132,6 +106,7 @@ export default function DobScreen() {
               onSubmitEditing={() => monthRef.current?.focus()}
               autoFocus
               selectionColor={cursorColor}
+              cursorColor={cursorColor}
               style={styles.input}
             />
           </View>
@@ -152,6 +127,7 @@ export default function DobScreen() {
               returnKeyType="next"
               onSubmitEditing={() => yearRef.current?.focus()}
               selectionColor={cursorColor}
+              cursorColor={cursorColor}
               style={styles.input}
             />
           </View>
@@ -172,6 +148,7 @@ export default function DobScreen() {
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
               selectionColor={cursorColor}
+              cursorColor={cursorColor}
               style={styles.input}
             />
           </View>
@@ -181,17 +158,6 @@ export default function DobScreen() {
       {errorMsg ? (
         <Text style={styles.errorLine}>{errorMsg}</Text>
       ) : null}
-      {error ? <Text style={styles.errorLine}>{error}</Text> : null}
-      {dateError ? (
-        <Text style={styles.errorLine}>{dateError}</Text>
-      ) : null}
-
-      <Pressable
-        style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}
-        onPress={handleSubmit}
-      >
-        <Text style={styles.ctaText}>Continue</Text>
-      </Pressable>
     </OnboardingScreen>
   );
 }
@@ -258,38 +224,9 @@ const styles = StyleSheet.create({
   errorLine: {
     fontFamily: fonts.terminal,
     fontSize: 13,
-    color: colors.text.tertiary,
-    letterSpacing: 0.5,
-    marginTop: 20,
-    opacity: 0.8,
-  cta: {
-    paddingVertical: 16,
-    alignSelf: 'flex-start',
-  },
-  ctaText: {
-    // TODO: fontFamily: fonts.body (Montserrat)
-  errorLine: {
-    fontFamily: fonts.terminal,
-    fontSize: 13,
-    color: '#C94B2C',
-    letterSpacing: 0.5,
-    marginTop: 20,
     color: colors.mist,
     letterSpacing: 0.5,
     marginTop: 24,
-  },
-  cta: {
-    borderWidth: 1,
-    borderColor: colors.ash,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignSelf: 'flex-start',
-    marginTop: 32,
-  },
-  ctaText: {
-    fontSize: typeScale.label.fontSize,
-    fontWeight: '600',
-    color: colors.bone,
-    letterSpacing: 2,
+    opacity: 0.8,
   },
 });
