@@ -1,8 +1,10 @@
 # MAJESTIC — ALTAR & RITUAL SPEC
+
 ## The Sacred Pause — Avatar Altars, Talismans, Breath Mechanics & Ritual Language
+
 *Version 2.0 — Your adventure. But Majestic.*
 
----
+-----
 
 ## 01 — ORIGIN & PHILOSOPHY
 
@@ -13,6 +15,7 @@ The app cannot replicate this. It should not try.
 What it can do is find the digital equivalent of the same intention: a minimum viable sacred pause — a brief moment of arrival that shifts the user from scrolling mode into presence mode. The mechanics are different. The effect is the same.
 
 **The governing principle:**
+
 > The ritual should be short enough that skipping it feels unnecessary. Not guilt-free — unnecessary. 5 seconds max. If it is beautiful and intentional, most users will not skip it. If it exceeds this, they will bypass it every time.
 
 **The two physical elements that translate directly:**
@@ -20,40 +23,57 @@ What it can do is find the digital equivalent of the same intention: a minimum v
 - **The beads (→ Talisman)** — tactile, interactive, identity-bearing. The beads do not just ground — they initiate. Touching them is the act that opens the reading. In the app, each avatar has a Talisman: a unique object that the user interacts with to begin the reading. It is the point of contact between the user and the world. It is the digital equivalent of picking up the beads.
 - **The candle (→ Light Source)** — ambient, already-lit. Not something the user activates. Something that is already burning when they arrive. The space was ready before they got there.
 
----
+-----
 
 ## 02 — THE READING SPACE VISUAL HIERARCHY
 
-Every avatar's reading space is built from four distinct visual layers, in order of function:
+Every avatar’s reading space is built from four distinct visual layers, in order of function:
 
-| Layer | Name | Function | Example |
-|-------|------|----------|---------|
-| 1 | **Light Source** | Anchor. Illuminates the reading surface and the card. The card floats in the light. | Casper: ember flame. Eli: signal lamp. Olivia: bioluminescent root glow. Destiny: moonlight on water. |
-| 2 | **Talisman** | Identity + Interaction. The avatar's ritual object. The user holds this to begin the reading. It is the initiation gesture. | Casper: iron beads on a copper wire. Eli: a resonance tuning fork. Olivia: a worn stone vessel. Destiny: a string of sea glass. |
-| 3 | **Reading Surface** | Interaction zone. Where the card lives. The physical-feeling surface the card rests on or floats above. | Casper: scorched iron plate. Eli: a glass panel with signal lines beneath. Olivia: a flat stone altar with root inlays. Destiny: a still water surface. |
-| 4 | **Element** | Atmosphere. The environmental layer that fills the space — always in peripheral motion, never demanding attention. | Casper: ember drift. Eli: air current signal traces. Olivia: slow botanical particles. Destiny: micro-ripple and mist. |
+|Layer|Name               |Function                                                                                                                   |Example                                                                                                                                                |
+|-----|-------------------|---------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+|1    |**Light Source**   |Anchor. Illuminates the reading surface and the card. The card floats in the light.                                        |Casper: ember flame. Eli: signal lamp. Olivia: bioluminescent root glow. Destiny: moonlight on water.                                                  |
+|2    |**Talisman**       |Identity + Interaction. The avatar’s ritual object. The user holds this to begin the reading. It is the initiation gesture.|Casper: iron beads on a copper wire. Eli: a resonance tuning fork. Olivia: a worn stone vessel. Destiny: a string of sea glass.                        |
+|3    |**Reading Surface**|Interaction zone. Where the card lives. The physical-feeling surface the card rests on or floats above.                    |Casper: scorched iron plate. Eli: a glass panel with signal lines beneath. Olivia: a flat stone altar with root inlays. Destiny: a still water surface.|
+|4    |**Element**        |Atmosphere. The environmental layer that fills the space — always in peripheral motion, never demanding attention.         |Casper: ember drift. Eli: air current signal traces. Olivia: slow botanical particles. Destiny: micro-ripple and mist.                                 |
 
 **Visual hierarchy rule:** Light Source illuminates everything. Talisman is foregrounded on approach. Reading Surface is where the eye rests during a reading. Element is always felt, rarely seen directly.
 
 **The card floats at the intersection of Light Source and Reading Surface.** The light hits it from below or behind. The surface grounds it. The element surrounds it.
 
----
+### Threshold City world-names — altar objects
+
+Each altar object has a Threshold City vernacular name — ancient in origin, absorbed into city language over generations. These are what inhabitants of Threshold City call them. Not mystical labels, not tarot jargon. The names everyone uses without remembering where they came from.
+
+|Object                                   |Avatar         |Threshold City Name|
+|-----------------------------------------|---------------|-------------------|
+|Ember source / light source              |Casper / Fire  |**the Ignis**      |
+|Stone vessel / talisman + reading surface|Olivia / Earth |**the Holdstone**  |
+|Antenna / signal receiver                |Eli / Air      |**the Filament**   |
+|Water surface / reading surface          |Destiny / Water|**the Mirrorwell** |
+
+These names appear in Codex lore fragments, altar scene tooltips (if implemented), and any world-building copy that references the altar space. They are the names the tabletop audience will want to know.
+
+*Locked: #155 — June 2026.*
+
+-----
 
 ## 03 — THE TALISMAN SYSTEM
 
 ### What is a Talisman?
 
-The Talisman is the avatar's equivalent of nana's beads. It is the ritual object unique to each avatar — present in their reading space, held or touched to initiate a reading. It carries the avatar's identity (material, texture, element) and the user's interaction (the hold gesture that begins the draw).
+The Talisman is the avatar’s equivalent of nana’s beads. It is the ritual object unique to each avatar — present in their reading space, held or touched to initiate a reading. It carries the avatar’s identity (material, texture, element) and the user’s interaction (the hold gesture that begins the draw).
 
 The Talisman is not decorative. It has a function: it is the gate. The reading does not begin until the user engages with it.
 
 **The Talisman is:**
+
 - Visually present at all times in the reading space
 - The object the user holds to initiate the reading (replaces or wraps the generic hold-to-reveal gesture)
 - Avatar-specific in material, form, and ambient behaviour
 - The first thing the user sees animate when they arrive
 
 **The Talisman is not:**
+
 - A button
 - A progress indicator
 - Explained or labelled
@@ -62,15 +82,15 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 ### Talisman interaction flow
 
 1. User arrives at reading screen or daily draw
-2. Talisman is present and at rest — subtle ambient motion
-3. Breath beat fires (see Section 04) — 5 seconds, the talisman breathes with it
-4. After breath — talisman becomes the interaction point. Subtle visual cue: the light source brightens slightly toward it. No text instruction.
-5. User holds the talisman. Particles gather. The element responds.
-6. Card rises from / appears above the reading surface. Reading begins.
+1. Talisman is present and at rest — subtle ambient motion
+1. Breath beat fires (see Section 04) — 5 seconds, the talisman breathes with it
+1. After breath — talisman becomes the interaction point. Subtle visual cue: the light source brightens slightly toward it. No text instruction.
+1. User holds the talisman. Particles gather. The element responds.
+1. Card rises from / appears above the reading surface. Reading begins.
 
 **The hold gesture is on the Talisman, not directly on the card.** The card is revealed through the Talisman. This is the key distinction from the previous spec.
 
----
+-----
 
 ### 03.1 — CASPER / FIRE TALISMAN
 
@@ -90,7 +110,7 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 
 **Colour temperature:** `#C94B2C` ember / `#D4A843` copper gold / obsidian black beneath.
 
----
+-----
 
 ### 03.2 — ELI / AIR TALISMAN
 
@@ -110,7 +130,7 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 
 **Colour temperature:** `#A8B4C8` silver / `#6ECFCF` signal cyan / deep blue-black.
 
----
+-----
 
 ### 03.3 — OLIVIA / EARTH TALISMAN
 
@@ -130,7 +150,7 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 
 **Colour temperature:** `#5C6B3A` moss earth / `#C49A4A` clay gold / `#A8C87A` bioluminescent green.
 
----
+-----
 
 ### 03.4 — DESTINY / WATER TALISMAN
 
@@ -138,7 +158,7 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 
 **Material language:** Sea-worn glass. Salt-smooth. The kind of thing found, not made. Each piece is different. The string is imperfect.
 
-**At rest:** The sea glass catches the moonlight and throws small refracted light points across the water surface. The water breathes — micro-ripple at the edges only. One ripple ring, very slow, from the talisman's resting point every 10–15 seconds.
+**At rest:** The sea glass catches the moonlight and throws small refracted light points across the water surface. The water breathes — micro-ripple at the edges only. One ripple ring, very slow, from the talisman’s resting point every 10–15 seconds.
 
 **On hold:** One ripple ring expands from the sea glass contact point — wider, slower than at rest. The glass pieces shift slightly — the string moves. The light refraction intensifies briefly and then softens.
 
@@ -146,11 +166,11 @@ The Talisman is not decorative. It has a function: it is the gate. The reading d
 
 **Reading surface:** A still water surface — dark, reflective, deeply calm at rest. The card appears to float on it.
 
-**Element:** Mist and micro-ripple. Water surface motion at the edges. A thin mist layer at low opacity. Destiny's element is the subtlest of the four.
+**Element:** Mist and micro-ripple. Water surface motion at the edges. A thin mist layer at low opacity. Destiny’s element is the subtlest of the four.
 
 **Colour temperature:** `#2A7B8C` deep teal / `#4DBFCC` moonlit cyan / near-black beneath.
 
----
+-----
 
 ## 04 — THE BREATH MECHANIC
 
@@ -164,48 +184,48 @@ The breath beat is a 5-second conscious transition. It is not a mindfulness feat
 
 The breath lives on the Talisman, not on a standalone emblem element.
 
-| Phase | Behaviour | Duration |
-|-------|-----------|----------|
-| Inhale | Talisman light source brightens gently, 3–4% | 2.5 seconds |
-| Exhale | Returns to rest. Avatar element particle fires once. | 2.5 seconds |
+|Phase |Behaviour                                           |Duration   |
+|------|----------------------------------------------------|-----------|
+|Inhale|Talisman light source brightens gently, 3–4%        |2.5 seconds|
+|Exhale|Returns to rest. Avatar element particle fires once.|2.5 seconds|
 
 One cycle. Then stops. The talisman becomes interactive on exhale completion.
 
 **On exhale, the element responds (once only):**
 
-| Avatar | Exhale particle |
-|--------|----------------|
-| Casper | One ember spark rises from the iron beads, 600ms |
-| Eli | One resonance ring expands from the tuning fork base, fades |
-| Olivia | One botanical spore drifts downward from the vessel, settles |
-| Destiny | One ripple ring from the sea glass resting point, fades |
+|Avatar |Exhale particle                                             |
+|-------|------------------------------------------------------------|
+|Casper |One ember spark rises from the iron beads, 600ms            |
+|Eli    |One resonance ring expands from the tuning fork base, fades |
+|Olivia |One botanical spore drifts downward from the vessel, settles|
+|Destiny|One ripple ring from the sea glass resting point, fades     |
 
 After the exhale particle settles — the talisman is ready. The light source shifts very slightly toward it. No text. No instruction. The user holds.
 
----
+-----
 
 ## 05 — READING SCREEN LAYOUT
 
 ### Layer order (back to front)
 
 1. **Background** — `#1A1A2E` with atmospheric grain, 5–6% opacity
-2. **Element layer** — avatar-specific ambient particles, always in peripheral motion
-3. **Light source** — avatar-specific, positioned at rear of reading zone
-4. **Reading surface** — avatar-specific, centre of screen
-5. **Card** — floats above reading surface, lit by light source
-6. **Talisman** — foregrounded slightly, lower portion of reading zone
-7. **Avatar companion line** — below card, above talisman. Text in this space.
-8. **Avatar emblem** — peripheral, 40% opacity at rest
+1. **Element layer** — avatar-specific ambient particles, always in peripheral motion
+1. **Light source** — avatar-specific, positioned at rear of reading zone
+1. **Reading surface** — avatar-specific, centre of screen
+1. **Card** — floats above reading surface, lit by light source
+1. **Talisman** — foregrounded slightly, lower portion of reading zone
+1. **Avatar companion line** — below card, above talisman. Text in this space.
+1. **Avatar emblem** — peripheral, 40% opacity at rest
 
 ### Zone heights (390px screen)
 
-| Zone | Height |
-|------|--------|
-| Top safe area + nav | ~60px |
-| Card zone | ~260px |
-| Reading surface + talisman zone | ~100px |
-| Companion line | ~48px |
-| Bottom nav bar | ~72px |
+|Zone                           |Height|
+|-------------------------------|------|
+|Top safe area + nav            |~60px |
+|Card zone                      |~260px|
+|Reading surface + talisman zone|~100px|
+|Companion line                 |~48px |
+|Bottom nav bar                 |~72px |
 
 **Total reading surface + talisman zone: ~100px.** This is the altar. Compact, atmospheric, purposeful.
 
@@ -217,13 +237,14 @@ The talisman dims to 60% opacity — it has done its work. The card and companio
 
 The talisman returns to full ambient presence. The card can recede. The space is open again.
 
----
+-----
 
 ## 06 — ONBOARDING INTEGRATION
 
 ### The principle
 
 Onboarding does not run the full ritual. It teaches the physical language of it — specifically:
+
 - That the talisman exists and belongs to their avatar
 - That the hold gesture initiates the reading
 - That something brief and intentional happens before the card appears
@@ -231,7 +252,7 @@ Onboarding does not run the full ritual. It teaches the physical language of it 
 ### Where it appears
 
 **Screen 11 — Companion Confirmed**
-The avatar appears fully. Their reading space appears for the first time — light source, talisman, element. The user sees their avatar's world. The talisman is present, at rest, breathing.
+The avatar appears fully. Their reading space appears for the first time — light source, talisman, element. The user sees their avatar’s world. The talisman is present, at rest, breathing.
 
 No explanation. No label. It simply exists.
 
@@ -244,6 +265,7 @@ Avatar line fires. Then: a compressed breath beat — exhale only, no inhale, 2.
 The user holds the talisman. The card reveals.
 
 **What this teaches without saying:**
+
 - This is where you go
 - This is what you hold
 - Something small happens first
@@ -252,30 +274,33 @@ The user holds the talisman. The card reveals.
 They will recognise all of this on day two. No instruction required.
 
 ### What onboarding does NOT include
+
 - The full 5-second breath cycle (compressed to exhale-only, 2.5 seconds)
-- Labels, tooltips, or "this is your talisman" copy
+- Labels, tooltips, or “this is your talisman” copy
 - A skip button on the breath beat (it is short enough that one is unnecessary)
 
----
+-----
 
 ## 07 — COMPANION SKIP / NO-QUIZ UX
 
 ### The question
+
 Should users be able to skip avatar selection entirely? And if so, what is the default state?
 
 ### Recommendation: Skip the quiz, not the choice
 
 **Option A (recommended for v1):** Add a skip option to the quiz intro screen (Screen 08). The user can bypass the four questions and go directly to Screen 10 — where all four avatar cards are shown without a highlighted recommendation. The user picks on instinct. They still make a conscious choice. The companion system stays clean.
 
-- **Copy for skip:** *"Skip straight to choosing."* — in the Majestic parent voice, not a system label.
-- **Screen 10 without recommendation:** All four avatar cards shown equally. No highlighted panel. No "tends to find people like you" line. Just: *"Choose your companion."*
+- **Copy for skip:** *“Skip straight to choosing.”* — in the Majestic parent voice, not a system label.
+- **Screen 10 without recommendation:** All four avatar cards shown equally. No highlighted panel. No “tends to find people like you” line. Just: *“Choose your companion.”*
 - **Downstream:** Identical to a quiz completion. The user has a companion. Everything works.
 
-**Option B (not recommended for v1):** A fifth "no companion" state — Threshold City itself as the guide, master emblem, parent voice throughout, `#9500FF` base accent. Requires defining a fifth voice register, a fifth altar, and a fifth set of talismans. Significant overhead for a v1 edge case. Flag for v2 if data shows a meaningful number of users refusing selection.
+**Option B (not recommended for v1):** A fifth “no companion” state — Threshold City itself as the guide, master emblem, parent voice throughout, `#9500FF` base accent. Requires defining a fifth voice register, a fifth altar, and a fifth set of talismans. Significant overhead for a v1 edge case. Flag for v2 if data shows a meaningful number of users refusing selection.
 
-**Why not "no companion at all":** The companion drives altar, talisman, reading voice, and UI accent. Without a selection, none of these can render. The app's visual identity collapses to a generic state. This is a worse experience than gentle pressure to choose.
+**Why not “no companion at all”:** The companion drives altar, talisman, reading voice, and UI accent. Without a selection, none of these can render. The app’s visual identity collapses to a generic state. This is a worse experience than gentle pressure to choose.
 
 ### Default state if somehow no companion is stored (edge case / technical fallback only)
+
 - Accent colour: `#9500FF` brand primary
 - No talisman rendered
 - No avatar companion line
@@ -283,33 +308,36 @@ Should users be able to skip avatar selection entirely? And if so, what is the d
 - Card appears on a plain `#16213E` surface
 - This is a technical fallback, not a designed state. It should never be a user experience.
 
----
+-----
 
 ## 08 — REFLECTION MODE (V2 FLAG)
 
 Reflection Mode is a future feature. It is flagged here because it directly extends the altar and talisman system and decisions made in v1 should not foreclose it.
 
-**What it is:** A user-initiated mode available after a reading. The user taps "Reflect" — the altar animates and changes perspective (as if the camera moves closer, or the altar expands to fill the screen). The talisman becomes the centre. Ambient visuals and sound deepen. Thought prompts appear sequentially, meditative in pace. The purpose is to help the user integrate the reading, not receive new content.
+**What it is:** A user-initiated mode available after a reading. The user taps “Reflect” — the altar animates and changes perspective (as if the camera moves closer, or the altar expands to fill the screen). The talisman becomes the centre. Ambient visuals and sound deepen. Thought prompts appear sequentially, meditative in pace. The purpose is to help the user integrate the reading, not receive new content.
 
 **What it requires from v1:**
+
 - The altar must be built as a layered system (which it is) — not a static image
 - The talisman must be an interactive element (which it is) — not just decoration
 - Sound design must be decided before this feature can be built (flagged as #156)
 
 **What is NOT in v1:**
+
 - Perspective animation
 - Expanded altar view
 - Meditative thought prompts
 - Ambient audio
-- The "Reflect" button/entry point
+- The “Reflect” button/entry point
 
 **V1 decision:** Build the altar and talisman as a layered system even if Reflection Mode is years away. The architecture cost is low. The cost of retrofitting later is high.
 
----
+-----
 
 ## 09 — OPEN QUESTIONS (UPDATED)
 
 **Resolved from v1:**
+
 - ✅ Altar static in v1 — confirmed
 - ✅ No altar before avatar selection — confirmed
 - ✅ Onboarding compressed breath (exhale only) — confirmed
@@ -318,12 +346,13 @@ Reflection Mode is a future feature. It is flagged here because it directly exte
 - ✅ Quiz skip UX: Option A recommended — skip quiz, still choose companion
 
 **Still open:**
-1. **Altar world-names (#155)** — the four talismans and their light sources need Threshold City names. Brief copy task. Blocks lore writing and codex unlock copy.
-2. **Sound design timing (#156)** — effects/ambient confirmed in principle. Specific implementation and timing TBD with Luke.
-3. **"Nana's beads" world-name** — does the hold gesture / talisman initiation have a name inside the Threshold City world? Worth a conversation with Luke. The tabletop audience will want this to have a name.
-4. **Talisman in Daily Draw vs Reading Screen** — the talisman appears in both contexts. Confirm whether the Daily Draw talisman is identical to the Reading Screen talisman, or whether there is a simplified version for the daily context. Recommend: identical in v1.
 
----
+1. ~**Altar world-names (#155)**~ — ✅ Locked June 2026. the Ignis / the Holdstone / the Filament / the Mirrorwell.
+1. **Sound design timing (#156)** — effects/ambient confirmed in principle. Specific implementation and timing TBD with Luke.
+1. **“Nana’s beads” world-name** — does the hold gesture / talisman initiation have a name inside the Threshold City world? Worth a conversation with Luke. The tabletop audience will want this to have a name.
+1. **Talisman in Daily Draw vs Reading Screen** — the talisman appears in both contexts. Confirm whether the Daily Draw talisman is identical to the Reading Screen talisman, or whether there is a simplified version for the daily context. Recommend: identical in v1.
+
+-----
 
 ## 10 — WHAT THIS UNLOCKS DOWNSTREAM
 
@@ -335,8 +364,10 @@ Reflection Mode is a future feature. It is flagged here because it directly exte
 - **MJ prompt library** — each talisman object (iron beads, tuning fork, stone vessel, sea glass) can become a cref for card art and avatar art consistency
 - **Reflection Mode (v2)** — architectural decisions in this spec directly enable it
 
----
+-----
 
-*Majestic — Altar & Ritual Spec — v2.0*
+*Majestic — Altar & Ritual Spec — v2.1*
+*Updated: Threshold City world-names locked (#155) — the Ignis, the Holdstone, the Filament, the Mirrorwell.*
+*Your adventure. But Majestic.*
 *Supersedes v1.0*
 *Your adventure. But Majestic.*
