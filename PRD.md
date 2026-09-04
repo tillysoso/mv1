@@ -18,7 +18,7 @@ Threshold City, navigated as three spatial states, not a tab hierarchy the user 
 - **Outer Realm (Codex)** — reached via a portal transition. Full 78-card deck, world lore, discovery.
 - **Self State (Reading + Journal)** — reached via a door transition, a desk scene the user pans laterally between altar (Reading) and book (Journal).
 
-These three states are nameless to the user; the bottom nav shows four destinations: **Home, Codex, Reading, Journal** (PRD §06, §13). **As of this repo's current state, the shipped bottom nav has 3 tabs (Today, Reading, Profile) with no Codex or Journal tab** — see `ARCHITECTURE-ESSENTIALS.md` for what that gap means and what's been scaffolded toward closing it.
+These three states are nameless to the user; the bottom nav shows four destinations: **Home, Codex, Reading, Journal** (PRD §06, §13). The shipped bottom nav has 5 tabs (Today, Codex, Reading, Journal, Profile) — Codex and Journal now exist as placeholder screens, and Profile was kept alongside rather than removed since the PRD doesn't specify where it lives if not a tab. See `ARCHITECTURE-ESSENTIALS.md` for the reasoning and what's still open.
 
 ## v1 scope (PRD §09, §11)
 

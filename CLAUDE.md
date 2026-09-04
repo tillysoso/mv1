@@ -53,7 +53,7 @@ docs/                 the real PRD and every design spec — see docs/README.md 
 - **One world, four accent themes.** Threshold City is the only environment; `activeAvatar` (Zustand) only swaps colour tokens (`avatarAccents` in `src/theme/tokens.ts`), never layout or copy. Don't build avatar-specific screens — build accent-aware ones.
 - **Aura triggers only after the card face resolves**, never on draw/anticipation — see the comment in `src/stores/avatarStore.ts` and the `03.6` references throughout `docs/03-experience-and-feature-specs/`.
 - **Card copy lives in TypeScript, not the database** (`src/features/onboarding/cardInterpretations.ts`, `cardOneliners.ts`). No `card_content` table exists. The subscription spec (`docs/01-product-strategy/majestic-subscription-tier-spec.md` §06) references one — that's a future decision, not current state.
-- **Bottom navigation currently ships 3 tabs** (Today, Reading, Profile — `app/(tabs)/_layout.tsx`) while the PRD's locked navigation model calls for 4 (Home, Codex, Reading, Journal — PRD §06/§13). Barely-drafted `codex.tsx` / `journal.tsx` screens exist as a starting point; they are not feature-complete.
+- **Bottom navigation ships 5 tabs** (Today, Codex, Reading, Journal, Profile — `app/(tabs)/_layout.tsx`), a superset of the PRD's locked 4 (Home, Codex, Reading, Journal — PRD §06/§13). Profile was kept rather than removed since the PRD doesn't say where it goes if not a tab — that's an open product decision, not one this codebase has made. `codex.tsx` / `journal.tsx` are barely-drafted placeholder screens, not feature-complete.
 
 ## Canonical docs (read before building a feature, not after)
 

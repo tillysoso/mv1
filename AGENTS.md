@@ -28,7 +28,7 @@ There is no lint script configured. There is no Jest/Vitest — tests are plain 
 
 ## Known repo hazard: duplicate-declaration corruption
 
-As of this writing, a systematic bug pattern was found and fixed across ~11 files: accidental duplicated `import` lines, duplicated `function`/`export default function` declarations, duplicated JSX props, and one `useState`/`Promise.all` block that ran twice per invocation. Each instance made its file fail to parse or silently double-write data. The likely cause was a bad merge or copy/paste, not intentional code.
+As of this writing, a systematic bug pattern was found and fixed across 16 files: accidental duplicated `import` lines, duplicated `function`/`export default function` declarations, duplicated JSX props, an unclosed object literal, and one `async` function that ran its side effects twice per invocation. Each instance made its file fail to parse, throw at runtime, or silently double-write data — full list in `ARCHITECTURE-ESSENTIALS.md`. The likely cause was a bad merge or copy/paste, not intentional code. Confirmed via `npm run typecheck` (clean), `npm test` (35/35), and `expo export --platform web` (builds end to end) — not just by reading the diff.
 
 If you see two `import` lines from the same module, two `export default function` in one file, or a JSX element with the same prop twice — that's this pattern, not a stylistic choice. Fix by removing the redundant half, not by keeping both.
 

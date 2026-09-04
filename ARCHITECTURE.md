@@ -58,7 +58,7 @@ Expo Router's file system defines routes. `app/_layout.tsx` owns global concerns
 - `useAuthRouting()` redirects based on auth state: no user → `(onboarding)`; user but no `birthCards` → onboarding profile step; both present → `(tabs)`. **Entirely skipped when `isSupabaseConfigured` is false** (prototype mode) — the router just falls through to whatever route Expo Router resolves by default.
 - Wraps everything in a class-based `ErrorBoundary` that renders the raw error + stack instead of a blank screen — deliberate, for dev visibility, not a production-polished crash screen.
 
-Per PRD, navigation is conceptually three spatial states (Ground/Outer Realm/Self State — see `docs/03-experience-and-feature-specs/majestic-navigation-architecture-spec.md`) surfaced as 4 bottom-nav destinations (Home, Codex, Reading, Journal). **Currently shipped:** `app/(tabs)/_layout.tsx` defines 3 tabs — Today (`index`), Reading, Profile. No Codex or Journal tab exists in the tab bar yet.
+Per PRD, navigation is conceptually three spatial states (Ground/Outer Realm/Self State — see `docs/03-experience-and-feature-specs/majestic-navigation-architecture-spec.md`) surfaced as 4 bottom-nav destinations (Home, Codex, Reading, Journal). **Currently shipped:** `app/(tabs)/_layout.tsx` defines 5 tabs — Today (`index`), Codex, Reading, Journal, Profile. Codex and Journal are placeholder screens (see "What's scaffolded but not built" below); Profile was kept rather than dropped, since the PRD doesn't specify where it moves if it's not a tab.
 
 ## State management
 
