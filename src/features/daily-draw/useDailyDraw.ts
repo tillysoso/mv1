@@ -88,11 +88,6 @@ export function useDailyDraw() {
             { onConflict: 'user_id' },
           ),
         ]);
-        await saveReading(user.id, { spreadType: SPREAD_TYPE.SINGLE, avatarId: null, cards: [selected] });
-        await supabase.from(TABLE.STREAKS).upsert(
-          { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
-          { onConflict: 'user_id' },
-        );
       } catch (e) {
         console.error('[DailyDraw] failed to persist reading/streak:', e);
       }

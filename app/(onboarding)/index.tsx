@@ -56,13 +56,6 @@ export default function EntryScreen() {
         >
           <Text style={styles.ctaText}>Begin</Text>
         </Pressable>
-        <CTAButton
-          label="Begin"
-          onPress={() => {
-            trackNavigationClick('begin_cta', '/name');
-            router.push(ROUTE.ONBOARDING_NAME);
-          }}
-        />
       }
     >
       <Animated.View style={[styles.content, animatedStyle]}>
@@ -138,5 +131,22 @@ const styles = StyleSheet.create({
     color: colors.bone,
     letterSpacing: 2,
     marginBottom: 60,
+  },
+  cta: {
+    borderWidth: 1,
+    borderColor: colors.ash,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignSelf: 'stretch',
+  },
+  ctaPressed: {
+    opacity: 0.7,
+  },
+  ctaText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: typeScale.label.fontSize,
+    color: colors.bone,
+    letterSpacing: 2,
+    textAlign: 'center',
   },
 });

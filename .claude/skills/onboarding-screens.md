@@ -40,7 +40,7 @@ You are implementing onboarding screens for **Majestic**. The onboarding flow ha
 | Personality | `(onboarding)/personality` | Reveal personality card |
 | Soul | `(onboarding)/soul` | Reveal soul card |
 | Profile | `(onboarding)/profile` | Both birth cards displayed together |
-| Quiz | `(onboarding)/quiz` | 5-question personality scoring |
+| Quiz | `(onboarding)/quiz` | 4-question personality scoring |
 | Recommendation | `(onboarding)/recommendation` | Recommend best-match avatar |
 
 ### Phase 3 — Choose Your Companion

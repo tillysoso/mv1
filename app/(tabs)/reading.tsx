@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import {
   View,
   Text,
@@ -58,9 +57,6 @@ function pickCards(count: number, profileNumbers: number[]): TarotCard[] {
   });
 }
 
-export default function ReadingScreen() {
-  const { activeAvatar } = useAvatarStore();
-  const { birthCards } = useProfileStore();
 // Animated face-down card the user taps to reveal — salvaged from the older
 // implementation for its press-in/press-out micro-interaction.
 function FaceDownCard({

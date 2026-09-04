@@ -60,7 +60,6 @@ export default function DobScreen() {
     const y = parseInt(year, 10);
 
     if (!isValidDate(d, m, y)) {
-      setErrorMsg('// that date doesn\'t resolve — try again');
       setErrorMsg("// that date doesn't resolve — try again");
       return;
     }
@@ -69,6 +68,8 @@ export default function DobScreen() {
     trackFormSubmit('dob_entry', 'onboarding_date_of_birth');
     router.push(ROUTE.ONBOARDING_CALCULATING);
   }
+
+  const canSubmit = day.length > 0 && month.length > 0 && year.length > 0;
 
   return (
     <OnboardingScreen
@@ -84,7 +85,6 @@ export default function DobScreen() {
           <Text style={[styles.ctaText, !canSubmit && styles.ctaTextDisabled]}>Continue</Text>
         </Pressable>
       }
-      bottomContent={<CTAButton label="Continue" disabled={!isReady} onPress={handleSubmit} />}
     >
       <Pressable style={styles.backLink} onPress={() => router.back()}>
         <Text style={styles.backText}>‹ back</Text>
@@ -256,10 +256,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.bone,
     letterSpacing: 2,
-    color: colors.mist,
-    letterSpacing: 0.5,
-    marginTop: 24,
-    opacity: 0.8,
   },
   ctaTextDisabled: {
     color: colors.text.tertiary,

@@ -45,8 +45,6 @@ export default function CalculatingScreen() {
     async function run() {
       const start = Date.now();
       const { dateOfBirth, setBirthCards } = useProfileStore.getState();
-
-      const { dateOfBirth, setBirthCards } = useProfileStore.getState();
       const cards = dateOfBirth
         ? birthCardCalculator(dateOfBirth.day, dateOfBirth.month, dateOfBirth.year)
         : undefined;

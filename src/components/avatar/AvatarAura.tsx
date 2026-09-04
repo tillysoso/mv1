@@ -11,7 +11,6 @@ import Animated, {
 import { avatarAccents } from '../../theme/tokens';
 import type { AvatarId, PortalShape } from '../../types/avatar';
 import type { AuraContext } from '../../types/tarot';
-import type { AvatarId, AuraContext, PortalShape } from '../../types';
 import { AURA_CONTEXT, PORTAL_SHAPE } from '../../constants';
 
 // Conditionally import Skia — only loaded on native where WASM is not needed

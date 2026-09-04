@@ -55,8 +55,14 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Today',
-          tabBarLabel: 'Draw',
           tabBarLabel: 'Today',
+          tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="codex"
+        options={{
+          title: 'Codex',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />
@@ -65,6 +71,13 @@ export default function TabsLayout() {
         options={{
           title: 'Reading',
           tabBarLabel: 'Reading',
+          tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="journal"
+        options={{
+          title: 'Journal',
           tabBarIcon: ({ color, focused }) => <TabDot focused={focused} color={color} />,
         }}
       />

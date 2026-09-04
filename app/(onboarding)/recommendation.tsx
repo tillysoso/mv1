@@ -60,7 +60,6 @@ export default function RecommendationScreen() {
   function handleConfirm() {
     setAvatar(selected);
     trackNavigationClick('choose_avatar_cta', '/confirm');
-    trackNavigationClick('choose_avatar_cta', ROUTE.ONBOARDING_CONFIRM);
     router.push(ROUTE.ONBOARDING_CONFIRM);
   }
 
@@ -109,7 +108,6 @@ export default function RecommendationScreen() {
                   <Text style={[styles.avatarName, isSelected && { color: accent.primary }]}>
                     {AVATAR_LABELS[id]}
                   </Text>
-                  <Text style={styles.avatarDesc} numberOfLines={2} ellipsizeMode="tail">{AVATAR_DESCRIPTIONS[id]}</Text>
                   <Text style={styles.avatarDesc} numberOfLines={2} ellipsizeMode="tail">
                     {AVATAR_DESCRIPTIONS[id]}
                   </Text>

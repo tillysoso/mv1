@@ -12,7 +12,6 @@ import { getCardOneliner } from '../../src/features/onboarding/cardOneliners';
 import { colors } from '../../src/theme/tokens';
 import { fonts, typeScale } from '../../src/theme/typography';
 import { ROUTE } from '../../src/constants';
-import NumberCardPlaceholder from '../../src/components/onboarding/NumberCardPlaceholder';
 import { toRoman } from '../../src/utils/roman';
 import { useEntranceAnimation } from '../../src/hooks/useEntranceAnimation';
 
@@ -59,13 +58,6 @@ export default function SoulScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <CTAButton
-          label="Continue"
-          onPress={() => {
-            trackNavigationClick('continue_cta', '/profile');
-            router.push(ROUTE.ONBOARDING_PROFILE);
-          }}
-        />
         ctaReady ? (
           <CTAButton
             label="Continue"
@@ -154,7 +146,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     alignSelf: 'flex-start',
   },
-  cardNumber: {
   cardsRow: {
     flexDirection: 'column',
     alignItems: 'center',

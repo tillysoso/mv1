@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -94,14 +93,13 @@ export default function QuizScreen() {
     setScores((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1) }));
     setAnswers((a) => a.slice(0, -1));
     setCurrentQ((q) => q - 1);
+    setSelectedIndex(null);
   }
-
-  const opacity = useSharedValue(1);
-  const isTransitioning = useRef(false);
 
   function advanceTo(newQ: number) {
     opacity.value = withTiming(0, { duration: 180 }, () => {
       runOnJS(setCurrentQ)(newQ);
+      runOnJS(setSelectedIndex)(null);
       opacity.value = withTiming(1, { duration: 280 });
       runOnJS(() => { isTransitioning.current = false; })();
     });
@@ -109,24 +107,17 @@ export default function QuizScreen() {
 
   function handleSelect(avatar: AvatarId, index: number, answerText: string) {
     if (isTransitioning.current || selectedIndex !== null) return;
-  function handleSelect(avatar: AvatarId, answerText: string) {
-    if (isTransitioning.current) return;
     isTransitioning.current = true;
     setSelectedIndex(index);
-
-    trackQuizAnswer(currentQ, answerText, avatar);
 
     trackQuizAnswer(currentQ, answerText, avatar);
 
     const newScores = { ...scores, [avatar]: scores[avatar] + 1 };
     setScores(newScores);
     setAnswers((a) => [...a, avatar]);
-    setSelectedIndex(null);
 
     if (currentQ === QUESTIONS.length - 1) {
       // Q4 tiebreaker: last answer determines tiebreak avatar
-
-    if (currentQ === QUESTIONS.length - 1) {
       setQuizScores(newScores, avatar);
       opacity.value = withTiming(0, { duration: 200 }, () => {
         runOnJS(router.push)(ROUTE.ONBOARDING_RECOMMEND);
@@ -175,8 +166,6 @@ export default function QuizScreen() {
                 ]}
                 onPress={() => handleSelect(opt.avatar, i, opt.text)}
                 disabled={selectedIndex !== null}
-                style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-                onPress={() => handleSelect(opt.avatar, opt.text)}
               >
                 <Text style={styles.optionText}>{opt.text}</Text>
               </Pressable>

@@ -1,5 +1,3 @@
-import { View, Text, StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -63,13 +61,6 @@ export default function PersonalityScreen() {
   return (
     <OnboardingScreen
       bottomContent={
-        <CTAButton
-          label="Continue"
-          onPress={() => {
-            trackNavigationClick('continue_cta', '/soul');
-            router.push(ROUTE.ONBOARDING_SOUL);
-          }}
-        />
         ctaReady ? (
           <CTAButton
             label="Continue"
@@ -150,6 +141,7 @@ const styles = StyleSheet.create({
     color: colors.mist,
     letterSpacing: 2,
     marginBottom: 8,
+  },
   lines: {
     alignItems: 'center',
     marginTop: 8,

@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -74,13 +73,6 @@ export default function ConfirmScreen() {
   function handleBegin() {
     trackNavigationClick('lets_begin_cta', '/first-draw');
     router.push(ROUTE.ONBOARDING_FIRST_DRAW);
-    if (confirming) return;
-    setConfirming(true);
-    confirmOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
-    trackNavigationClick('lets_begin_cta', '/first-draw');
-    setTimeout(() => {
-      router.push(ROUTE.ONBOARDING_FIRST_DRAW);
-    }, 600);
   }
 
   return (
@@ -91,7 +83,6 @@ export default function ConfirmScreen() {
         bottomContent={
           <CTAButton label="Let's Begin" onPress={handleBegin} />
         }
-        bottomContent={<CTAButton label="Let's Begin" onPress={handleBegin} />}
       >
         {/* Elemental accent bloom overlay */}
         <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]} pointerEvents="none" />
@@ -114,12 +105,6 @@ export default function ConfirmScreen() {
           <Text style={styles.firstWords}>
             "{FIRST_WORDS[activeAvatar]}"
           </Text>
-
-          {confirming && (
-            <Animated.Text style={[styles.confirmLine, confirmStyle]}>
-              // confirmed.
-            </Animated.Text>
-          )}
         </Animated.View>
       </OnboardingScreen>
     </>
