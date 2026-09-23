@@ -27,10 +27,6 @@
           "path": ".claude/skills/vercel-react-native-skills/SKILL.md"
         },
         {
-          "name": "vercel-react-view-transitions",
-          "path": ".claude/skills/vercel-react-view-transitions/SKILL.md"
-        },
-        {
           "name": "vercel-cli-with-tokens",
           "path": ".claude/skills/vercel-cli-with-tokens/SKILL.md"
         },
