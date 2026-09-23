@@ -4,6 +4,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase/client';
 import { handleSupabaseError } from '../../utils/handleError';
 import { saveReading } from '../../lib/supabase/v2/readings';
+import { trackDailyDrawCompleted } from '../../lib/analytics/posthog';
 import { MAJOR_ARCANA_CARDS } from './cardData';
 import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
 
@@ -77,6 +78,7 @@ export function useDailyDraw() {
   async function draw() {
     const selected = resolveAuraContext(pickRandom(MAJOR_ARCANA_CARDS));
     setTodaysCard(selected);
+    trackDailyDrawCompleted();
 
     if (user?.id) {
       const today = todayString();

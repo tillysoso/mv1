@@ -220,3 +220,68 @@ Reserved GA4 event names used as-is: `page_view`, `select_content`, `search`.
    action (e.g. inside `onPress`, not in a `useEffect`).
 3. Document the new event in this file.
 4. Verify in GA4 DebugView (`?gtag_debug=1` query param on web) before shipping.
+
+---
+
+# PostHog — product analytics (tracker #147)
+
+Runs **alongside** GA4 on every platform (iOS, Android, web). GA4 above is
+unchanged; migrating the existing `track*` calls to PostHog is tracker #178.
+
+Implementation: `src/lib/analytics/posthog.ts` (SDK wrapper) and
+`src/lib/analytics/posthogConfig.js` (pure config, unit-tested).
+
+## Setup
+
+Set `EXPO_PUBLIC_POSTHOG_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (see
+`.env.example`). With no key, PostHog is never constructed and every call
+no-ops — same pattern as prototype mode for Supabase.
+
+## Privacy rules (permanent, not placeholders)
+
+- Identify by **Supabase user id only** (`identifyUser` in `app/_layout.tsx`).
+  No name, email, DOB, birth cards, or journal content — the event wrappers
+  take no free-form properties, so nothing can be attached at call sites.
+- No user (including prototype mode): PostHog's anonymous id stands. No
+  placeholder ids are invented.
+- Identity is processed once auth has resolved. A persisted identified id that
+  outlived its Supabase session is reset on a signed-out cold start; a plain
+  anonymous id is kept (so anonymous retention holds). Sign-out and account
+  switches reset, and `accent_theme` is reapplied after every identity change.
+  Only the SDK's own `Application Opened`, fired at startup before auth
+  resolves, can still carry the stale id.
+- Session replay off. Error autocapture off (errors go to Sentry, #146).
+
+## Events
+
+| Event | Fires | Source |
+|---|---|---|
+| `onboarding_completed` | user taps Enter on the first-draw screen (same point `setOnboardingComplete(true)` runs) | `app/(onboarding)/first-draw.tsx` |
+| `daily_draw_completed` | a daily card is drawn (local state set; fires even if the Supabase save later fails) | `src/features/daily-draw/useDailyDraw.ts` → `draw()` |
+| `Application Opened` / `Became Active` / `Backgrounded` / `Installed` / `Updated` | SDK lifecycle autocapture (`captureAppLifecycleEvents: true`) | PostHog SDK |
+
+## Properties
+
+| Property | Where | Value |
+|---|---|---|
+| `accent_theme` | super property (on every event) **and** person property | active avatar id (`avatarStore.activeAvatar`) — a plain accent-token value, no per-avatar logic |
+
+## Building the four metrics in PostHog
+
+- **Onboarding completion:** Funnel or Trends on `onboarding_completed`
+  (unique users), optionally over `Application Installed`.
+- **Daily draw rate:** Trends → `daily_draw_completed` unique users ÷
+  `Application Opened` unique users, daily interval (formula mode).
+- **D3 / D7 / D30 retention:** Retention insight, day interval. Start event
+  `onboarding_completed` (or `Application Installed`), return event
+  `daily_draw_completed` (ritual retention) or `Application Opened` (app
+  retention). Read the day 3 / 7 / 30 columns.
+- **Avatar distribution:** Trends → unique users, breakdown by person property
+  `accent_theme` (current choice), or by event property `accent_theme` on
+  `daily_draw_completed` (choice at time of draw).
+
+## Known limits
+
+- Only verified against a local mock endpoint on a web build (both events,
+  `accent_theme`, persisted anonymous id, zero requests without a key).
+  Real-key delivery and iOS/Android device behaviour are unverified.

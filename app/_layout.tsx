@@ -1,6 +1,6 @@
 import '../global.css';
 
-import { Component, type ReactNode, useEffect } from 'react';
+import { Component, type ErrorInfo, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
@@ -21,11 +21,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
 import { trackPageView } from '../src/lib/analytics';
+import { initMonitoring, captureError, wrapRoot } from '../src/lib/monitoring';
+import { initProductAnalytics, identifyUser, setAccentTheme } from '../src/lib/analytics/posthog';
+import { useAvatarStore } from '../src/stores/avatarStore';
 import { localFontAssets } from '../src/theme/typography';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
 
+initMonitoring();
+initProductAnalytics();
 SplashScreen.preventAutoHideAsync();
 
 function usePageTracking() {
@@ -33,6 +38,22 @@ function usePageTracking() {
   useEffect(() => {
     trackPageView(pathname);
   }, [pathname]);
+}
+
+// PostHog identity: Supabase user id only, and the accent theme as a plain
+// value. No user (incl. prototype mode) → PostHog's anonymous id stands.
+function useProductAnalyticsIdentity() {
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+  // Wait for the restored session so a signed-in cold start isn't read as
+  // signed out. Prototype mode never initialises auth — it's resolved as-is.
+  const authResolved = useAuthStore((s) => s.initialised) || !isSupabaseConfigured;
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
+  useEffect(() => {
+    if (authResolved) identifyUser(userId);
+  }, [authResolved, userId]);
+  useEffect(() => {
+    setAccentTheme(activeAvatar);
+  }, [activeAvatar]);
 }
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
@@ -43,6 +64,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   }
   static getDerivedStateFromError(error: Error) {
     return { error };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    captureError(error, { componentStack: info.componentStack });
   }
   render() {
     if (this.state.error) {
@@ -126,6 +150,7 @@ function AppContent() {
 
   useAuthRouting();
   usePageTracking();
+  useProductAnalyticsIdentity();
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -149,10 +174,12 @@ function AppContent() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <ErrorBoundary>
       <AppContent />
     </ErrorBoundary>
   );
 }
+
+export default wrapRoot(RootLayout);
