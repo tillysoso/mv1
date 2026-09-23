@@ -22,12 +22,15 @@ import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
 import { trackPageView } from '../src/lib/analytics';
 import { initMonitoring, captureError, wrapRoot } from '../src/lib/monitoring';
+import { initProductAnalytics, identifyUser, setAccentTheme } from '../src/lib/analytics/posthog';
+import { useAvatarStore } from '../src/stores/avatarStore';
 import { localFontAssets } from '../src/theme/typography';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
 
 initMonitoring();
+initProductAnalytics();
 SplashScreen.preventAutoHideAsync();
 
 function usePageTracking() {
@@ -35,6 +38,19 @@ function usePageTracking() {
   useEffect(() => {
     trackPageView(pathname);
   }, [pathname]);
+}
+
+// PostHog identity: Supabase user id only, and the accent theme as a plain
+// value. No user (incl. prototype mode) → PostHog's anonymous id stands.
+function useProductAnalyticsIdentity() {
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+  const activeAvatar = useAvatarStore((s) => s.activeAvatar);
+  useEffect(() => {
+    identifyUser(userId);
+  }, [userId]);
+  useEffect(() => {
+    setAccentTheme(activeAvatar);
+  }, [activeAvatar]);
 }
 
 // Error boundary — surfaces runtime crashes instead of blank white screen
@@ -131,6 +147,7 @@ function AppContent() {
 
   useAuthRouting();
   usePageTracking();
+  useProductAnalyticsIdentity();
 
   if (!fontsLoaded && !fontError) {
     return null;
