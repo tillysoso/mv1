@@ -1,6 +1,6 @@
 import '../global.css';
 
-import { Component, type ReactNode, useEffect } from 'react';
+import { Component, type ErrorInfo, type ReactNode, useEffect } from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
@@ -21,11 +21,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore, initAuthListener } from '../src/stores/authStore';
 import { useProfileStore } from '../src/stores/profileStore';
 import { trackPageView } from '../src/lib/analytics';
+import { initMonitoring, captureError, wrapRoot } from '../src/lib/monitoring';
 import { localFontAssets } from '../src/theme/typography';
 import { isSupabaseConfigured } from '../src/lib/supabase/client';
 import { colors } from '../src/theme/tokens';
 import { ROUTE } from '../src/constants';
 
+initMonitoring();
 SplashScreen.preventAutoHideAsync();
 
 function usePageTracking() {
@@ -43,6 +45,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   }
   static getDerivedStateFromError(error: Error) {
     return { error };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    captureError(error, { componentStack: info.componentStack });
   }
   render() {
     if (this.state.error) {
@@ -149,10 +154,12 @@ function AppContent() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <ErrorBoundary>
       <AppContent />
     </ErrorBoundary>
   );
 }
+
+export default wrapRoot(RootLayout);
