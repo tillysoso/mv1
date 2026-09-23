@@ -92,7 +92,7 @@ Node's built-in test runner (`node:test`), not Jest/Vitest — no config file fo
 
 ## CI/CD
 
-`.github/workflows/webpack.yml` — despite the filename (misleading, no webpack is used or referenced by any command in it) — runs on push/PR to `main`: install, `npm run typecheck`, `npm test`, `npm run build:web`, across Node 20.x and 22.x.
+`.github/workflows/webpack.yml` — despite the filename (misleading, no webpack is used or referenced by any command in it) — runs on push/PR to `main`: install, `npm run typecheck`, `npm test`, `npm run build:web`, on Node 22.x (Node 20 was dropped: `@supabase/supabase-js` requires Node >=22, and Node 20's `node --test` doesn't expand the `src/**/*.test.mjs` glob).
 
 Vercel deploys `dist/` from `EXPO_OFFLINE=1 expo export --platform web` (`vercel.json`, `package.json`'s `build:web` script). No native (iOS/Android) build or release pipeline exists in this repo — those are presumably manual/EAS, outside version control here.
 
