@@ -44,10 +44,13 @@ function usePageTracking() {
 // value. No user (incl. prototype mode) → PostHog's anonymous id stands.
 function useProductAnalyticsIdentity() {
   const userId = useAuthStore((s) => s.user?.id ?? null);
+  // Wait for the restored session so a signed-in cold start isn't read as
+  // signed out. Prototype mode never initialises auth — it's resolved as-is.
+  const authResolved = useAuthStore((s) => s.initialised) || !isSupabaseConfigured;
   const activeAvatar = useAvatarStore((s) => s.activeAvatar);
   useEffect(() => {
-    identifyUser(userId);
-  }, [userId]);
+    if (authResolved) identifyUser(userId);
+  }, [authResolved, userId]);
   useEffect(() => {
     setAccentTheme(activeAvatar);
   }, [activeAvatar]);

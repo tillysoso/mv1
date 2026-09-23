@@ -10,6 +10,7 @@ import {
   ACCENT_THEME_PROPERTY,
   buildPostHogConfig,
   createWebStorage,
+  resolveIdentityAction,
 } from './posthogConfig.js';
 
 describe('buildPostHogConfig — no-op without a key', () => {
@@ -80,5 +81,39 @@ describe('createWebStorage', () => {
     const s = createWebStorage(throwing);
     assert.doesNotThrow(() => s.setItem('a', '1'));
     assert.equal(s.getItem('a'), null);
+  });
+});
+
+describe('resolveIdentityAction', () => {
+  const none = { reset: false, identify: false };
+
+  it('first signed-out state with an anonymous stored id: leave it (keeps anonymous retention)', () => {
+    assert.deepEqual(resolveIdentityAction(undefined, null, false), none);
+  });
+
+  it('first signed-out state with a stale identified stored id: reset', () => {
+    assert.deepEqual(resolveIdentityAction(undefined, null, true), { reset: true, identify: false });
+  });
+
+  it('first state signed in: identify without reset', () => {
+    assert.deepEqual(resolveIdentityAction(undefined, 'u1', true), { reset: false, identify: true });
+    assert.deepEqual(resolveIdentityAction(undefined, 'u1', false), { reset: false, identify: true });
+  });
+
+  it('sign in from anonymous: identify (merges the anonymous history)', () => {
+    assert.deepEqual(resolveIdentityAction(null, 'u1', false), { reset: false, identify: true });
+  });
+
+  it('sign out: reset', () => {
+    assert.deepEqual(resolveIdentityAction('u1', null, true), { reset: true, identify: false });
+  });
+
+  it('account switch without sign-out in between: reset then identify', () => {
+    assert.deepEqual(resolveIdentityAction('u1', 'u2', true), { reset: true, identify: true });
+  });
+
+  it('unchanged user: nothing', () => {
+    assert.deepEqual(resolveIdentityAction('u1', 'u1', true), none);
+    assert.deepEqual(resolveIdentityAction(null, null, false), none);
   });
 });

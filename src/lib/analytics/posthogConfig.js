@@ -58,3 +58,25 @@ export function createWebStorage(storage) {
     },
   };
 }
+
+/**
+ * What to do when the auth user changes. `previousUserId` is undefined until
+ * the first auth state has been processed. `storedIdIsIdentified` is whether
+ * PostHog's persisted distinct id belongs to an identified user (it can
+ * outlive the Supabase session, e.g. expired session or cleared auth storage).
+ *
+ * - reset: drop the identified id so events stop being attributed to it.
+ *   Never on a plain anonymous cold start — that would mint a new anonymous
+ *   id every launch and break anonymous retention.
+ * - identify: attach the (new) Supabase user id.
+ */
+export function resolveIdentityAction(previousUserId, nextUserId, storedIdIsIdentified) {
+  if (nextUserId === previousUserId) return { reset: false, identify: false };
+  if (nextUserId) {
+    // Switching accounts without a signed-out state in between.
+    const switching = typeof previousUserId === 'string';
+    return { reset: switching, identify: true };
+  }
+  if (previousUserId === undefined) return { reset: storedIdIsIdentified, identify: false };
+  return { reset: true, identify: false };
+}

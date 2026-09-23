@@ -244,6 +244,12 @@ no-ops — same pattern as prototype mode for Supabase.
   take no free-form properties, so nothing can be attached at call sites.
 - No user (including prototype mode): PostHog's anonymous id stands. No
   placeholder ids are invented.
+- Identity is processed once auth has resolved. A persisted identified id that
+  outlived its Supabase session is reset on a signed-out cold start; a plain
+  anonymous id is kept (so anonymous retention holds). Sign-out and account
+  switches reset, and `accent_theme` is reapplied after every identity change.
+  Only the SDK's own `Application Opened`, fired at startup before auth
+  resolves, can still carry the stale id.
 - Session replay off. Error autocapture off (errors go to Sentry, #146).
 
 ## Events

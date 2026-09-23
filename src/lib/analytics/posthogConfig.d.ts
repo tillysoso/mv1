@@ -29,3 +29,14 @@ export declare function createWebStorage(storage: WebStorageLike | null | undefi
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
 };
+
+export interface IdentityAction {
+  reset: boolean;
+  identify: boolean;
+}
+
+export declare function resolveIdentityAction(
+  previousUserId: string | null | undefined,
+  nextUserId: string | null,
+  storedIdIsIdentified: boolean,
+): IdentityAction;

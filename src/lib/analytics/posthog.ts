@@ -5,6 +5,7 @@ import {
   ACCENT_THEME_PROPERTY,
   buildPostHogConfig,
   createWebStorage,
+  resolveIdentityAction,
 } from './posthogConfig';
 
 // PostHog product analytics (tracker #147). Runs alongside the web-only GA
@@ -19,7 +20,8 @@ const config = buildPostHogConfig(
 export const isProductAnalyticsConfigured = config !== null;
 
 let client: PostHog | null = null;
-let identifiedUserId: string | null = null;
+// undefined until the first auth state has been processed.
+let identifiedUserId: string | null | undefined = undefined;
 let accentTheme: string | null = null;
 
 // Accessing window.localStorage can itself throw (blocked site data).
@@ -43,19 +45,31 @@ export function initProductAnalytics(): void {
 }
 
 /**
- * Identify by Supabase user id only — never name, email, or DOB. Pass null on
- * sign-out. With no user (incl. prototype mode) PostHog's anonymous id stands.
+ * Identify by Supabase user id only — never name, email, or DOB. Call once auth
+ * has resolved (first state included), and with null on sign-out. With no user
+ * (incl. prototype mode) PostHog's anonymous id stands.
  */
 export function identifyUser(userId: string | null): void {
   if (!client || userId === identifiedUserId) return;
-  if (userId) {
-    client.identify(userId);
-  } else {
-    client.reset();
-    // reset() clears super properties — restore the accent theme.
-    if (accentTheme) void client.register({ [ACCENT_THEME_PROPERTY]: accentTheme });
-  }
+  const c = client;
+  const previousUserId = identifiedUserId;
   identifiedUserId = userId;
+  // ready(): persisted ids are loaded asynchronously on native.
+  void c.ready().then(() => {
+    const storedIdIsIdentified = c.getDistinctId() !== c.getAnonymousId();
+    const action = resolveIdentityAction(previousUserId, userId, storedIdIsIdentified);
+    if (action.reset) c.reset();
+    if (action.identify && userId) c.identify(userId);
+    // reset() clears super + person properties, and a newly identified
+    // person needs the accent too — reapply after any identity change.
+    if (action.reset || action.identify) applyAccentTheme(c);
+  });
+}
+
+function applyAccentTheme(c: PostHog): void {
+  if (!accentTheme) return;
+  void c.register({ [ACCENT_THEME_PROPERTY]: accentTheme });
+  c.setPersonProperties({ [ACCENT_THEME_PROPERTY]: accentTheme });
 }
 
 /**
@@ -64,9 +78,9 @@ export function identifyUser(userId: string | null): void {
  */
 export function setAccentTheme(theme: string): void {
   accentTheme = theme;
-  if (!client) return;
-  void client.register({ [ACCENT_THEME_PROPERTY]: theme });
-  client.setPersonProperties({ [ACCENT_THEME_PROPERTY]: theme });
+  const c = client;
+  if (!c) return;
+  void c.ready().then(() => applyAccentTheme(c));
 }
 
 export function trackOnboardingCompleted(): void {
