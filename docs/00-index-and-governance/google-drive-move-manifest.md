@@ -63,6 +63,7 @@ Create the folders listed in `docs/README.md`, then move each active file into t
 ## 05-ai-and-conversation
 
 - `majestic-avatar-llm-seeds.md`
+- `majestic-spread-pattern-library.md`
 - `majestic-dig-deeper-complete.md`
 - `majestic-emblem-prompt-library.md`
 

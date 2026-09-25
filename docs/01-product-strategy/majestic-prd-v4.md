@@ -36,6 +36,7 @@ This PRD should be read alongside the following documents. In all cases of confl
 |Pixel Elder Character Spec                         |Hidden pixel art Easter egg — trigger moments, prop system, animation states, dev integration                                |
 |Major Arcana Interpretations — Final               |Full personality and soul card interpretations for all 22 Major Arcana                                                       |
 |Major Arcana One-Liners — Final                    |One-line personality and soul summaries for all 22 Major Arcana                                                              |
+|Spread Pattern Library — v0.1 (template)           |Cross-card pattern detection feeding spread-level synthesis — new architecture layer, not yet populated, 🔶 pending Luke     |
 
 -----
 
@@ -193,6 +194,8 @@ The Majestic Profile is permanent from day one. It becomes the user’s first co
 
 After the Majestic Profile is revealed, users complete a four-question world scenario quiz before selecting their companion. Questions are externally framed — the user solves world problems, not self-assessments. Their answers surface a companion recommendation which is presented as a suggestion not a result. The user always makes the final conscious choice.
 
+**Quiz skip option:** Users who prefer to choose directly can skip the quiz via a text link below the primary quiz CTA: *“Rather choose for yourself? Skip ahead.”* Skipping routes to the companion selection screen with all four avatars shown equally — no highlighted recommendation. Quiz score stays null. Analytics and insight generation begin from avatar selection onwards. The quiz is a guide, not a gate.
+
 Avatar selection determines the UI accent theme and tone of voice across all readings and prompts. Companions can be switched at any time.
 
 ### The Pixel Elder
@@ -260,6 +263,9 @@ Each card has two one-line summaries: one for the personality card, one for the 
 
 **Minor Arcana — Status: Not Started**
 Minor Arcana interpretation copy is out of scope for v1 content. The card frame and suit system must be locked before content is written. Scope and format to be confirmed in Phase 08.
+
+**Spread-Level Interpretation — Status: Architecture Defined, Content Pending**
+Multi-card readings (Dig Deeper synthesis) draw on a Spread Pattern Library in addition to individual card content — a growing repository of cross-card relational patterns (suit clustering, aura clustering, structural composition) that an experienced reader notices but a card-by-card lookup can’t produce. Structural patterns (computable from existing card data) require no additional sign-off; symbolic/traditional patterns require Luke’s individual review before use, per the synthesis philosophy rules in Dig Deeper Spec v2.0. Applies to user-requested multi-card readings only — not daily draw, not onboarding. Not the same mechanic as journal cross-entry pattern tracking (#143, out of scope for v1) — see Spread Pattern Library for the distinction. Template exists; repository not yet populated.
 
 -----
 
