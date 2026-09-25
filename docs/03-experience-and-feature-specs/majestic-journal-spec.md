@@ -253,7 +253,7 @@ Note: `userNote` is the only mutable field after creation. All other fields are 
 
 ## 12 — OUT OF SCOPE FOR V1
 
-- Pattern tracking or insight summaries across entries (e.g. “You’ve been drawing shadow cards for 2 weeks”)
+- Pattern tracking or insight summaries across entries (e.g. “You’ve been drawing shadow cards for 2 weeks”) — *distinct from the Spread Pattern Library, which detects patterns within a single spread, not across reading history. Separate architecture, not in scope here.*
 - Card frequency analysis
 - Export or share journal entries
 - Entry deletion
@@ -263,6 +263,7 @@ Note: `userNote` is the only mutable field after creation. All other fields are 
 
 -----
 
-*Majestic — Journal & Reflection Surface Spec — v1.0*
+*Majestic — Journal & Reflection Surface Spec — v1.1*
 *Task #127 — Complete*
+*v1.1: added disambiguation note vs Spread Pattern Library (Section 12) — no scope change.*
 *Your adventure. But Majestic.*
