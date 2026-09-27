@@ -17,6 +17,8 @@ Complete technical reference. For the condensed, opinionated version (what will 
 | Payments | RevenueCat | **not integrated** — see Gaps |
 | Web deploy | Vercel | `vercel.json`, static export via `expo export --platform web` |
 | Web analytics | Google Analytics 4 (`gtag`) | **web-only**, no-ops on iOS/Android — see Gaps |
+| Product analytics | PostHog (`posthog-react-native`) | all platforms; no-ops without `EXPO_PUBLIC_POSTHOG_KEY` — `docs/06-engineering-and-analytics/majestic-analytics-reference.md` |
+| Error monitoring | Sentry (`@sentry/react-native`) | all platforms; no-ops without `EXPO_PUBLIC_SENTRY_DSN` — `src/lib/monitoring/` |
 
 ## Folder structure
 
@@ -40,7 +42,8 @@ src/
   lib/
     supabase/v2/                current data layer: auth.ts, profile.ts, readings.ts (+ *.test.mjs)
     supabase/{auth,profile,readings,client}.ts   client.ts is current; the other three are superseded v1, unused
-    analytics/                  GA4 wrapper + useScrollDepth hook
+    analytics/                  GA4 wrapper + useScrollDepth hook; posthog.ts (PostHog wrapper)
+    monitoring/                 Sentry init / captureError / wrapRoot
   theme/                        tokens.ts (colours, avatarAccents), typography.ts, cssVars.ts, theme.css
   types/                        tarot.ts, avatar.ts, streak.ts, subscription.ts, journal.ts, codex.ts — barrel: index.ts
   constants/                    AVATAR_IDS, AURA_CONTEXT, SUIT, TABLE, SPREAD_TYPE, PORTAL_SHAPE, AVATAR_STATE, PRESENCE_LEVEL, ROUTE
