@@ -27,10 +27,6 @@
           "path": ".claude/skills/vercel-react-native-skills/SKILL.md"
         },
         {
-          "name": "vercel-react-view-transitions",
-          "path": ".claude/skills/vercel-react-view-transitions/SKILL.md"
-        },
-        {
           "name": "vercel-cli-with-tokens",
           "path": ".claude/skills/vercel-cli-with-tokens/SKILL.md"
         },
@@ -45,10 +41,6 @@
     "giuseppe-trisciuoglio/developer-kit": {
       "skills": [
         {
-          "name": "react-patterns",
-          "path": ".claude/skills/react-patterns/SKILL.md"
-        },
-        {
           "name": "react-code-review",
           "path": ".claude/skills/react-code-review/SKILL.md"
         },
@@ -57,24 +49,12 @@
           "path": ".claude/skills/tailwind-css-patterns/SKILL.md"
         },
         {
-          "name": "tailwind-design-system",
-          "path": ".claude/skills/tailwind-design-system/SKILL.md"
-        },
-        {
           "name": "typescript-docs",
           "path": ".claude/skills/typescript-docs/SKILL.md"
         },
         {
           "name": "typescript-security-review",
           "path": ".claude/skills/typescript-security-review/SKILL.md"
-        },
-        {
-          "name": "shadcn-ui",
-          "path": ".claude/skills/shadcn-ui/SKILL.md"
-        },
-        {
-          "name": "zod-validation-utilities",
-          "path": ".claude/skills/zod-validation-utilities/SKILL.md"
         },
         {
           "name": "adr-drafting",
@@ -116,10 +96,6 @@
           "path": ".claude/skills/agents-md/SKILL.md"
         },
         {
-          "name": "autoship",
-          "path": ".claude/skills/autoship/SKILL.md"
-        },
-        {
           "name": "babysit-pr",
           "path": ".claude/skills/babysit-pr/SKILL.md"
         },
@@ -132,28 +108,12 @@
           "path": ".claude/skills/copywriting/SKILL.md"
         },
         {
-          "name": "define-architecture",
-          "path": ".claude/skills/define-architecture/SKILL.md"
-        },
-        {
           "name": "docs-writing",
           "path": ".claude/skills/docs-writing/SKILL.md"
         },
         {
-          "name": "linear-worktree",
-          "path": ".claude/skills/linear-worktree/SKILL.md"
-        },
-        {
           "name": "mermaid",
           "path": ".claude/skills/mermaid/SKILL.md"
-        },
-        {
-          "name": "multi-tenant-architecture",
-          "path": ".claude/skills/multi-tenant-architecture/SKILL.md"
-        },
-        {
-          "name": "optimise-seo",
-          "path": ".claude/skills/optimise-seo/SKILL.md"
         },
         {
           "name": "presentation-creator",
@@ -166,14 +126,6 @@
         {
           "name": "review-pr",
           "path": ".claude/skills/review-pr/SKILL.md"
-        },
-        {
-          "name": "scaffold-cli",
-          "path": ".claude/skills/scaffold-cli/SKILL.md"
-        },
-        {
-          "name": "scaffold-nextjs",
-          "path": ".claude/skills/scaffold-nextjs/SKILL.md"
         },
         {
           "name": "typography-audit",
@@ -205,6 +157,70 @@
       ],
       "source": "https://github.com/mistyhx/frontend-design-audit",
       "installed": "2026-04-26"
+    },
+    "bencium/bencium-marketplace": {
+      "skills": [
+        {
+          "name": "bencium-controlled-ux-designer",
+          "path": ".claude/skills/bencium-controlled-ux-designer/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/bencium/bencium-marketplace",
+      "installed": "2026-05-02",
+      "installedIn": "c03cb5f",
+      "provenance": "Attributed from SKILL.md metadata and install commit c03cb5f (#57); upstream repo exists but local files were not diffed against it"
+    },
+    "wondelai/skills": {
+      "skills": [
+        {
+          "name": "cro-methodology",
+          "path": ".claude/skills/cro-methodology/SKILL.md"
+        },
+        {
+          "name": "crossing-the-chasm",
+          "path": ".claude/skills/crossing-the-chasm/SKILL.md"
+        },
+        {
+          "name": "drive-motivation",
+          "path": ".claude/skills/drive-motivation/SKILL.md"
+        },
+        {
+          "name": "hooked-ux",
+          "path": ".claude/skills/hooked-ux/SKILL.md"
+        },
+        {
+          "name": "influence-psychology",
+          "path": ".claude/skills/influence-psychology/SKILL.md"
+        },
+        {
+          "name": "jobs-to-be-done",
+          "path": ".claude/skills/jobs-to-be-done/SKILL.md"
+        },
+        {
+          "name": "lean-startup",
+          "path": ".claude/skills/lean-startup/SKILL.md"
+        },
+        {
+          "name": "refactoring-ui",
+          "path": ".claude/skills/refactoring-ui/SKILL.md"
+        },
+        {
+          "name": "storybrand-messaging",
+          "path": ".claude/skills/storybrand-messaging/SKILL.md"
+        },
+        {
+          "name": "ux-heuristics",
+          "path": ".claude/skills/ux-heuristics/SKILL.md"
+        },
+        {
+          "name": "web-typography",
+          "path": ".claude/skills/web-typography/SKILL.md"
+        }
+      ],
+      "source": "https://github.com/wondelai/skills",
+      "installed": "2026-05-02",
+      "installedIn": "c03cb5f",
+      "provenance": "Attributed from SKILL.md metadata and install commit c03cb5f (#57); upstream repo exists but local files were not diffed against it"
     }
   }
 }
