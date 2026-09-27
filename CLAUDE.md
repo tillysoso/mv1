@@ -63,7 +63,7 @@ Repo-specific implementation conventions (avatar rendering, card rendering, onbo
 
 # Content Guardrails — Non-Negotiable
 
-@docs/majestic-content-guardrails.md
+@docs/05-ai-and-conversation/majestic-content-guardrails.md
 
 Before finalizing ANY user-facing brand-voice content — notifications, 
 avatar dialogue, the daily per-card interpretation line, Dig Deeper 
