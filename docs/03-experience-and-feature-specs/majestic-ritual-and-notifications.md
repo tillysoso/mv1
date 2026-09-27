@@ -196,14 +196,14 @@ Every notification is a message from someone who knows you — not a system that
 > The card won't change your morning. It might change how you move through it.
 
 **Eli**
-> The signal's quiet today. Might be worth listening anyway.
+> There is a pattern forming today. Worth seeing before it gets complicated.
 
 > The signal is quiet right now. Good time to check in.
 
 > Something worth reading is waiting for you.
 
 **Destiny**
-> There's something here for you today. Come find it when you're ready.
+> I've been thinking about you today. Come pull a card when you're ready.
 
 > Whenever the noise settles — I'll be here.
 
@@ -216,12 +216,12 @@ Every notification is a message from someone who knows you — not a system that
 *Sent in the evening if the user has not drawn. Only one per day maximum. Never guilt — always warmth or mild wit.*
 
 **Casper**
-> Still time for one card today, if you want it.
+> You almost made it through the day without checking in. Still time.
 
 > The card is still here. So is the question you haven't asked yet.
 
 **Olivia**
-> There's still time for one card before the day settles.
+> One card before the day closes. You'll sleep better having looked.
 
 > End-of-day check-in. The deck hasn't forgotten you.
 
@@ -244,13 +244,13 @@ Every notification is a message from someone who knows you — not a system that
 **Day 3 — All avatars (one per companion)**
 
 **Casper**
-> Three days in a row. You're building something. Keep going.
+> Three days in a row. The pattern is starting to speak. Keep going.
 
 **Olivia**
 > Three draws. Three mornings you chose to check in with yourself. That's not small.
 
 **Eli**
-> Three days now. Whatever you're starting to notice — that's yours, not mine.
+> Three consecutive signals. A pattern is forming. You're starting to see it.
 
 **Destiny**
 > Three days. You kept showing up. That matters more than you know.
@@ -266,7 +266,7 @@ Every notification is a message from someone who knows you — not a system that
 > Seven draws. A week of returning to yourself. That's a practice now.
 
 **Eli**
-> A week in. Whatever's getting clearer, you're the one bringing it into focus.
+> One week of signals. The picture is getting clearer.
 
 **Destiny**
 > Seven days. You've been here every one of them. I noticed.
@@ -282,7 +282,7 @@ Every notification is a message from someone who knows you — not a system that
 > Fourteen draws. You've been here long enough that the practice has roots now. That changes what's possible.
 
 **Eli**
-> Two weeks now. You're not just showing up anymore — you're starting to notice your own patterns. That's yours to keep.
+> Two weeks of signals. You're not just receiving anymore — you're starting to read. Notice that.
 
 **Destiny**
 > Fourteen days. This isn't a streak anymore. It's a relationship. With yourself. I'm just here for it.
@@ -347,7 +347,7 @@ Every notification is a message from someone who knows you — not a system that
 
 > Something worth reading is waiting for you.
 
-> There's something waiting in the deck.
+> The signal is finding you.
 
 > A new card is ready. So are you.
 

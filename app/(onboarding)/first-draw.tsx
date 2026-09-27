@@ -3,7 +3,6 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import OnboardingScreen from '../../src/components/onboarding/OnboardingScreen';
 import { trackNavigationClick } from '../../src/lib/analytics';
-import { trackOnboardingCompleted } from '../../src/lib/analytics/posthog';
 import { useProfileStore } from '../../src/stores/profileStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { saveProfile } from '../../src/lib/supabase/v2/profile';
@@ -24,7 +23,6 @@ export default function FirstDrawScreen() {
     if (drawing) return;
     setDrawing(true);
     setOnboardingComplete(true);
-    trackOnboardingCompleted();
     trackNavigationClick('draw_cta', ROUTE.TABS);
 
     if (user?.id && dateOfBirth && birthCards) {

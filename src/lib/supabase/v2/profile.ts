@@ -44,12 +44,10 @@ export async function getProfile(userId: string): Promise<Profile> {
   return data as Profile;
 }
 
-// Upsert, not update: onboarding calls this (confirm.tsx) before saveProfile
-// (first-draw.tsx), and no migration creates the profile row at signup — an
-// update().eq() against a missing row matches nothing and fails silently.
 export async function updateAvatar(userId: string, avatarId: AvatarId): Promise<void> {
   const { error } = await supabase
     .from('profiles')
-    .upsert({ id: userId, active_avatar: avatarId });
+    .update({ active_avatar: avatarId })
+    .eq('id', userId);
   if (error) throw error;
 }
