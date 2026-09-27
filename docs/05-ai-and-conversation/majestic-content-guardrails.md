@@ -2,7 +2,7 @@
 
 *Your adventure. But Majestic.*
 
-**Status:** New — v1.0. Companion document to `majestic-ai-spirituality-scorecard.html`, which audits the product *strategy* against UX failure modes. This document audits individual pieces of *content* against manipulation risk, specifically the mechanism identified as "algorithmic conspirituality" (Cotter, De, Kanthawala et al., Penn State, 2022–2025) — the pattern where a system's mechanical, scheduled, or algorithmic behaviour gets reframed as cosmically meaningful, personal, or fated, in order to make the content more persuasive than it has any right to be.
+**Status:** New — v1.0. This document audits individual pieces of *content* against manipulation risk, specifically the mechanism identified as "algorithmic conspirituality" (Cotter, De, Kanthawala et al., Penn State, 2022–2025) — the pattern where a system's mechanical, scheduled, or algorithmic behaviour gets reframed as cosmically meaningful, personal, or fated, in order to make the content more persuasive than it has any right to be.
 
 Majestic's stated philosophy is a structured framework for self-reflection that does not require buying into spiritual doctrine. This rubric exists because good intentions don't stop copy from drifting. This document was built directly off a real audit of TASK #129 (notification copy) that found five live examples of the exact thing it's meant to prevent — this isn't a theoretical exercise.
 
@@ -140,7 +140,7 @@ Not every REWRITE is equal effort, and this rubric shouldn't make you personally
 
 **Honest limit of this rule, stated plainly rather than smoothed over:** mode-count is a fast proxy for severity, not a substitute for structural judgment, and the two will occasionally disagree. Live example already in this document: "The signal is finding you" tripped exactly one mode (System-as-Seeker Personification) but was scored KILL, not REWRITE, because the personification wasn't a clause sitting inside an otherwise-fine sentence, it was the entire reason the sentence existed. Count said REWRITE-tier. Structure said KILL. Structure overrides count every time they conflict — the count is a triage speed tool for the obvious cases, not the final word for the ambiguous ones.
 
-**Validated against the actual audit already run in this document:** 9 lines scored REWRITE, all single-mode and phrase-level, matching the auto-rewrite tier exactly (all 9 already generated in the Approved Rewrites table above). 1 line scored KILL, single-mode but load-bearing, matching the override case above. 1 line sits on HOLD, because Gate 6 questions are never auto-resolved by design, no matter what.
+**Validated against the actual audit already run in this document:** 9 lines scored REWRITE, all single-mode and phrase-level, matching the auto-rewrite tier exactly (all 9 already generated in the Approved Rewrites table below). 1 line scored KILL, single-mode but load-bearing, matching the override case above. 1 line sits on HOLD, because Gate 6 questions are never auto-resolved by design, no matter what.
 
 ---
 
@@ -170,7 +170,7 @@ Raised, considered, and resolved as follows rather than actioned wholesale:
 
 Notification copy is hand-written and easy to gate manually. Dig Deeper synthesis and card interpretation are generated per-user at runtime, so this rubric can't live only as a human copy-review checklist for that content — it has to be encoded as an explicit constraint inside the synthesis prompt itself, the same way the avatar seed system already bans jargon and generic affirmations at the prompt layer.
 
-Recommend adding a **Failure Mode block** to the LLM prompt library (same location as the shadow-aura and yes-man-prevention fixes flagged as gaps D1/D2 in `majestic-ai-spirituality-scorecard.html`), instructing the model never to attribute intent, memory, ongoing awareness, or cosmic timing to itself, to the app, or to "the algorithm," in any generated output — full stop, not just in notification copy.
+Recommend adding a **Failure Mode block** to the LLM prompt library (`docs/05-ai-and-conversation/majestic-avatar-llm-seeds.md`, alongside its existing "Quality Check — Before Shipping a Synthesis" rules), instructing the model never to attribute intent, memory, ongoing awareness, or cosmic timing to itself, to the app, or to "the algorithm," in any generated output — full stop, not just in notification copy.
 
 ---
 

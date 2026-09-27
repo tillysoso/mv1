@@ -29,7 +29,7 @@ No screen in Majestic is ever dead. Every moment of loading, waiting, or emptine
 
 **Copy:** Nothing. The emblem is enough. If load exceeds 3 seconds, fade in one line below the emblem:
 
-> *The signal is finding you.*
+> *There's something waiting in the deck.*
 
 Montserrat, mist grey, centred. Fades in at 3s, stays until load completes.
 
