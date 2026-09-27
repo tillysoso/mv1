@@ -1,12 +1,12 @@
 # MAJESTIC — READING SCREEN, CARD ANIMATION & AURA AMBIENT SPEC
-## Reading Screen Layout · Card Animation Choreography · Aura Glow Rules
+## Reading Screen Layout · Card Animation Choreography · Aura Glow Rules · Zen Mode
 *Version 1.0 — Your adventure. But Majestic.*
 
 ---
 
 ## HOW TO READ THIS DOCUMENT
 
-Three locked specs in one file. They are interdependent — card animation depends on reading screen layout; aura rules depend on card state. Read in order.
+Three locked specs in one file, plus a draft (Part 04 — Zen Mode). They are interdependent — card animation depends on reading screen layout; aura rules depend on card state. Read in order. Part 04 is **not locked**: see its open items before building.
 
 **Companion documents:**
 - `majestic-altar-ritual-spec-v2.md` — altar layer order, talisman interaction, breath mechanic
@@ -19,6 +19,7 @@ Three locked specs in one file. They are interdependent — card animation depen
 - Reading screen layout and zone map (daily draw + initiated spreads)
 - Card animation choreography: shuffle → hold → reveal → settle
 - Aura ambient glow behaviour: per avatar, per state, per surface
+- Zen Mode: the optional post-reading full-screen focus view (draft)
 
 ---
 
@@ -106,6 +107,7 @@ Identical to Altar Ritual Spec v2.0, Section 05. Restated here for dev reference
 |--------|------|------------|
 | SAVE TO JOURNAL | Text button, Montserrat tracked uppercase, avatar accent | Always visible post-reveal |
 | DIG DEEPER | Cinzel, subtle full-width button, avatar accent | Initiated readings only |
+| ZEN MODE | Entry to full-screen focus view — see Part 04 | Always visible post-reveal. Not offered inside Dig Deeper |
 | CLOSE | Ghost text link, mist grey | Always visible post-reveal |
 
 **Save flow:** Universal. Tapping SAVE TO JOURNAL opens the journal entry composer pre-populated with: card name, spread type, date, avatar companion line. User can add intention field and free-write before confirming. Full spec in `majestic-journal-spec.md`.
@@ -395,12 +397,67 @@ When a card is revealed, the avatar shifts from neutral to active state. The act
 
 ---
 
-## PART 04 — OPEN QUESTIONS
+## PART 04 — ZEN MODE (DRAFT)
+
+### 04.1 — What it is
+
+An optional, user-initiated focus view that opens after a card reading. It gives the user a quiet moment to sit with the card they drew before moving on. It adds no new interpretation. It stays with the card that has already been revealed.
+
+### 04.2 — Entry point
+
+- A ZEN MODE button appears in the post-reveal action zone (see 01.5) after the main card reading completes, meaning after the companion line settles.
+- Offered after the **main card reading only**. It is not offered from within Dig Deeper, and Dig Deeper does not link to it.
+- Tapping it opens Zen Mode full screen over the reading screen.
+
+### 04.3 — What the screen shows
+
+| Element | Behaviour |
+|---------|-----------|
+| **Drawn card** | The card from this reading, face-up. For a 3-card spread, which card or cards are shown is not yet specced. See 04.8. |
+| **Breathing / meditation guide** | A paced visual breathing guide the user can follow. |
+| **Periodic prompts** | Short on-screen prompts appear at intervals, e.g. "Breathe," "Look at the symbols." One at a time, fading in and out. They are not interactive. |
+| **Ambient sound** | Optional. Off by default until sound design (#156 / #158) is decided. |
+| **Exit** | A small X, available at all times, from the first frame to the last. |
+| **Center visual** | 🔶 Not decided. See 04.8. |
+
+### 04.4 — Background
+
+- An animated, zoomed-in gradient built from the **current avatar's environment colours**. The source is each avatar's "Environment cue" and palette in `majestic-avatar-accent-system.md`. Do not restate hex values here. Read them from that doc and its tokens.
+- The gradient moves slowly, as if the camera is pushed in close on the avatar's world. It should read as atmosphere, not as a pattern.
+- It follows the active avatar. If the user switches avatar, the next Zen Mode session uses the new avatar's colours.
+
+### 04.5 — Duration and ending
+
+- **Default duration: 90 seconds.**
+- The user can leave at any point via the X. There is no confirmation step.
+- On exit, or when the timer ends, the user returns to the post-reveal reading screen in the same state they left it.
+
+### 04.6 — Motion and accessibility
+
+- Reduced motion follows `majestic-accessibility-copy-rules.md` §09. The gradient animation and breathing motion need a static or reduced fallback that keeps the prompts and exit working.
+- Prompts need screen-reader announcements, following the conventions in that same doc.
+
+### 04.7 — Relationship to Reflection Mode
+
+`majestic-altar-ritual-spec-v2.md` §08 describes **Reflection Mode**, a v2 post-reading mode with the talisman at its centre, a perspective shift on the altar, meditative prompts and ambient audio. The PRD also lists it as v2. Zen Mode covers much of the same ground but centres on the card, not the talisman. Their relationship is not decided. See 04.8.
+
+### 04.8 — Open items
+
+- **🔶 Center visual — needs Oso/Luke sign-off.** The option on the table is a pulsing orb. An alternative has not been chosen. Nothing is decided and nothing should be built for this slot until it is signed off.
+- **🔶 Zen Mode vs Reflection Mode — needs Oso/Luke sign-off.** Does Zen Mode replace Reflection Mode, bring part of it into v1, or sit alongside it? Once decided, update altar spec §08 and the PRD's v2 list so only one doc owns the post-reading focus mode.
+- **🔶 Ambient sound.** Whether it ships, and which sound per avatar, depends on #156 / #158.
+- **3-card spread.** Show all three cards, or only the one the user chooses?
+- **Prompt timing.** The interval and full prompt list are not yet specified.
+
+---
+
+## PART 05 — OPEN QUESTIONS
 
 1. **Sound design (#156):** Reveal animation has natural sound trigger points — hold threshold met, apex bloom, card settle. Spec these sound events once #158 (sound design spec) is written. Animation timings here are final regardless.
 2. **3-card spread — talisman for cards 2 and 3:** In the single-card draw, the user holds the talisman to initiate. In the 3-card spread, cards 2 and 3 reveal automatically. Confirm: does the talisman respond again for each auto-reveal, or only for card 1? **Recommendation:** Talisman pulses once for each card reveal — a visual acknowledgement, not an interaction requirement.
 3. **Altar world-names (#155):** Talisman objects are named functionally here (iron beads, tuning fork etc.). Threshold City lore names are a separate task — flagged, not blocking.
 4. **Dig Deeper — animation handoff:** When the user taps DIG DEEPER, the card and altar recede slightly (suggest 20% opacity dim over 300ms) and the Dig Deeper surface comes forward. The reading screen becomes a background to the synthesis. This transition needs a component spec — out of scope here, flagged for #123 completion.
+5. **Zen Mode:** open items, including the 🔶 center visual, are listed in 04.8.
 
 ---
 
