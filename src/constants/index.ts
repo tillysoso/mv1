@@ -26,6 +26,14 @@ export const SUIT = {
   PENTACLES: 'pentacles',
 } as const;
 
+// ─── Supabase table names ─────────────────────────────────────────────────────
+
+export const TABLE = {
+  PROFILES: 'profiles',
+  READINGS: 'readings',
+  STREAKS:  'streaks',
+} as const;
+
 // ─── Reading spread types ─────────────────────────────────────────────────────
 
 export const SPREAD_TYPE = {

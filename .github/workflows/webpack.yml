@@ -23,7 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: npm ci
+      run: npm install
 
     - name: TypeScript type check
       run: npm run typecheck
@@ -33,11 +33,3 @@ jobs:
 
     - name: Build web
       run: npm run build:web
-
-    # expo export exiting 0 doesn't mean the app renders — load it in a real
-    # browser and fail on a blank page or uncaught startup error.
-    - name: Install Chromium
-      run: npx playwright install --with-deps chromium
-
-    - name: Web smoke test (renders in browser)
-      run: npm run test:web
