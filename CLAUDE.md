@@ -60,36 +60,3 @@ docs/                 the real PRD and every design spec — see docs/README.md 
 `docs/README.md` explains the folder map and naming convention. The single most important file is `docs/01-product-strategy/majestic-prd-v4.md` — it lists every other spec document and states explicitly that those specs override the PRD on conflict. Root `PRD.md` is a shorter, engineering-oriented pointer into that structure, not a replacement for it.
 
 Repo-specific implementation conventions (avatar rendering, card rendering, onboarding screen patterns, design tokens) are already written up as Claude Code skills in `.claude/skills/` (`avatar-system.md`, `tarot-cards.md`, `onboarding-screens.md`, `frontend-design.md`) and load automatically by trigger — read them instead of re-deriving conventions from scratch.
-
-# Content Guardrails — Non-Negotiable
-
-@docs/05-ai-and-conversation/majestic-content-guardrails.md
-
-Before finalizing ANY user-facing brand-voice content — notifications, 
-avatar dialogue, the daily per-card interpretation line, Dig Deeper 
-synthesis, journal prompts, marketing copy — run it through the 
-guardrails self-improvement loop defined in the file above:
-
-1. Generate the line normally, in the avatar's established voice.
-2. Self-critique it against Modes 1–5 (False Intimacy, Pattern/Signal 
-   Mysticism, Absence Shaming, Unverifiable Efficacy, System-as-Seeker 
-   Personification), one at a time.
-3. If any mode fails, revise specifically to fix that mode without 
-   introducing a new one. Re-run the critique. Repeat until it passes 
-   all five, or until the failure is structurally load-bearing (the 
-   violation IS the premise, not a clause in it) — in that case, kill 
-   the line and generate a full replacement concept instead of patching it.
-4. Character warmth, personality, banter, and a sense of ongoing 
-   relationship are the goal, not a risk to sand down. Don't flatten 
-   avatar voice out of caution — the five modes ban specific false 
-   claims, not tone.
-5. Gate 6 (Factual Verification) is EXCLUDED from this loop, always. 
-   Any line claiming a specific, personal, or computed connection 
-   (e.g. birth cards connecting to a reading) does not get auto-resolved 
-   by self-critique, no matter how many passes it survives. Flag it 
-   explicitly to Oso for confirmation against actual backend logic before 
-   it ships. Never guess, never assume it's true because the wording is fine.
-
-Surface only the final, passing version of generated copy, plus a one-line 
-note of what mode (if any) it originally failed and how it was fixed. 
-Flag anything routed to Gate 6 clearly, separately, at the top of your response.

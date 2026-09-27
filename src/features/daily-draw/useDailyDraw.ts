@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
 import { useAuthStore } from '../../stores/authStore';
+import { supabase } from '../../lib/supabase/client';
 import { handleSupabaseError } from '../../utils/handleError';
 import { saveReading } from '../../lib/supabase/v2/readings';
-import { getStreak, recordDraw } from '../../lib/supabase/v2/streaks';
-import { trackDailyDrawCompleted } from '../../lib/analytics/posthog';
 import { MAJOR_ARCANA_CARDS } from './cardData';
-import { SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
+import { TABLE, SPREAD_TYPE, AURA_CONTEXT } from '../../constants';
 
 function todayString(): string {
   const d = new Date();
@@ -36,10 +35,18 @@ export function useDailyDraw() {
       if (user?.id) {
         try {
           const today = todayString();
-          const streak = await getStreak(user.id);
+          const { data, error } = await supabase
+            .from(TABLE.STREAKS)
+            .select('last_draw_date, last_card_id')
+            .eq('user_id', user.id)
+            .single();
 
-          if (streak?.last_draw_date === today) {
-            const found = MAJOR_ARCANA_CARDS.find((c) => c.id === streak.last_card_id);
+          if (error && error.code !== 'PGRST116') {
+            console.error('[DailyDraw] streak lookup failed:', handleSupabaseError(error).message);
+          }
+
+          if (data?.last_draw_date === today && data?.last_card_id) {
+            const found = MAJOR_ARCANA_CARDS.find((c) => c.id === data.last_card_id);
             if (found) {
               setTodaysCard(found);
               setIsLoading(false);
@@ -47,7 +54,7 @@ export function useDailyDraw() {
             }
           }
         } catch (e) {
-          console.error('[DailyDraw] streak lookup failed, falling back to local draw:', handleSupabaseError(e).message);
+          console.error('[DailyDraw] streak check error, falling back to local draw:', e);
         }
       }
 
@@ -70,14 +77,16 @@ export function useDailyDraw() {
   async function draw() {
     const selected = resolveAuraContext(pickRandom(MAJOR_ARCANA_CARDS));
     setTodaysCard(selected);
-    trackDailyDrawCompleted();
 
     if (user?.id) {
       const today = todayString();
       try {
         await Promise.all([
           saveReading(user.id, { spreadType: SPREAD_TYPE.SINGLE, avatarId: null, cards: [selected] }),
-          recordDraw(user.id, { date: today, cardId: selected.id }),
+          supabase.from(TABLE.STREAKS).upsert(
+            { user_id: user.id, last_draw_date: today, last_card_id: selected.id },
+            { onConflict: 'user_id' },
+          ),
         ]);
       } catch (e) {
         console.error('[DailyDraw] failed to persist reading/streak:', e);
