@@ -4,6 +4,9 @@
 -- engineering starts wiring it up, per PRD v4 section 12/13 and:
 --   docs/01-product-strategy/majestic-subscription-tier-spec.md (section 06)
 --   docs/03-experience-and-feature-specs/majestic-journal-spec.md (sections 04-06)
+--
+-- Idempotent: add column if not exists, create table if not exists, and
+-- drop-if-exists before every create policy / create trigger.
 
 -- ─── profiles: subscription + reading-credit columns ──────────────────────
 -- Column set and naming taken verbatim from majestic-subscription-tier-spec.md
@@ -51,18 +54,23 @@ create index if not exists journal_entries_user_id_created_at_idx
 
 alter table journal_entries enable row level security;
 
+drop policy if exists "journal_entries: select own" on journal_entries;
 create policy "journal_entries: select own" on journal_entries
   for select using (auth.uid() = user_id);
 
+drop policy if exists "journal_entries: insert own" on journal_entries;
 create policy "journal_entries: insert own" on journal_entries
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "journal_entries: update own" on journal_entries;
 create policy "journal_entries: update own" on journal_entries
   for update using (auth.uid() = user_id);
 
+drop policy if exists "journal_entries: delete own" on journal_entries;
 create policy "journal_entries: delete own" on journal_entries
   for delete using (auth.uid() = user_id);
 
+drop trigger if exists journal_entries_set_updated_at on journal_entries;
 create trigger journal_entries_set_updated_at
   before update on journal_entries
   for each row execute function set_updated_at();

@@ -4,6 +4,12 @@
 -- time the shape the app code already assumes is written down. Review before
 -- running against a real project; RLS policies below are the minimum viable
 -- "users see only their own rows" set, not a full security audit.
+--
+-- Idempotent: safe to re-run against a project where some or all of these
+-- objects already exist. Policies and triggers are dropped-if-exists by their
+-- own names and recreated; objects with other names (e.g. hand-made policies,
+-- the on_auth_user_created trigger) are never touched. This file deliberately
+-- creates NO auth.users trigger — profile-row creation is owned elsewhere.
 
 -- ─── profiles ──────────────────────────────────────────────────────────────
 -- One row per authenticated user. id == auth.users.id (1:1, not a separate PK).
@@ -25,12 +31,15 @@ create table if not exists profiles (
 
 alter table profiles enable row level security;
 
+drop policy if exists "profiles: select own" on profiles;
 create policy "profiles: select own" on profiles
   for select using (auth.uid() = id);
 
+drop policy if exists "profiles: upsert own" on profiles;
 create policy "profiles: upsert own" on profiles
   for insert with check (auth.uid() = id);
 
+drop policy if exists "profiles: update own" on profiles;
 create policy "profiles: update own" on profiles
   for update using (auth.uid() = id);
 
@@ -40,8 +49,12 @@ begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+set search_path = '';
+-- search_path pinned here as well as in 0003, so re-running this file's
+-- create-or-replace doesn't silently undo 0003's hardening.
 
+drop trigger if exists profiles_set_updated_at on profiles;
 create trigger profiles_set_updated_at
   before update on profiles
   for each row execute function set_updated_at();
@@ -67,9 +80,11 @@ create index if not exists readings_user_id_created_at_idx
 
 alter table readings enable row level security;
 
+drop policy if exists "readings: select own" on readings;
 create policy "readings: select own" on readings
   for select using (auth.uid() = user_id);
 
+drop policy if exists "readings: insert own" on readings;
 create policy "readings: insert own" on readings
   for insert with check (auth.uid() = user_id);
 
@@ -90,15 +105,19 @@ create table if not exists streaks (
 
 alter table streaks enable row level security;
 
+drop policy if exists "streaks: select own" on streaks;
 create policy "streaks: select own" on streaks
   for select using (auth.uid() = user_id);
 
+drop policy if exists "streaks: upsert own" on streaks;
 create policy "streaks: upsert own" on streaks
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "streaks: update own" on streaks;
 create policy "streaks: update own" on streaks
   for update using (auth.uid() = user_id);
 
+drop trigger if exists streaks_set_updated_at on streaks;
 create trigger streaks_set_updated_at
   before update on streaks
   for each row execute function set_updated_at();

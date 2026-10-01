@@ -143,6 +143,7 @@ LLM receives:
 - All cards drawn, in order, with positions
 - Aura classifications (breakthrough / shadow / neutral)
 - Active avatar seed from `majestic-avatar-llm-seeds.md`
+- 🔶 Detected spread patterns from `majestic-spread-pattern-library.md` — not yet active, repository unpopulated. Add to this list once entries exist.
 
 Format: Montserrat, bone white. Avatar emblem micro inline left. Slight left indent.
 
@@ -294,6 +295,7 @@ Reset: readings_today resets to 0 at midnight local time via edge function or cl
 |`majestic-avatar-llm-seeds.md`            |Avatar seeds for all LLM calls                      |
 |`majestic-arcana-interpretations-final.md`|Source content for Major Arcana                     |
 |`majestic-ritual-and-notifications.md`    |Reading screen close flow                           |
+|`majestic-spread-pattern-library.md`      |Cross-card pattern layer feeding spread synthesis — new, 🔶 pending Luke |
 
 -----
 
@@ -389,6 +391,6 @@ Reset: readings_today resets to 0 at midnight local time via edge function or cl
 
 -----
 
-*Majestic — Dig Deeper — v2.6*
-*Updated: A08 open-ending rule + cultural bridge added.*
+*Majestic — Dig Deeper — v2.7*
+*Updated: A08 open-ending rule + cultural bridge added. Spread Pattern Library added as companion doc — cross-card pattern layer for synthesis (Section 04), not yet populated.*
 *Your adventure. But Majestic.*

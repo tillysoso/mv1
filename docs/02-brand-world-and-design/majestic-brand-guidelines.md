@@ -199,7 +199,7 @@ Warm but not soft. It has been through things. Direct but never prescriptive. It
 | Onboarding | Warm, curious, unhurried | *You made it here for a reason. Let's begin.* |
 | Card interpretations | Present-tense, emotionally intelligent | *There is something you already know about this situation.* |
 | Notifications | Brief, atmospheric, never nagging | *Something worth reading is waiting for you.* |
-| Empty states | World-building, never corporate | *The signal is finding you.* |
+| Empty states | World-building, never corporate | *There's something waiting in the deck.* |
 
 ### The four avatar voices
 
