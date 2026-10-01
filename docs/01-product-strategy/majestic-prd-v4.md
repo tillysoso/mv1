@@ -204,7 +204,7 @@ The Majestic Profile is permanent from day one. It becomes the user’s first co
 
 After the Majestic Profile is revealed, users complete a four-question world scenario quiz before selecting their companion. Questions are externally framed — the user solves world problems, not self-assessments. Their answers surface a companion recommendation which is presented as a suggestion not a result. The user always makes the final conscious choice.
 
-**Quiz skip option:** Users who prefer to choose directly can skip the quiz via a text link below the primary quiz CTA: *“Rather choose for yourself? Skip ahead.”* Skipping routes to the companion selection screen with all four avatars shown equally — no highlighted recommendation. Quiz score stays null. Analytics and insight generation begin from avatar selection onwards. The quiz is a guide, not a gate.
+**Quiz skip option:** Users who prefer to choose directly can skip the quiz via a text link below the primary quiz CTA: *“Skip straight to choosing.”* Skipping routes to the companion selection screen with all four avatars shown equally — no highlighted recommendation. Quiz score stays null. Analytics and insight generation begin from avatar selection onwards. The quiz is a guide, not a gate.
 
 Avatar selection determines the UI accent theme and tone of voice across all readings and prompts. Companions can be switched at any time.
 
