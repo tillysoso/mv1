@@ -223,7 +223,7 @@ Motion is reserved for ritual moments only:
 - Not dead screens — every loading moment is a world-building beat
 - Rain on glass, signal pulse, botanical detail, atmospheric haze
 - Brief copy in brand voice — atmospheric, never corporate
-- Examples: *The signal is finding you.* / *The pattern is forming.* / *Almost there.*
+- Examples: *There's something waiting in the deck.* / *Still arriving.* / *Almost there.*
 
 ---
 
