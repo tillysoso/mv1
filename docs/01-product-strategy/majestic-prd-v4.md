@@ -46,6 +46,7 @@ This PRD should be read alongside the following documents. In all cases of confl
 |Major Arcana Interpretations — Final               |Full personality and soul card interpretations for all 22 Major Arcana                                                       |
 |Major Arcana One-Liners — Final                    |One-line personality and soul summaries for all 22 Major Arcana                                                              |
 |Spread Pattern Library — v0.1 (template)           |Cross-card pattern detection feeding spread-level synthesis — new architecture layer, not yet populated, 🔶 pending Luke     |
+|Content Integrity Scorecard v1.0                   |Manipulation and rabbit-hole check for all content and copy (`majestic-content-guardrails.md`)                               |
 
 -----
 
@@ -243,7 +244,7 @@ Every user-facing feature and the one spec that owns it. This table is an index 
 |Feature                          |What it is                                                                                                   |Owning spec                                                    |
 |---------------------------------|-------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
 |Onboarding                       |Three-phase, 12-screen flow: terminal entry, Majestic Profile reveal, quiz, companion selection, first draw  |Onboarding Narrative v2                                        |
-|Quiz skip                        |"Skip straight to choosing": bypass the quiz but still choose a companion (#157)                             |Altar & Ritual Spec v2.0 §07                                   |
+|Quiz skip                        |Bypass the quiz but still choose a companion; all four shown with no recommendation (#157)                   |Altar & Ritual Spec v2.0 §07                                   |
 |Home — ground state              |Command center window, daily directive, pop culture reference, observational prompts                         |Home Screen Spec v1.0                                          |
 |Navigation                       |Three-state spatial system, four-destination bottom nav, portal and door transitions                         |Navigation Architecture Spec v1.0                              |
 |Daily draw & ritual              |Talisman hold → direct reveal, with an arrival and reflection ritual. No fan, no jumping card                |Ritual & Notification Copy (#122), Altar & Ritual Spec v2.0    |
@@ -252,6 +253,7 @@ Every user-facing feature and the one spec that owns it. This table is an index 
 |Initiated readings               |1-card and 3-card spreads with fan selection and the jumping card                                            |Reading Screen, Card Animation & Aura Spec; Quarter Deck Fan & Jumping Card Spec v2.0|
 |Aura system                      |World atmosphere responding to card context and reading state                                                |Aura Treatment & App States v1.0; Reading Screen Spec Part 03  |
 |Dig Deeper                       |Post-reading lore resonance, extended reading, synthesis and Love/Career/Life angles                         |Dig Deeper Spec v2.0; Dig Deeper Content — Master Doc          |
+|Spread-level interpretation 🔶   |Cross-card patterns (suit, aura, structure) feeding multi-card Dig Deeper synthesis. Template only, not yet populated; symbolic patterns need Luke review|Spread Pattern Library — v0.1 (template)                       |
 |Zen Mode 🔶                      |Optional full-screen focus view after the main card reading (not Dig Deeper). **Draft, not locked.** See open items below|Reading Screen, Card Animation & Aura Spec Part 04             |
 |Codex                            |78-card deck browser, card detail, lore unlocks, two-tier expansion                                          |Codex Spec                                                     |
 |Journal                          |Reading archive plus standalone writing surface. No streaks, no habit tracking                               |Journal Spec                                                   |
